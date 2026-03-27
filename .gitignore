@@ -101,3 +101,6 @@ InitTestScene*.unity*
 # Ignore temporaries from GameCI
 /[Aa]rtifacts/
 /[Cc]odeCoverage/
+
+# Ignore everything inside _Dev folder
+/Assets/_Dev/
