@@ -35,10 +35,24 @@
   </p>
 </div>
 
+## Estrutura de Pastas
 
-## Credits
+O projeto segue uma organização feature-based. Veja o objetivo de cada pasta principal:
 
-CI/CD powered by [GameCI](https://game.ci/) and GitHub Actions.
+- **_Core/**: Scripts e assets centrais, utilitários e sistemas fundamentais usados por todo o projeto (ex: Input, Managers).
+- **_Dev/**: Onde você coloca arquivos, scripts, ferramentas, cenas ou assets que são usados apenas durante o desenvolvimento e não vão para produção.
+- **_Shared/**: Assets e scripts compartilhados entre diferentes features.
+- **_ThirdParty/**: Plugins, assets e bibliotecas de terceiros.
+- **Features/**: Cada subpasta representa uma feature (funcionalidade) do jogo. Dentro de cada feature, organize por Animations, Audio, Materials, Prefabs, Scripts e UI.
+- **Scenes/**: Cenas do Unity usadas no projeto.
+- **Settings/**: Configurações globais do projeto, como perfis de renderização, áudio, qualidade, etc.
+
+Mantenha cada asset na pasta correspondente para garantir organização e facilitar o trabalho em equipe.
+
+## Créditos
+
+CI/CD providenciados pelo [GameCI](https://game.ci/) e GitHub Actions.
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
