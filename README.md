@@ -66,7 +66,7 @@ CI/CD providenciados pelo [GameCI](https://game.ci/) e GitHub Actions.
 [issues-shield]: https://img.shields.io/github/issues/Senac-Code-Nuts/Multiplayer-Pong-Project.svg?style=for-the-badge
 [issues-url]: https://github.com/Senac-Code-Nuts/Multiplayer-Pong-Project/issues
 [license-shield]: https://img.shields.io/github/license/Senac-Code-Nuts/Multiplayer-Pong-Project.svg?style=for-the-badge
-[license-url]: https://github.com/Senac-Code-Nuts/Multiplayer-Pong-Project/blob/master/LICENSE.txt
+[license-url]: https://github.com/Senac-Code-Nuts/Multiplayer-Pong-Project/blob/master/LICENSE
 [Unity]: https://img.shields.io/badge/Unity-000000?style=for-the-badge&logo=unity&logoColor=white
 [Unity-url]: https://unity.com/
 [CSharp]: https://img.shields.io/badge/C%23-239120?style=for-the-badge&logo=dotnet&logoColor=white
