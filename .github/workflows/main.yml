@@ -109,12 +109,12 @@ jobs:
 
           # 3. Prepara o conteúdo base usando printf para garantir as quebras de linha
           HEADER=$(printf "📢 **@everyone | Nova Versão Disponível!**\n_%s_\n\n**Repositório:** [%s](%s)\n**Release:** [v%s](%s)\n**Versão:** \`v%s\`\n\n" \
-                  "$FUNNY_MESSAGE" "$REPO_NAME" "$REPO_URL_HIDDEN" "$RELEASE_TAG" "$RELEASE_LINK" "$RELEASE_TAG")
+                  "$FUNNY_MESSAGE" "$REPO_NAME" "$REPO_URL_HIDDEN" "$RELEASE_TAG" "$RELEASE_LINK")
           
           FOOTER=$(printf "\n\n---\n📅 %s | 🛠️ [Abrir uma Issue](%s)" "$CURRENT_DATE" "$ISSUE_LINK")
 
           # 4. Lógica de decisão
-          TOTAL_MSG="${HEADER}**O que mudou:**\n${RAW_BODY}${FOOTER}"
+          TOTAL_MSG="${HEADER}**O que mudou:**\n\n${RAW_BODY}${FOOTER}"
 
           if [ ${#TOTAL_MSG} -le 1900 ]; then
             echo "Enviando mensagem normal..."
