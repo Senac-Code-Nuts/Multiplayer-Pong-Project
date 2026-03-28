@@ -89,45 +89,40 @@ jobs:
           RELEASE_BODY: ${{ steps.semantic.outputs.new_release_notes }}
           REPO_URL: ${{ github.event.repository.html_url }}
           REPO_NAME: ${{ github.repository }}
+
         run: |
-          SUBTITLE="Já se alongaram antes de fazer qualquer coisa?"
-
+          # Formata o corpo da release
           RAW_BODY=$(echo "${RELEASE_BODY}" | sed '1,2d' \
-            | sed 's/### Features/\n🚀 **Features**\n/g' \
-            | sed 's/### Bug Fixes/\n🐛 **Bug Fixes**\n/g' \
-            | sed 's/### Performance Improvements/\n⚡ **Performance**\n/g' \
-            | sed 's/### Code Refactoring/\n🛠️ **Refactor**\n/g' \
-            | sed 's/### Documentation/\n📝 **Docs**\n/g' \
-            | sed 's/### Reverts/\n⏪ **Reverts**\n/g' \
-            | sed 's/### Tests/\n🧪 **Tests**\n/g' \
-            | sed 's/### Build System/\n🏗️ **Build**\n/g' \
-            | sed 's/### Continuous Integration/\n⚙️ **CI**\n/g' \
-            | sed 's/^\* /🔹 /g')
+                    | sed 's/### Features/🚀 **Features**/g' \
+                    | sed 's/### Bug Fixes/🐛 **Bug Fixes**/g' \
+                    | sed 's/### Performance Improvements/⚡ **Performance**/g' \
+                    | sed 's/### BREAKING CHANGES/⚠️ **BREAKING CHANGES**/g' \
+                    | sed 's/^\* /🔹 /g' \
+                    | sed 's/^- /🔹 /g' \
+                    | tr -s '\n')
 
-          SAFE_BODY=$(jq -aRs . <<< "$RAW_BODY")
+          # Variáveis extras para os links e rodapé
+          FUNNY_MESSAGE="Já se alongaram os dedos antes de trabalhar?"
+          RELEASE_LINK="${REPO_URL}/releases/tag/v${RELEASE_TAG}"
+          ISSUE_LINK="${REPO_URL}/issues/new"
+          CURRENT_DATE=$(date +'%d/%m/%Y')
 
+          # Mensagem final em Markdown puro
+          FULL_MESSAGE=$(printf "📢 **@everyone | Nova Versão Disponível!**\n_%s_\n\n**Repositório:** [%s](%s)\n**Release:** [v%s](%s)\n**Versão:** \`v%s\`\n\n**O que mudou:**\n%s\n\n---\n📅 %s | 🛠️ [Abrir uma Issue](%s)" \
+            "$FUNNY_MESSAGE" \
+            "$REPO_NAME" "$REPO_URL" \
+            "$RELEASE_TAG" "$RELEASE_URL" \
+            "$RELEASE_TAG" \
+            "$RAW_BODY" \
+            "$CURRENT_DATE" "$ISSUE_LINK")
+
+          # Transforma em JSON seguro
+          JSON_PAYLOAD=$(jq -n --arg msg "$FULL_MESSAGE" '{content: $msg}')
+
+          # Envia para o Discord
           HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
             -H "Content-Type: application/json" \
-            -d @- "$DISCORD_WEBHOOK" <<EOF
-          {
-            "content": "@everyone",
-            "embeds": [
-              {
-                "title": "📦 Nova Versão: v${RELEASE_TAG}",
-                "description": "${SUBTITLE}",
-                "color": 5814783,
-                "fields": [
-                  { "name": "💻 Repositório", "value": "[\`${REPO_NAME}\`](${REPO_URL})", "inline": true },
-                  { "name": "🔖 Versão", "value": "\`v${RELEASE_TAG}\`", "inline": true },
-                  { "name": "🗒️ O que mudou?", "value": ${SAFE_BODY}, "inline": false }
-                ],
-                "footer": { "text": "GitHub Actions • CI/CD" },
-                "timestamp": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-              }
-            ]
-          }
-          EOF
-          )
+            -d "$JSON_PAYLOAD" "$DISCORD_WEBHOOK")
 
           if [ "$HTTP_STATUS" -eq 204 ] || [ "$HTTP_STATUS" -eq 200 ]; then
             echo "✅ Notificação enviada!"
