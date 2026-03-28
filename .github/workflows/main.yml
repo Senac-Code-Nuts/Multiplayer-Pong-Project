@@ -101,22 +101,22 @@ jobs:
                     | sed 's/^- /🔹 /g' \
                     | tr -s '\n')
 
-          # Variáveis extras para os links e rodapé
-          FUNNY_MESSAGE="Já se alongaram os dedos antes de trabalhar?"
-          RELEASE_LINK="${REPO_URL}/releases/tag/v${RELEASE_TAG}"
-          ISSUE_LINK="${REPO_URL}/issues/new"
+          # Variáveis
+          FUNNY_MESSAGE="Já se alongaram antes de começar a trabalhar?"
+          REPO_URL_HIDDEN="<${REPO_URL}>"
+          RELEASE_LINK="<${REPO_URL}/releases/tag/v${RELEASE_TAG}>"
+          ISSUE_LINK="<${REPO_URL}/issues/new>"
           CURRENT_DATE=$(date +'%d/%m/%Y')
 
-          # Mensagem final em Markdown puro
+          # Monta a mensagem final
           FULL_MESSAGE=$(printf "📢 **@everyone | Nova Versão Disponível!**\n_%s_\n\n**Repositório:** [%s](%s)\n**Release:** [v%s](%s)\n**Versão:** \`v%s\`\n\n**O que mudou:**\n%s\n\n---\n📅 %s | 🛠️ [Abrir uma Issue](%s)" \
             "$FUNNY_MESSAGE" \
-            "$REPO_NAME" "$REPO_URL" \
-            "$RELEASE_TAG" "$RELEASE_URL" \
+            "$REPO_NAME" "$REPO_URL_HIDDEN" \
+            "$RELEASE_TAG" "$RELEASE_LINK" \
             "$RELEASE_TAG" \
             "$RAW_BODY" \
             "$CURRENT_DATE" "$ISSUE_LINK")
 
-          # Transforma em JSON seguro
           JSON_PAYLOAD=$(jq -n --arg msg "$FULL_MESSAGE" '{content: $msg}')
 
           # Envia para o Discord
