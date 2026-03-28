@@ -77,7 +77,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SEMVER: ${{ steps.semantic.outputs.new_release_version }}
         run: |
-          # Aqui ${PROJECT_NAME} funciona porque é um comando de shell (run)
           mv ${PROJECT_NAME}_Windows_temp.zip ${PROJECT_NAME}_Windows_${SEMVER}.zip
           gh release upload v${SEMVER} ${PROJECT_NAME}_Windows_${SEMVER}.zip
 
@@ -91,7 +90,7 @@ jobs:
           REPO_NAME: ${{ github.repository }}
 
         run: |
-          # Formata o corpo da release
+          # 1. Formata o corpo da release
           RAW_BODY=$(echo "${RELEASE_BODY}" | sed '1,2d' \
                     | sed 's/### Features/🚀 **Features**/g' \
                     | sed 's/### Bug Fixes/🐛 **Bug Fixes**/g' \
@@ -101,38 +100,36 @@ jobs:
                     | sed 's/^- /🔹 /g' \
                     | tr -s '\n')
 
-          # Variáveis de ambiente e links
+          # 2. Variáveis de ambiente e links
           FUNNY_MESSAGE="Já se alongaram antes de começar a trabalhar?"
           REPO_URL_HIDDEN="<${REPO_URL}>"
           RELEASE_LINK="<${REPO_URL}/releases/tag/v${RELEASE_TAG}>"
           ISSUE_LINK="<${REPO_URL}/issues/new>"
           CURRENT_DATE=$(date +'%d/%m/%Y')
 
-          # Prepara o conteúdo base
+          # 3. Prepara o conteúdo base usando printf para garantir as quebras de linha
           HEADER=$(printf "📢 **@everyone | Nova Versão Disponível!**\n_%s_\n\n**Repositório:** [%s](%s)\n**Release:** [v%s](%s)\n**Versão:** \`v%s\`\n\n" \
                   "$FUNNY_MESSAGE" "$REPO_NAME" "$REPO_URL_HIDDEN" "$RELEASE_TAG" "$RELEASE_LINK" "$RELEASE_TAG")
           
-          FOOTER=$(printf "\n\n\n📅 %s | 🛠️ [Abrir uma Issue](%s)" "$CURRENT_DATE" "$ISSUE_LINK")
+          FOOTER=$(printf "\n\n---\n📅 %s | 🛠️ [Abrir uma Issue](%s)" "$CURRENT_DATE" "$ISSUE_LINK")
 
+          # 4. Lógica de decisão
           TOTAL_MSG="${HEADER}**O que mudou:**\n${RAW_BODY}${FOOTER}"
 
           if [ ${#TOTAL_MSG} -le 1900 ]; then
             echo "Enviando mensagem normal..."
             JSON_PAYLOAD=$(jq -n --arg msg "$TOTAL_MSG" '{content: $msg}')
-            
-            curl -s -X POST -H "Content-Type: application/json" \
-              -d "$JSON_PAYLOAD" "$DISCORD_WEBHOOK"
+            curl -s -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" "$DISCORD_WEBHOOK"
           else
-            echo "Mensagem muito grande, enviando com arquivo anexo..."
-
-            # Salva o changelog num arquivo
-            echo "$RAW_BODY" > changelog.txt
+            echo "Mensagem muito grande, enviando CHANGELOG.md..."
             
-            SHORT_MSG="${HEADER}**O que mudou:**\n⚠️ *O log de mudanças era muito grande e foi anexado como arquivo abaixo.*${FOOTER}"
+            SHORT_MSG=$(printf "%s**O que mudou:**\n⚠️ *O log de mudanças era muito grande e foi anexado como arquivo abaixo.*%s" "$HEADER" "$FOOTER")
+            
+            echo "$RAW_BODY" > CHANGELOG.md
             
             PAYLOAD_JSON_STRING=$(jq -n --arg msg "$SHORT_MSG" '{content: $msg}')
             
             curl -s -X POST "$DISCORD_WEBHOOK" \
               -F "payload_json=$PAYLOAD_JSON_STRING" \
-              -F "file=@changelog.txt"
+              -F "file=@CHANGELOG.md"
           fi
