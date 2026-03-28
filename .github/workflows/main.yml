@@ -117,15 +117,22 @@ jobs:
           TOTAL_MSG="${HEADER}**O que mudou:**\n${RAW_BODY}${FOOTER}"
 
           if [ ${#TOTAL_MSG} -le 1900 ]; then
-            # ENVIAR MENSAGEM NORMAL
+            echo "Enviando mensagem normal..."
             JSON_PAYLOAD=$(jq -n --arg msg "$TOTAL_MSG" '{content: $msg}')
-            curl -s -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" "$DISCORD_WEBHOOK"
+            
+            curl -s -X POST -H "Content-Type: application/json" \
+              -d "$JSON_PAYLOAD" "$DISCORD_WEBHOOK"
           else
-            # ENVIAR COMO ARQUIVO (Caso ultrapasse o limite)
+            echo "Mensagem muito grande, enviando com arquivo anexo..."
+
+            # Salva o changelog num arquivo
             echo "$RAW_BODY" > changelog.txt
+            
             SHORT_MSG="${HEADER}**O que mudou:**\n⚠️ *O log de mudanças era muito grande e foi anexado como arquivo abaixo.*${FOOTER}"
             
+            PAYLOAD_JSON_STRING=$(jq -n --arg msg "$SHORT_MSG" '{content: $msg}')
+            
             curl -s -X POST "$DISCORD_WEBHOOK" \
-              -F "payload_json={\"content\": \"$SHORT_MSG\"}" \
+              -F "payload_json=$PAYLOAD_JSON_STRING" \
               -F "file=@changelog.txt"
           fi
