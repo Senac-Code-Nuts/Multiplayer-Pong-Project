@@ -108,8 +108,8 @@ jobs:
           CURRENT_DATE=$(date +'%d/%m/%Y')
 
           # 3. Prepara o conteúdo base usando printf para garantir as quebras de linha
-          HEADER=$(printf "📢 **@everyone | Nova Versão Disponível!**\n_%s_\n\n**Repositório:** [%s](%s)\n**Release:** [v%s](%s)\n**Versão:** \`v%s\`\n\n" \
-                  "$FUNNY_MESSAGE" "$REPO_NAME" "$REPO_URL_HIDDEN" "$RELEASE_TAG" "$RELEASE_LINK")
+            HEADER=$(printf "📢 **@everyone | Nova Versão Disponível!**\n_%s_\n\n**Repositório:** [%s](%s)\n**Versão:** [v%s](%s)\n\n" \
+              "$FUNNY_MESSAGE" "$REPO_NAME" "$REPO_URL_HIDDEN" "$RELEASE_TAG" "$RELEASE_LINK")
           
           FOOTER=$(printf "\n\n---\n📅 %s | 🛠️ [Abrir uma Issue](%s)" "$CURRENT_DATE" "$ISSUE_LINK")
 
@@ -123,7 +123,7 @@ jobs:
           else
             echo "Mensagem muito grande, enviando CHANGELOG.md..."
             
-            SHORT_MSG=$(printf "%s**O que mudou:**\n⚠️ *O log de mudanças era muito grande e foi anexado como arquivo abaixo.*%s" "$HEADER" "$FOOTER")
+            SHORT_MSG=$(printf "%s\n**O que mudou:**\n⚠️ *O log de mudanças era muito grande e foi anexado como arquivo abaixo.*%s" "$HEADER" "$FOOTER")
             
             echo "$RAW_BODY" > CHANGELOG.md
             
