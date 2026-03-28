@@ -1,0 +1,136 @@
+name: Build & Release 🚀
+permissions:
+  contents: write
+
+on:
+  push:
+    branches: [main]
+
+env:
+    PROJECT_NAME: Pong_Multiplayer
+    FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  build:
+    name: Build Unity 🎮
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+          fetch-depth: 0 
+
+      - uses: actions/cache@v3
+        with:
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+
+      - name: Build Unity Project
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          targetPlatform: StandaloneWindows64
+          buildName: Build
+
+      - name: Zip Build
+        run: |
+          cd build
+          zip -r "../${PROJECT_NAME}_Windows_temp.zip" .
+          cd ..
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-zip
+          path: ${PROJECT_NAME}_Windows_temp.zip          
+
+  release:
+    name: Semantic Release 🧠
+    runs-on: ubuntu-latest
+    needs: build 
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-zip
+
+      - name: Run Semantic Release
+        id: semantic
+        uses: cycjimmy/semantic-release-action@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          branches: main
+
+      - name: Rename & Upload Release Asset
+        if: steps.semantic.outputs.new_release_published == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SEMVER: ${{ steps.semantic.outputs.new_release_version }}
+        run: |
+          mv ${PROJECT_NAME}_Windows_temp.zip ${PROJECT_NAME}_Windows_${SEMVER}.zip
+          gh release upload v${SEMVER} ${PROJECT_NAME}_Windows_${SEMVER}.zip
+
+      - name: Notify Discord 📢
+        if: steps.semantic.outputs.new_release_published == 'true'
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          RELEASE_TAG: ${{ steps.semantic.outputs.new_release_version }}
+          RELEASE_BODY: ${{ steps.semantic.outputs.new_release_notes }}
+          REPO_URL: ${{ github.event.repository.html_url }}
+          REPO_NAME: ${{ github.repository }}
+
+        run: |
+                  RAW_BODY=$(echo "${RELEASE_BODY}" | sed '1,2d' \
+                    | sed 's/### Features/🚀 **Features**/g' \
+                    | sed 's/### Bug Fixes/🐛 **Bug Fixes**/g' \
+                    | sed 's/### Performance Improvements/⚡ **Performance**/g' \
+                    | sed 's/### Code Refactoring/🛠️ **Refactor**/g' \
+                    | sed 's/### Documentation/📝 **Docs**/g' \
+                    | sed 's/### Reverts/⏪ **Reverts**/g' \
+                    | sed 's/### Tests/🧪 **Tests**/g' \
+                    | sed 's/### Build System/🏗️ **Build**/g' \
+                    | sed 's/### Continuous Integration/⚙️ **CI**/g' \
+                    | sed 's/^\* /🔹 /g' \
+                    | tr -s '\n')
+
+                  SAFE_BODY=$(jq -aRs . <<< "$RAW_BODY")
+
+                  HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
+                    -H "Content-Type: application/json" \
+                    -d @- "$DISCORD_WEBHOOK" <<EOF
+                  {
+                    "content": "@everyone",
+                    "embeds": [
+                      {
+                        "title": "📦 Nova Versão: v${RELEASE_TAG}",
+                        "description": "${SUBTITLE}",
+                        "color": 5814783,
+                        "fields": [
+                          { "name": "💻 Repositório", "value": "[\`${REPO_NAME}\`](${REPO_URL})", "inline": true },
+                          { "name": "🔖 Versão", "value": "\`v${RELEASE_TAG}\`", "inline": true },
+                          { "name": "🗒️ O que mudou?", "value": ${SAFE_BODY}, "inline": false }
+                        ],
+                        "footer": { "text": "GitHub Actions • CI/CD" },
+                        "timestamp": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+                      }
+                    ]
+                  }
+                  EOF
+                  )
+
+                  if [ "$HTTP_STATUS" -eq 204 ] || [ "$HTTP_STATUS" -eq 200 ]; then
+                    echo "✅ Notificação enviada!"
+                  else
+                    echo "❌ Erro HTTP: $HTTP_STATUS"
+                    exit 1
+                  fi
