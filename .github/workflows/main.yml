@@ -114,7 +114,7 @@ jobs:
           FOOTER=$(printf "\n\n---\n📅 %s | 🛠️ [Abrir uma Issue](%s)" "$CURRENT_DATE" "$ISSUE_LINK")
 
           # 4. Lógica de decisão
-          TOTAL_MSG="${HEADER}**O que mudou:**\n\n${RAW_BODY}${FOOTER}"
+          TOTAL_MSG=$(printf "%s**O que mudou:**\n\n%s%s" "$HEADER" "$RAW_BODY" "$FOOTER")
 
           if [ ${#TOTAL_MSG} -le 1900 ]; then
             echo "Enviando mensagem normal..."
