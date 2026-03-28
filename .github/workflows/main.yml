@@ -101,32 +101,31 @@ jobs:
                     | sed 's/^- /🔹 /g' \
                     | tr -s '\n')
 
-          # Variáveis
+          # Variáveis de ambiente e links
           FUNNY_MESSAGE="Já se alongaram antes de começar a trabalhar?"
           REPO_URL_HIDDEN="<${REPO_URL}>"
           RELEASE_LINK="<${REPO_URL}/releases/tag/v${RELEASE_TAG}>"
           ISSUE_LINK="<${REPO_URL}/issues/new>"
           CURRENT_DATE=$(date +'%d/%m/%Y')
 
-          # Monta a mensagem final
-          FULL_MESSAGE=$(printf "📢 **@everyone | Nova Versão Disponível!**\n_%s_\n\n**Repositório:** [%s](%s)\n**Release:** [v%s](%s)\n**Versão:** \`v%s\`\n\n**O que mudou:**\n%s\n\n---\n📅 %s | 🛠️ [Abrir uma Issue](%s)" \
-            "$FUNNY_MESSAGE" \
-            "$REPO_NAME" "$REPO_URL_HIDDEN" \
-            "$RELEASE_TAG" "$RELEASE_LINK" \
-            "$RELEASE_TAG" \
-            "$RAW_BODY" \
-            "$CURRENT_DATE" "$ISSUE_LINK")
+          # Prepara o conteúdo base
+          HEADER=$(printf "📢 **@everyone | Nova Versão Disponível!**\n_%s_\n\n**Repositório:** [%s](%s)\n**Release:** [v%s](%s)\n**Versão:** \`v%s\`\n\n" \
+                  "$FUNNY_MESSAGE" "$REPO_NAME" "$REPO_URL_HIDDEN" "$RELEASE_TAG" "$RELEASE_LINK" "$RELEASE_TAG")
+          
+          FOOTER=$(printf "\n\n\n📅 %s | 🛠️ [Abrir uma Issue](%s)" "$CURRENT_DATE" "$ISSUE_LINK")
 
-          JSON_PAYLOAD=$(jq -n --arg msg "$FULL_MESSAGE" '{content: $msg}')
+          TOTAL_MSG="${HEADER}**O que mudou:**\n${RAW_BODY}${FOOTER}"
 
-          # Envia para o Discord
-          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
-            -H "Content-Type: application/json" \
-            -d "$JSON_PAYLOAD" "$DISCORD_WEBHOOK")
-
-          if [ "$HTTP_STATUS" -eq 204 ] || [ "$HTTP_STATUS" -eq 200 ]; then
-            echo "✅ Notificação enviada!"
+          if [ ${#TOTAL_MSG} -le 1900 ]; then
+            # ENVIAR MENSAGEM NORMAL
+            JSON_PAYLOAD=$(jq -n --arg msg "$TOTAL_MSG" '{content: $msg}')
+            curl -s -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" "$DISCORD_WEBHOOK"
           else
-            echo "❌ Erro HTTP: $HTTP_STATUS"
-            exit 1
+            # ENVIAR COMO ARQUIVO (Caso ultrapasse o limite)
+            echo "$RAW_BODY" > changelog.txt
+            SHORT_MSG="${HEADER}**O que mudou:**\n⚠️ *O log de mudanças era muito grande e foi anexado como arquivo abaixo.*${FOOTER}"
+            
+            curl -s -X POST "$DISCORD_WEBHOOK" \
+              -F "payload_json={\"content\": \"$SHORT_MSG\"}" \
+              -F "file=@changelog.txt"
           fi
