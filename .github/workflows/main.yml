@@ -7,8 +7,8 @@ on:
     branches: [main]
 
 env:
-    PROJECT_NAME: Pong_Multiplayer
-    FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  PROJECT_NAME: Pong_Multiplayer
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build:
@@ -46,7 +46,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-zip
-          path: ${PROJECT_NAME}_Windows_temp.zip          
+          path: ${{ env.PROJECT_NAME }}_Windows_temp.zip          
 
   release:
     name: Semantic Release 🧠
@@ -77,6 +77,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SEMVER: ${{ steps.semantic.outputs.new_release_version }}
         run: |
+          # Aqui ${PROJECT_NAME} funciona porque é um comando de shell (run)
           mv ${PROJECT_NAME}_Windows_temp.zip ${PROJECT_NAME}_Windows_${SEMVER}.zip
           gh release upload v${SEMVER} ${PROJECT_NAME}_Windows_${SEMVER}.zip
 
@@ -88,49 +89,49 @@ jobs:
           RELEASE_BODY: ${{ steps.semantic.outputs.new_release_notes }}
           REPO_URL: ${{ github.event.repository.html_url }}
           REPO_NAME: ${{ github.repository }}
-
         run: |
-                  RAW_BODY=$(echo "${RELEASE_BODY}" | sed '1,2d' \
-                    | sed 's/### Features/🚀 **Features**/g' \
-                    | sed 's/### Bug Fixes/🐛 **Bug Fixes**/g' \
-                    | sed 's/### Performance Improvements/⚡ **Performance**/g' \
-                    | sed 's/### Code Refactoring/🛠️ **Refactor**/g' \
-                    | sed 's/### Documentation/📝 **Docs**/g' \
-                    | sed 's/### Reverts/⏪ **Reverts**/g' \
-                    | sed 's/### Tests/🧪 **Tests**/g' \
-                    | sed 's/### Build System/🏗️ **Build**/g' \
-                    | sed 's/### Continuous Integration/⚙️ **CI**/g' \
-                    | sed 's/^\* /🔹 /g' \
-                    | tr -s '\n')
+          SUBTITLE="Já se alongaram antes de fazer qualquer coisa?"
 
-                  SAFE_BODY=$(jq -aRs . <<< "$RAW_BODY")
+          RAW_BODY=$(echo "${RELEASE_BODY}" | sed '1,2d' \
+            | sed 's/### Features/\n🚀 **Features**\n/g' \
+            | sed 's/### Bug Fixes/\n🐛 **Bug Fixes**\n/g' \
+            | sed 's/### Performance Improvements/\n⚡ **Performance**\n/g' \
+            | sed 's/### Code Refactoring/\n🛠️ **Refactor**\n/g' \
+            | sed 's/### Documentation/\n📝 **Docs**\n/g' \
+            | sed 's/### Reverts/\n⏪ **Reverts**\n/g' \
+            | sed 's/### Tests/\n🧪 **Tests**\n/g' \
+            | sed 's/### Build System/\n🏗️ **Build**\n/g' \
+            | sed 's/### Continuous Integration/\n⚙️ **CI**\n/g' \
+            | sed 's/^\* /🔹 /g')
 
-                  HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
-                    -H "Content-Type: application/json" \
-                    -d @- "$DISCORD_WEBHOOK" <<EOF
-                  {
-                    "content": "@everyone",
-                    "embeds": [
-                      {
-                        "title": "📦 Nova Versão: v${RELEASE_TAG}",
-                        "description": "${SUBTITLE}",
-                        "color": 5814783,
-                        "fields": [
-                          { "name": "💻 Repositório", "value": "[\`${REPO_NAME}\`](${REPO_URL})", "inline": true },
-                          { "name": "🔖 Versão", "value": "\`v${RELEASE_TAG}\`", "inline": true },
-                          { "name": "🗒️ O que mudou?", "value": ${SAFE_BODY}, "inline": false }
-                        ],
-                        "footer": { "text": "GitHub Actions • CI/CD" },
-                        "timestamp": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-                      }
-                    ]
-                  }
-                  EOF
-                  )
+          SAFE_BODY=$(jq -aRs . <<< "$RAW_BODY")
 
-                  if [ "$HTTP_STATUS" -eq 204 ] || [ "$HTTP_STATUS" -eq 200 ]; then
-                    echo "✅ Notificação enviada!"
-                  else
-                    echo "❌ Erro HTTP: $HTTP_STATUS"
-                    exit 1
-                  fi
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
+            -H "Content-Type: application/json" \
+            -d @- "$DISCORD_WEBHOOK" <<EOF
+          {
+            "content": "@everyone",
+            "embeds": [
+              {
+                "title": "📦 Nova Versão: v${RELEASE_TAG}",
+                "description": "${SUBTITLE}",
+                "color": 5814783,
+                "fields": [
+                  { "name": "💻 Repositório", "value": "[\`${REPO_NAME}\`](${REPO_URL})", "inline": true },
+                  { "name": "🔖 Versão", "value": "\`v${RELEASE_TAG}\`", "inline": true },
+                  { "name": "🗒️ O que mudou?", "value": ${SAFE_BODY}, "inline": false }
+                ],
+                "footer": { "text": "GitHub Actions • CI/CD" },
+                "timestamp": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+              }
+            ]
+          }
+          EOF
+          )
+
+          if [ "$HTTP_STATUS" -eq 204 ] || [ "$HTTP_STATUS" -eq 200 ]; then
+            echo "✅ Notificação enviada!"
+          else
+            echo "❌ Erro HTTP: $HTTP_STATUS"
+            exit 1
+          fi
