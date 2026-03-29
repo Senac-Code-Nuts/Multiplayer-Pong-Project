@@ -1,9 +1,9 @@
+using UnityEngine;
+using UnityEngine.InputSystem;
+
 namespace Pong.Player
 {
-    using UnityEngine;
-    using UnityEngine.InputSystem;
-
-    public class Player_Controller : MonoBehaviour
+    public class PlayerController : MonoBehaviour
     {
         [SerializeField, Range(0f, 10f)] float _speed = 10f;
         private Vector2 _moveInput;
