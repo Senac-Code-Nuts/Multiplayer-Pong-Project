@@ -1,7 +1,7 @@
+using UnityEngine;
+
 namespace Pong.Ball
 {
-    using UnityEngine;
-
     public class Ball : MonoBehaviour
     {
         [SerializeField, Range(0f,10f)] private float _speed;
