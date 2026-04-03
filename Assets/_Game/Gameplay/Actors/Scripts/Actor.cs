@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-namespace PingPong.Features.Actors
+namespace Pong.Gameplay.Actors
 {
     public abstract class Actor : MonoBehaviour, IDamageable
     {

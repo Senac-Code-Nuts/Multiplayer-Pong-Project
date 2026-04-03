@@ -1,4 +1,4 @@
-namespace PingPong.Features.Actors
+namespace Pong.Gameplay.Actors
 {
     public interface IDamageable
     {
