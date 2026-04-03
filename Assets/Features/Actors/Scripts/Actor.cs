@@ -5,17 +5,18 @@ namespace PingPong.Features.Actors
 {
     public abstract class Actor : MonoBehaviour, IDamageable
     {
-        [Header("Atributos")]
+        [Header("Attributes")]
         [SerializeField] protected int _maxHealth;
         [SerializeField] protected int _currentHealth;
         [SerializeField] protected int _damage;
 
-        [Header("Estados")]
+        [Header("States")]
         [SerializeField] protected bool _isVulnerable = true;
         [SerializeField] protected bool _isStunned = false;
         [SerializeField] protected bool _isDead = false;
 
         public int CurrentHealth => _currentHealth;
+        public int Damage => _damage;
         public bool IsDead => _isDead;
         public bool IsAlive => !_isDead;
         public bool IsStunned => _isStunned;
@@ -26,10 +27,7 @@ namespace PingPong.Features.Actors
             _currentHealth = _maxHealth;
         }
 
-        // =========================
-        // DANO
-        // =========================
-
+        #region Damage
         public virtual void ApplyDamage(int damage)
         {
             if (!_isVulnerable || _isDead)
@@ -46,14 +44,10 @@ namespace PingPong.Features.Actors
             }
         }
 
-        protected virtual void OnDamageTaken()
-        {
-        }
+        protected abstract void OnDamageTaken();
+        #endregion
 
-        // =========================
-        // MORTE
-        // =========================
-
+        #region Death
         protected virtual void Die()
         {
             if (_isDead)
@@ -62,12 +56,11 @@ namespace PingPong.Features.Actors
             _isDead = true;
             OnDeath();
         }
-
+        
         protected abstract void OnDeath();
+        #endregion
 
-        // =========================
-        // STUN
-        // =========================
+        #region Stun
         public virtual void ApplyStun(float duration)
         {
             if (_isDead || _isStunned)
@@ -84,13 +77,13 @@ namespace PingPong.Features.Actors
             _isStunned = false;
         }
 
-        // =========================
-        // VULNERABILIDADE
-        // =========================
+        #endregion
 
+        #region Vulnerability
         public virtual void SetVulnerable(bool value)
         {
             _isVulnerable = value;
         }
+        #endregion
     }
 }
