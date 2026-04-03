@@ -1,0 +1,17 @@
+{
+    "name": "Pong.Gameplay",
+    "rootNamespace": "Pong.Gameplay",
+    "references": [
+        "GUID:7d606eb347d638846a958de7edf6643b",
+        "GUID:1b8f9525283e91040aab8b6b72c7e4bd"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
