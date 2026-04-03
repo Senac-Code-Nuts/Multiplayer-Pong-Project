@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Pong.Ball
+namespace Pong.Gameplay.Ball
 {
     public class Ball : MonoBehaviour
     {

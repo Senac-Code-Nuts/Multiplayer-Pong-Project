@@ -102,5 +102,5 @@ InitTestScene*.unity*
 /[Aa]rtifacts/
 /[Cc]odeCoverage/
 
-# Ignore everything inside _Dev folder
-/Assets/_Dev/
+# Ignore everything inside _Local folder
+/Assets/_Local/
