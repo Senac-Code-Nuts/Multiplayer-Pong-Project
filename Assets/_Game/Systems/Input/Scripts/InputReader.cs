@@ -4,34 +4,41 @@ using UnityEngine.InputSystem;
 
 namespace Pong.Systems
 {
-    [CreateAssetMenu(menuName = "Systems/Input Reader")]
-    public class InputReader : ScriptableObject, GameInput.IPlayerMoveActions
+    public class InputReader : MonoBehaviour
     {
         public event Action<Vector2> MoveEvent;
         public event Action AttackEvent;
 
         private GameInput _gameInput;
-
         private void OnEnable()
         {
-            if (_gameInput == null)
-            {
-                _gameInput = new GameInput();
-                _gameInput.PlayerMove.SetCallbacks(this);
-            }
-            _gameInput.PlayerMove.Enable();
+            _gameInput = new GameInput();
+
+            _gameInput.Enable();
+            
+            _gameInput.PlayerMove.Move.performed += OnMove;
+            _gameInput.PlayerMove.Move.canceled += OnMove;
+            //_gameInput.Player.Attack.performed += OnAttack;
         }
 
-        public void OnMove(InputAction.CallbackContext context)
+        private void OnDisable()
         {
-            MoveEvent.Invoke(context.ReadValue<Vector2>());
-        }
+            _gameInput.PlayerMove.Move.performed -= OnMove;
+            _gameInput.PlayerMove.Move.canceled -= OnMove;
+            //_gameInput.Player.Attack.performed -= OnAttack;
 
-        public void OnAttack(InputAction.CallbackContext context)
+            _gameInput.Disable();
+        }
+        private void OnMove(InputAction.CallbackContext context)
+        {
+            Vector2 movement = context.canceled ? Vector2.zero : context.ReadValue<Vector2>();
+            MoveEvent?.Invoke(movement);
+        }
+        private void OnAttack(InputAction.CallbackContext context)
         {
             if (context.performed)
             {
-                AttackEvent.Invoke();
+                AttackEvent?.Invoke();
             }
         }
     }
