@@ -11,18 +11,18 @@ namespace Pong.Systems.Graph
 
         [SerializeField] private InfluenceSystem _influenceSystem;
 
-        [Header("Cor de peso")]
+        [Header("Weight Color")]
         [SerializeField] private Gradient _weightGradient;
 
         private float GetDynamicCost(GraphNode from, Connection conn)
         {
-            var to = conn.GetOther(from);
+           GraphNode toNode = conn.GetOther(from);
 
-            if (to == null) return conn.weight;
+            if (toNode == null) return conn.weight;
 
             float baseCost = conn.weight;
 
-            float influence = _influenceSystem != null ? _influenceSystem.GetMultiplier(to.transform.position) : 1f;
+            float influence = _influenceSystem != null ? _influenceSystem.GetMultiplier(toNode.transform.position) : 1f;
 
             return baseCost * influence;
         }
@@ -84,9 +84,9 @@ namespace Pong.Systems.Graph
 
         private Color GetColor(float weight, float min, float max)
         {
-            float t = Mathf.InverseLerp(min, max, weight);
+            float normalizedWeight = Mathf.InverseLerp(min, max, weight);
 
-            return _weightGradient.Evaluate(t);
+            return _weightGradient.Evaluate(normalizedWeight);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Pong.Systems.Graph
             {
                 float distance = Vector3.Distance(position, source.transform.position);
 
-                if (distance <= source.radius)
+                if (distance <= source.Radius)
                 {
                     total += (source.Evaluate(distance) - 1f);
                 }

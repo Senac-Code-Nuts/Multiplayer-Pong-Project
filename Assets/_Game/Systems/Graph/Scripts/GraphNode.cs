@@ -19,7 +19,10 @@ namespace Pong.Systems.Graph
                 var other = conn.GetOther(this);
 
                 if (other != null)
-                    neighbours.Add(other);
+                {
+                    neighbours.Add(other);   
+                }
+                    
             }
 
             return neighbours;

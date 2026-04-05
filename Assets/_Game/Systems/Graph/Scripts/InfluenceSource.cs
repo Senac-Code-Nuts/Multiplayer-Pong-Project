@@ -4,15 +4,15 @@ namespace Pong.Systems.Graph
 {
     public class InfluenceSource : MonoBehaviour
     {
-        public float radius;
+        [field : SerializeField]public float Radius {get; private set;}
         public float weightMultiplier = 2f;
         [SerializeField] private AnimationCurve _fallof;
 
         public float Evaluate(float distance)
         {
-            float t = distance / radius;
+            float normalizedDistance = distance / Radius;
 
-            float curveValue = _fallof.Evaluate(t);
+            float curveValue = _fallof.Evaluate(normalizedDistance);
 
             return Mathf.Lerp(weightMultiplier, 1f, curveValue);
         }
@@ -20,7 +20,7 @@ namespace Pong.Systems.Graph
         private void OnDrawGizmos()
         {
             Gizmos.color = Color.blue;
-            Gizmos.DrawWireSphere(transform.position, radius);
+            Gizmos.DrawWireSphere(transform.position, Radius);
         }
     }
 

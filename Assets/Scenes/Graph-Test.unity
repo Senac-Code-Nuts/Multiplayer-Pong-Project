@@ -201,7 +201,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e69c4d6feb198184cb3f3d07a901d053, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 1
+  <Radius>k__BackingField: 1.04
   weightMultiplier: 1.5
   _fallof:
     serializedVersion: 2
@@ -245,7 +245,7 @@ Transform:
   m_GameObject: {fileID: 135292978}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.079, y: 0, z: -0.959}
+  m_LocalPosition: {x: -0.407, y: 0, z: -0.236}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
