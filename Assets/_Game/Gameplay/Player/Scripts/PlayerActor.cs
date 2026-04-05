@@ -8,8 +8,6 @@ namespace Pong.Gameplay.Player
     {
         [Header("Input")]
         [SerializeField] protected InputReader _inputReader;
-
-        #region Unity Methods
         protected virtual void OnEnable()
         {
             if (_inputReader != null)
@@ -21,9 +19,7 @@ namespace Pong.Gameplay.Player
             if (_inputReader != null)
                 _inputReader.AttackEvent -= HandleAbility;
         }
-        #endregion
 
-        #region Ability
         private void HandleAbility()
         {
             if (_isDead || _isStunned)
@@ -33,20 +29,15 @@ namespace Pong.Gameplay.Player
         }
 
         public abstract void UseAbility();
-        #endregion
 
-        #region Damage
         protected override void OnDamageTaken()
         {
             Debug.Log($"{gameObject.name} took damage.");
         }
-        #endregion
 
-        #region Death
         protected override void OnDeath()
         {
             Debug.Log($"{gameObject.name} died.");
         }
-        #endregion
     }
 }
