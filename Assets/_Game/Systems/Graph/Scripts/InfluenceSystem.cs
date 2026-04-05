@@ -1,30 +1,29 @@
-namespace Pong.InfluenceSystem
-{
-    using System.Collections.Generic;
-    using UnityEngine;
-    using Pong.InfluenceSource;
+using System.Collections.Generic;
+using UnityEngine;
 
-   public class InfluenceSystem : MonoBehaviour
+namespace Pong.Systems.Graph
 {
-    [SerializeField] private List<InfluenceSource> _sources = new List<InfluenceSource>();
-
-    public float GetMultiplier(Vector3 position)
+    public class InfluenceSystem : MonoBehaviour
     {
-        float total = 0f;
+        [SerializeField] private List<InfluenceSource> _sources = new List<InfluenceSource>();
 
-        foreach(var source in _sources)
+        public float GetMultiplier(Vector3 position)
         {
-            float distance = Vector3.Distance(position, source.transform.position);
+            float total = 0f;
 
-            if(distance <= source.radius)
+            foreach (var source in _sources)
             {
-                total += (source.Evaluate(distance) - 1f);
-            }
-        }
+                float distance = Vector3.Distance(position, source.transform.position);
 
-        return 1f + total;
+                if (distance <= source.radius)
+                {
+                    total += (source.Evaluate(distance) - 1f);
+                }
+            }
+
+            return 1f + total;
+        }
     }
-} 
 }
 
 

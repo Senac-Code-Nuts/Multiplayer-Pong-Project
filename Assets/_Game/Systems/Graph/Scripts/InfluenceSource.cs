@@ -1,26 +1,27 @@
-namespace Pong.InfluenceSource
-{
-    using UnityEngine;
-   public class InfluenceSource : MonoBehaviour
-{
-     public float radius;
-     public float weightMultiplier = 2f;
-    [SerializeField] private AnimationCurve _fallof;
+using UnityEngine;
 
-    public float Evaluate(float distance)
+namespace Pong.Systems.Graph
+{
+    public class InfluenceSource : MonoBehaviour
     {
-        float t = distance / radius;
+        public float radius;
+        public float weightMultiplier = 2f;
+        [SerializeField] private AnimationCurve _fallof;
 
-        float curveValue = _fallof.Evaluate(t);
+        public float Evaluate(float distance)
+        {
+            float t = distance / radius;
 
-        return Mathf.Lerp(weightMultiplier, 1f, curveValue);
+            float curveValue = _fallof.Evaluate(t);
+
+            return Mathf.Lerp(weightMultiplier, 1f, curveValue);
+        }
+
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireSphere(transform.position, radius);
+        }
     }
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(transform.position, radius);
-    }
-}
- 
 }

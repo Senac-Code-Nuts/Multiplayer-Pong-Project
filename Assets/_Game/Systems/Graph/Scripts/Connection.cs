@@ -1,14 +1,7 @@
-namespace Pong.Connection
-{
-    using System;
-    using System.Collections.Generic;
-    using NUnit.Framework.Interfaces;
-    using Unity.VisualScripting;
-    using UnityEditor.Experimental.GraphView;
-    using UnityEngine;
-    using GraphNode;
-    
+using System;
 
+namespace Pong.Systems.Graph
+{
     [Serializable]
     public class Connection
     {
@@ -18,10 +11,10 @@ namespace Pong.Connection
 
         public GraphNode GetOther(GraphNode current)
         {
-            if(current == nodeA) return nodeB;
-            if(current == nodeB) return nodeA;
+            if (current == nodeA) return nodeB;
+            if (current == nodeB) return nodeA;
 
             return null;
         }
-    } 
+    }
 }

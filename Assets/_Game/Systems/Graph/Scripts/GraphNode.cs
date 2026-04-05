@@ -1,63 +1,62 @@
-namespace Pong.GraphNode
-{
-    using System.Collections.Generic;
-    using UnityEngine;
-    using Connection;
+using System.Collections.Generic;
+using UnityEngine;
 
+namespace Pong.Systems.Graph
+{
     public class GraphNode : MonoBehaviour
-{
-    public List<Connection> connections = new List<Connection>();
-
-    [Header("Auto Connect")]
-    [SerializeField] private GraphNode _autoTarget;
-    [SerializeField] private float _autoWeight = 1f;
-    public List<GraphNode> GetNeighbours()
     {
-        List<GraphNode> neighbours = new();
+        public List<Connection> connections = new List<Connection>();
 
-        foreach (var conn in connections)
+        [Header("Auto Connect")]
+        [SerializeField] private GraphNode _autoTarget;
+        [SerializeField] private float _autoWeight = 1f;
+        public List<GraphNode> GetNeighbours()
         {
-            var other = conn.GetOther(this);
+            List<GraphNode> neighbours = new();
 
-            if (other != null)
-                neighbours.Add(other);
+            foreach (var conn in connections)
+            {
+                var other = conn.GetOther(this);
+
+                if (other != null)
+                    neighbours.Add(other);
+            }
+
+            return neighbours;
         }
 
-        return neighbours;
-    }
-
-    public void ConnectTo(GraphNode other, float weight = 1f)
-    {
-        if(other == null || other == this) return;
-
-        foreach(var conn in connections)
+        public void ConnectTo(GraphNode other, float weight = 1f)
         {
-            if(conn.GetOther(this) == other)
+            if (other == null || other == this) return;
+
+            foreach (var conn in connections)
             {
-                conn.weight = weight;
-                return;
+                if (conn.GetOther(this) == other)
+                {
+                    conn.weight = weight;
+                    return;
+                }
+            }
+
+            Connection newConn = new Connection
+            {
+                nodeA = this,
+                nodeB = other,
+                weight = weight
+            };
+
+            connections.Add(newConn);
+            other.connections.Add(newConn);
+        }
+
+        [ContextMenu("Connect To Target")]
+        private void ConnectToTarget()
+        {
+            if (_autoTarget != null)
+            {
+                ConnectTo(_autoTarget, _autoWeight);
             }
         }
-
-        Connection newConn = new Connection
-        {
-            nodeA = this,
-            nodeB = other,
-            weight = weight
-        };
-
-        connections.Add(newConn);
-        other.connections.Add(newConn);
     }
-
-    [ContextMenu("Connect To Target")]
-    private void ConnectToTarget()
-    {
-        if (_autoTarget != null)
-        {
-            ConnectTo(_autoTarget, _autoWeight);
-        }
-    }
-}
 
 }
