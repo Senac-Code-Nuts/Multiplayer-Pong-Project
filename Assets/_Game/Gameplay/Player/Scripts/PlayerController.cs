@@ -8,7 +8,6 @@ namespace Pong.Gameplay.Player
         [SerializeField, Range(0f, 10f)] float _speed = 10f;
         private Vector2 _moveInput;
         [SerializeField] private InputReader _inputReader;
-
         private void OnEnable()
         {
             _inputReader.MoveEvent += HandleMovement;
@@ -26,7 +25,7 @@ namespace Pong.Gameplay.Player
         {
             Vector3 movement = new Vector3(_moveInput.x, 0 , _moveInput.y);
             
-            transform.Translate(movement * _speed * Time.deltaTime);
+            transform.Translate(movement * _speed * Time.fixedDeltaTime);
         }
     }
 
