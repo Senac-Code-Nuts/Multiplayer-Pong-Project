@@ -10,12 +10,7 @@ namespace MenuManager{
 public class MenuStateMachine : MonoBehaviour
 {
 
-    public enum StateType
-        {
-            Padrao,
-            config,
-            credit
-        }
+   
 
     [SerializeField] private List<MenuState> _States = new List<MenuState>(); // list of all states in the machine
 
@@ -57,9 +52,9 @@ public class MenuStateMachine : MonoBehaviour
                 _CurrenteState.LocalFixedUpdate();
             } 
     }
-    public void ChangeState(MenuState OldState, StateType NewState)
+    public void ChangeState(MenuState OldState, MenuState.StateType NewState)
     {
-        if (OldState != _CurrenteState)
+        if (OldState != _CurrenteState || OldState == null)
             {
                 return;
             }

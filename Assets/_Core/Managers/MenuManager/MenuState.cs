@@ -8,12 +8,20 @@ namespace MenuManager
 {
     public abstract class MenuState : MonoBehaviour
     {
+
+        public enum StateType
+        {
+            Padrao,
+            config,
+            credit
+        }
+
         //reference to which state it is
-        [SerializeField] private MenuStateMachine.StateType _stateType;
+        [SerializeField] private StateType _stateType;
 
         //get setter, unshure of its usability, 
         //kept in here while attempting to fix problem with type referencing
-        public MenuStateMachine.StateType _StateType
+        public StateType _StateType
         {
             get {return _stateType;}
             private set {_StateType = value;} 

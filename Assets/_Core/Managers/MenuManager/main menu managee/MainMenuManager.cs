@@ -17,16 +17,16 @@ public class MainMenuManager : MonoBehaviour
 
     public void change_to_options()
     {
-        StateMachina.ChangeState(StateMachina.currentState,MenuStateMachine.StateType.config);
+        StateMachina.ChangeState(StateMachina.currentState,MenuState.StateType.config);
     }
 
     public void change_to_credits()
     {
-        StateMachina.ChangeState(StateMachina.currentState,MenuStateMachine.StateType.credit);
+        StateMachina.ChangeState(StateMachina.currentState,MenuState.StateType.credit);
     }
     public void change_to_main()
     {
-        StateMachina.ChangeState(StateMachina.currentState,MenuStateMachine.StateType.Padrao);
+        StateMachina.ChangeState(StateMachina.currentState,MenuState.StateType.Padrao);
     }
 
     public void change_to_null()
