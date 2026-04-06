@@ -1,18 +1,18 @@
 using UnityEngine;
+using Pong.Gameplay.Actors;
 
 namespace Pong.Gameplay.Ball
 {
     public class Ball : MonoBehaviour
     {
         [Header("Speed")]
-        [SerializeField, Range(0f, 10f)] private float _speed;
+        [SerializeField, Range(0f, 10f)] private float _speed = 5f;
 
         [Header("Damage")]
         [SerializeField] private int _damage;
 
         private Vector3 _direction;
         private Rigidbody _rigidBody;
-
 
         private void Start()
         {
@@ -36,18 +36,24 @@ namespace Pong.Gameplay.Ball
 
         private void OnCollisionEnter(Collision collision)
         {
+            Reflect(collision);
+
+            TryApplyDamage(collision);
+        }
+
+        private void Reflect(Collision collision)
+        {
             Vector3 normal = collision.contacts[0].normal;
             _direction = Vector3.Reflect(_direction, normal);
-
             _rigidBody.linearVelocity = _direction * _speed;
+        }
 
-            var damageable = collision.gameObject.GetComponent<Pong.Gameplay.Actors.IDamageable>();
-
-            if (damageable != null)
+        private void TryApplyDamage(Collision collision)
+        {
+            if (collision.gameObject.TryGetComponent(out IDamageable damageable))
             {
                 damageable.ApplyDamage(_damage);
             }
-
         }
     }
 }
