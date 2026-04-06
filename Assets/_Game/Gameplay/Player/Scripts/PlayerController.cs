@@ -1,5 +1,6 @@
 using UnityEngine;
 using Pong.Systems.Input;
+using Pong.Systems;
 
 namespace Pong.Gameplay.Player
 {
@@ -11,8 +12,7 @@ namespace Pong.Gameplay.Player
 
         [Header("Movement")]
         private Vector2 _moveInput;
-        private enum PlayerType { Vertical, Horizontal }
-        [SerializeField] private PlayerType _playerType;
+        [SerializeField] private PlayerSide _playerSide;
 
         private void Awake()
         {
@@ -30,7 +30,7 @@ namespace Pong.Gameplay.Player
         }
         private void HandleMovement(Vector2 movement)
         {
-            if (_playerType == PlayerType.Vertical)
+            if (_playerSide == PlayerSide.West || _playerSide == PlayerSide.East)
             {
                 _moveInput = new Vector2(0, movement.y);
             }

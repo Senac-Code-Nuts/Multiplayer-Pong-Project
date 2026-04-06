@@ -2,20 +2,36 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
 
-namespace Pong.Systems
+namespace Pong.Systems.Input
 {
+    [Serializable]
+    struct PlayerSlot
+    {
+        public GameObject Prefab;
+        public Transform SpawnPoint;
+        public PlayerSide PlayerSide;
+    }
     public class GamepadsManager : MonoBehaviour
     {
         private const int MAX_PLAYERS = 4;
+        private const int MIN_PLAYERS = 2;
+        private const int DEFAULT_PLAYERS = 2;
+        private const string GAMEPAD_TAG = "<color=yellow><b>[Gamepads Manager]</b></color>";
 
         [SerializeField] private PlayerSlot[] _playerSlots = new PlayerSlot[MAX_PLAYERS];
-        [Serializable]
-        struct PlayerSlot
+        private PlayerData[] _activePlayers = new PlayerData[MAX_PLAYERS];
+
+        [SerializeField, Range(2, 4)] private int _playerCount = DEFAULT_PLAYERS;
+        [SerializeField] private bool _enableKeyboardForTesting = false;
+
+
+        private int PlayerCount
         {
-            public GameObject Prefab;
-            public Transform SpawnPoint;
+            get
+            {
+                return _playerCount;
+            }
         }
-        private GameObject[] _activePlayers = new GameObject[MAX_PLAYERS];
 
         private void Start()
         {
@@ -24,7 +40,7 @@ namespace Pong.Systems
                 SpawnPlayerForDevice(gamepad);
             }
 
-            if (Keyboard.current != null)
+            if (_enableKeyboardForTesting && Keyboard.current != null)
             {
                 SpawnPlayerForDevice(Keyboard.current);
             }
@@ -39,11 +55,19 @@ namespace Pong.Systems
         {
             InputSystem.onDeviceChange -= OnDeviceChange;
         }
+        private void OnValidate()
+        {
+            if (_playerCount != MIN_PLAYERS && _playerCount != MAX_PLAYERS)
+            {
+                _playerCount = DEFAULT_PLAYERS;
+            }
+        }
 
         private void OnDeviceChange(InputDevice device, InputDeviceChange change)
         {
-            if (change == InputDeviceChange.Added && (device is Gamepad || device is Keyboard))
+            if (change == InputDeviceChange.Added && (device is Gamepad || (_enableKeyboardForTesting && device is Keyboard)))
             {
+                Debug.Log($"{GAMEPAD_TAG} Device added: {device.displayName}");
                 SpawnPlayerForDevice(device);
             }
 
@@ -53,14 +77,23 @@ namespace Pong.Systems
 
                 if (index == -1) return;
 
-                Destroy(_activePlayers[index]);
+                if (_activePlayers[index]?.Instance != null)
+                {
+                    Destroy(_activePlayers[index].Instance);
+                }
+
                 _activePlayers[index] = null;
+
+                Debug.Log($"{GAMEPAD_TAG} Device removed: {device.displayName} (Index: {index})");
             }
         }
         private void SpawnPlayerForDevice(InputDevice device)
         {
+            if (IsDeviceAlreadyPaired(device)) return;
+
             int index = GetFirstEmptyIndex();
-            if (index == -1 || _playerSlots.Length <= index) return;
+            if (index == -1) return;
+            if (index >= PlayerCount) return;
 
             var slot = _playerSlots[index];
             if (slot.Prefab == null || slot.SpawnPoint == null) return;
@@ -74,41 +107,38 @@ namespace Pong.Systems
             playerInput.transform.position = slot.SpawnPoint.position;
             playerInput.name = $"Player {index + 1}";
 
-            _activePlayers[index] = playerInput.gameObject;
+            _activePlayers[index] = new PlayerData
+            {
+                Instance = playerInput.gameObject,
+                Device = device,
+                Side = slot.PlayerSide
+            };
+
+            Debug.Log($"{GAMEPAD_TAG} Spawned player for device: {device.displayName} at index {index}");
         }
 
         #region Device Helpers
         private int FindPlayerIndexForDevice(InputDevice device)
         {
-            // Check if the device is already associated with a player
             for (int i = 0; i < _activePlayers.Length; i++)
             {
-                var player = _activePlayers[i];
-
-                if (player == null) continue;
-
-                if (!player.TryGetComponent<PlayerInput>(out var playerInput)) continue;
-
-                // Check if the player's devices include the disconnected device
-                for (int j = 0; j < playerInput.devices.Count; j++)
-                {
-                    if (playerInput.devices[j] == device)
-                    {
-                        return i;
-                    }
-                }
+                if (_activePlayers[i] != null && _activePlayers[i].Device == device)
+                    return i;
             }
-
             return -1;
         }
 
         private int GetFirstEmptyIndex()
         {
-            for (int i = 0; i < _activePlayers.Length; i++)
+            for (int i = 0; i < PlayerCount; i++)
             {
                 if (_activePlayers[i] == null) return i;
             }
             return -1;
+        }
+        private bool IsDeviceAlreadyPaired(InputDevice device)
+        {
+            return FindPlayerIndexForDevice(device) != -1;
         }
         #endregion
     }
