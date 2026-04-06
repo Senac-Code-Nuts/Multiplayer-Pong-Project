@@ -104,3 +104,8 @@ InitTestScene*.unity*
 
 # Ignore everything inside _Local folder
 /Assets/_Local/
+
+# vscode and visual studio folder
+
+/.vscode/
+/.vs/
