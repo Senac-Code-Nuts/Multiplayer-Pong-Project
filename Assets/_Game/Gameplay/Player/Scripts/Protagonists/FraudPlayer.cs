@@ -4,19 +4,21 @@ namespace Pong.Gameplay.Player
 {
     public class FraudPlayer : PlayerActor
     {
+        [Header("Fraud Ability")]
+        [SerializeField] private bool _isCopyModeActive = false;
+
+        public bool IsCopyModeActive => _isCopyModeActive;
+
         public override void UseAbility()
         {
-            Debug.Log("Fraud duplicated the relic.");
+            _isCopyModeActive = true;
+            Debug.Log($"{gameObject.name} activated relic copy mode.");
         }
 
-        protected override void OnDamageTaken()
+        public void ConsumeCopyMode()
         {
-            base.OnDamageTaken();
-        }
-
-        protected override void OnDeath()
-        {
-            base.OnDeath();
+            _isCopyModeActive = false;
+            Debug.Log($"{gameObject.name} consumed relic copy mode.");
         }
     }
 }
