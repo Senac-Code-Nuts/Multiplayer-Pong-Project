@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Pong.Systems
+namespace Pong.Systems.Input
 {
     [CreateAssetMenu(menuName = "Systems/Input Reader")]
     public class InputReader : ScriptableObject, GameInput.IPlayerMoveActions
@@ -22,16 +22,24 @@ namespace Pong.Systems
             _gameInput.PlayerMove.Enable();
         }
 
+        private void OnDisable()
+        {
+            if (_gameInput != null)
+            {
+                _gameInput.PlayerMove.Disable();
+            }
+        }
+
         public void OnMove(InputAction.CallbackContext context)
         {
-            MoveEvent.Invoke(context.ReadValue<Vector2>());
+            MoveEvent?.Invoke(context.ReadValue<Vector2>());
         }
 
         public void OnAttack(InputAction.CallbackContext context)
         {
             if (context.performed)
             {
-                AttackEvent.Invoke();
+                AttackEvent?.Invoke();
             }
         }
     }

@@ -1,5 +1,5 @@
 using UnityEngine;
-using Pong.Systems;
+using Pong.Systems.Input;
 
 namespace Pong.Gameplay.Player
 {
@@ -11,12 +11,18 @@ namespace Pong.Gameplay.Player
 
         private void OnEnable()
         {
-            _inputReader.MoveEvent += HandleMovement;
+            if (_inputReader != null)
+            {
+                _inputReader.MoveEvent += HandleMovement;
+            }
         }
 
         private void OnDisable()
         {
-            _inputReader.MoveEvent -= HandleMovement;
+            if (_inputReader != null)
+            {
+                _inputReader.MoveEvent -= HandleMovement;
+            }
         }
         private void HandleMovement(Vector2 movement)
         {
@@ -26,7 +32,7 @@ namespace Pong.Gameplay.Player
         {
             Vector3 movement = new Vector3(_moveInput.x, 0 , _moveInput.y);
             
-            transform.Translate(movement * _speed * Time.deltaTime);
+            transform.Translate(movement * _speed * Time.fixedDeltaTime);
         }
     }
 
