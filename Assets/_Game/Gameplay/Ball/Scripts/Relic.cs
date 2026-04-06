@@ -6,7 +6,7 @@ namespace Pong.Gameplay.Relic
     public class Relic : MonoBehaviour
     {
         [Header("Speed")]
-        [SerializeField, Range(0f, 10f)] private float _speed = 5f;
+        [SerializeField, Range(0f, 10f)] private float _speed;
 
         [Header("Damage")]
         [SerializeField] private int _damage;
