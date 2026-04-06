@@ -1,9 +1,9 @@
 using UnityEngine;
 using Pong.Gameplay.Actors;
 
-namespace Pong.Gameplay.Ball
+namespace Pong.Gameplay.Relic
 {
-    public class Ball : MonoBehaviour
+    public class Relic : MonoBehaviour
     {
         [Header("Speed")]
         [SerializeField, Range(0f, 10f)] private float _speed = 5f;
