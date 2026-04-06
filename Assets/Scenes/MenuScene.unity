@@ -1004,6 +1004,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5398297228737793645, guid: 680b2d58e5035234ba07d67bcd81fac7, type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6716205026774900408, guid: 680b2d58e5035234ba07d67bcd81fac7, type: 3}
+      propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7432605837642882403, guid: 680b2d58e5035234ba07d67bcd81fac7, type: 3}
@@ -2583,7 +2587,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 938231159}
         m_TargetAssemblyTypeName: MenuManager.MainMenuManager, Assembly-CSharp
-        m_MethodName: change_to_credits
+        m_MethodName: change_to_null
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
