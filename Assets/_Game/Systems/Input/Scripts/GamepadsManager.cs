@@ -80,6 +80,7 @@ namespace Pong.Systems
         #region Device Helpers
         private int FindPlayerIndexForDevice(InputDevice device)
         {
+            // Check if the device is already associated with a player
             for (int i = 0; i < _activePlayers.Length; i++)
             {
                 var player = _activePlayers[i];
@@ -88,6 +89,7 @@ namespace Pong.Systems
 
                 if (!player.TryGetComponent<PlayerInput>(out var playerInput)) continue;
 
+                // Check if the player's devices include the disconnected device
                 for (int j = 0; j < playerInput.devices.Count; j++)
                 {
                     if (playerInput.devices[j] == device)
