@@ -3,6 +3,7 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.InputSystem.XR.Haptics;
 
 
 namespace MenuManager{
@@ -22,6 +23,12 @@ public class MenuStateMachine : MonoBehaviour
 
     private MenuState _CurrenteState; // the machines current state
 
+    public MenuState currentState 
+    {
+            get {return _CurrenteState;}
+            private set {_CurrenteState = value;} 
+        }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -31,7 +38,7 @@ public class MenuStateMachine : MonoBehaviour
                 return;   
             }
         _CurrenteState = _StarterState;
-        _CurrenteState.LocalStart();
+        _CurrenteState.LocalReady();
     }
 
     // Update is called once per frame
@@ -43,21 +50,33 @@ public class MenuStateMachine : MonoBehaviour
             }
     }
 
-    void ChangeState(MenuState OldState, StateType NewState)
+    void FixedUpdate()
+    {
+           if (_CurrenteState != null)
+            {
+                _CurrenteState.LocalFixedUpdate();
+            } 
+    }
+    public void ChangeState(MenuState OldState, StateType NewState)
     {
         if (OldState != _CurrenteState)
             {
                 return;
             }
-
         var _NewState = _States.FirstOrDefault(o => o._StateType == NewState);
-
         _CurrenteState.OnChange();
-
-        _NewState.LocalStart();
-
+        
+        _NewState.LocalReady();
+        
         _CurrenteState = _NewState;
+        
+    }
 
+    public void ClearState()
+    {
+        
+        _CurrenteState.OnChange();
+        _CurrenteState = null;
     }
 
 }
