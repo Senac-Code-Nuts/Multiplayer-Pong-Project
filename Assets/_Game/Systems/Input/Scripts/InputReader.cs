@@ -8,26 +8,34 @@ namespace Pong.Systems
     {
         public event Action<Vector2> MoveEvent;
         public event Action AttackEvent;
+        private PlayerInput _playerInput;
 
         private GameInput _gameInput;
         private void OnEnable()
         {
-            _gameInput = new GameInput();
+            //_gameInput = new GameInput();
 
-            _gameInput.Enable();
+            //_gameInput.Enable();
             
-            _gameInput.PlayerMove.Move.performed += OnMove;
-            _gameInput.PlayerMove.Move.canceled += OnMove;
+            //_gameInput.PlayerMove.Move.performed += OnMove;
+            //_gameInput.PlayerMove.Move.canceled += OnMove;
             //_gameInput.Player.Attack.performed += OnAttack;
+        
+            _playerInput = GetComponent<PlayerInput>();
+            _playerInput.actions["Move"].performed += OnMove;
+            _playerInput.actions["Move"].canceled += OnMove;
         }
 
         private void OnDisable()
         {
-            _gameInput.PlayerMove.Move.performed -= OnMove;
-            _gameInput.PlayerMove.Move.canceled -= OnMove;
+            //_gameInput.PlayerMove.Move.performed -= OnMove;
+            //_gameInput.PlayerMove.Move.canceled -= OnMove;
             //_gameInput.Player.Attack.performed -= OnAttack;
 
-            _gameInput.Disable();
+            _playerInput.actions["Move"].performed -= OnMove;
+            _playerInput.actions["Move"].canceled -= OnMove;
+
+            //_gameInput.Disable();
         }
         private void OnMove(InputAction.CallbackContext context)
         {
