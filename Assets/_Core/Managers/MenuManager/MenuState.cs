@@ -16,39 +16,53 @@ namespace MenuManager
             credit
         }
 
-        //reference to which state it is
+        /// <summary>
+        /// reference to which state it is
+        /// </summary>
         [SerializeField] private StateType _stateType;
 
-        //get setter, unshure of its usability, 
-        //kept in here while attempting to fix problem with type referencing
+        /// <summary>
+        /// get setter, unsure of its usability, 
+        /// kept in here while attempting to fix problem with type referencing
+        /// </summary>
         public StateType _StateType
         {
-            get {return _stateType;}
-            private set {_StateType = value;} 
+            get { return _stateType; }
+            private set { _StateType = value; }
         }
 
-        //the start func of a state
+        /// <summary>
+        /// the start func of a state
+        /// </summary>
         public abstract void LocalStart();
 
-        //the update func of a state, ]
-        //will run as long as the state is currently running on the machine
+        /// <summary>
+        /// the update func of a state, will run as long as the state is currently running on the machine
+        /// </summary>
         public abstract void LocalUpdate();
 
-        //LocalUpdate, but for the FixedUpdate
+        /// <summary>
+        /// LocalUpdate, but for the FixedUpdate
+        /// </summary>
         public abstract void LocalFixedUpdate();
 
-        /*To be played whenever the state machine changes a state, 
-        will be played BEFORE the UI goes invisible, keep that in mind*/
+        /// <summary>
+        /// To be played whenever the state machine changes a state, will be played BEFORE the UI goes invisible, keep that in mind
+        /// </summary>
         public abstract void LocalExit();
 
-        // when entering a new state, the state machine first activates it and THEN runs its ready func
+        /// <summary>
+        /// when entering a new state, the state machine first activates it and THEN runs its ready func
+        /// </summary>
         public void LocalReady()
         {
             gameObject.SetActive(true);
             LocalStart();
         }
 
-        //will do the inverse when changing a state
+        /// <summary>
+        /// will do the inverse when changing a state
+        /// </summary>
         public void OnChange()
         {
             LocalExit();
