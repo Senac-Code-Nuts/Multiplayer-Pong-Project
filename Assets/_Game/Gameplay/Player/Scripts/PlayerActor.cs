@@ -34,8 +34,11 @@ namespace Pong.Gameplay.Player
 
         private void HandleAbility()
         {
+            Debug.Log($"{gameObject.name} received CastEvent.");
+
             if (_isDead || _isStunned || !_canUseAbility) return;
 
+            
             UseAbility();
             StartCoroutine(AbilityCooldownRoutine());
         }
@@ -47,7 +50,7 @@ namespace Pong.Gameplay.Player
             _canUseAbility = true;
         }
 
-        public abstract void UseAbility();
+        protected abstract void UseAbility();
 
         protected override void OnDamageTaken()
         {
