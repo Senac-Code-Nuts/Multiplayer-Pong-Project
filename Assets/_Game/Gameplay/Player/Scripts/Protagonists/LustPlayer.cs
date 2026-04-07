@@ -4,7 +4,7 @@ namespace Pong.Gameplay.Player
 {
     public class LustPlayer : PlayerActor
     {
-        [Header("Lust Ability")]
+        [Header("Ability")]
         [SerializeField] private GameObject _projectilePrefab;
         [SerializeField] private Transform _projectileSpawnPoint;
 

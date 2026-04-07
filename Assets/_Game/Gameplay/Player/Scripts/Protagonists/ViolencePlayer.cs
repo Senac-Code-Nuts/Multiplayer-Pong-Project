@@ -7,7 +7,7 @@ namespace Pong.Gameplay.Player
 {
     public class ViolencePlayer : PlayerActor
     {
-        [Header("Violence Ability")]
+        [Header("Ability")]
         [SerializeField] private float _stunRadius = 5f;
 
         [SerializeField] private float _enemyStunDuration = 1f;

@@ -34,8 +34,7 @@ namespace Pong.Gameplay.Player
 
         private void HandleAbility()
         {
-            if (_isDead || _isStunned || !_canUseAbility)
-                return;
+            if (_isDead || _isStunned || !_canUseAbility) return;
 
             UseAbility();
             StartCoroutine(AbilityCooldownRoutine());
