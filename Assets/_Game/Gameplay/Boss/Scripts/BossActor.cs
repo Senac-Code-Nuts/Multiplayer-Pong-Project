@@ -6,7 +6,7 @@ namespace Pong.Gameplay.Boss
     public abstract class BossActor : Actor
     {
         [Header("Boss")]
-        [SerializeField] protected int _phase = 1;
+        [SerializeField, Range(0, 3)] protected int _phase;
 
         public int Phase => _phase;
 
