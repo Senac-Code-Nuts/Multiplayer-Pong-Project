@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using Pong.Gameplay.Actors;
 using Pong.Systems.Input;
@@ -8,24 +9,42 @@ namespace Pong.Gameplay.Player
     {
         [Header("Input")]
         [SerializeField] protected InputReader _inputReader;
+
+        [Header("Ability")]
+        [SerializeField] protected float _abilityCooldown;
+
+        protected bool _canUseAbility = true;
+
+        protected override void Awake()
+        {
+            base.Awake();
+        }
+
         protected virtual void OnEnable()
         {
             if (_inputReader != null)
-                _inputReader.AttackEvent += HandleAbility;
+                _inputReader.CastEvent += HandleAbility;
         }
 
         protected virtual void OnDisable()
         {
             if (_inputReader != null)
-                _inputReader.AttackEvent -= HandleAbility;
+                _inputReader.CastEvent -= HandleAbility;
         }
 
         private void HandleAbility()
         {
-            if (_isDead || _isStunned)
-                return;
+            if (_isDead || _isStunned || !_canUseAbility) return;
 
             UseAbility();
+            StartCoroutine(AbilityCooldownRoutine());
+        }
+
+        private IEnumerator AbilityCooldownRoutine()
+        {
+            _canUseAbility = false;
+            yield return new WaitForSeconds(_abilityCooldown);
+            _canUseAbility = true;
         }
 
         public abstract void UseAbility();

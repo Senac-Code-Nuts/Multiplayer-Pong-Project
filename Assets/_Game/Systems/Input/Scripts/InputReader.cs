@@ -4,42 +4,48 @@ using UnityEngine.InputSystem;
 
 namespace Pong.Systems.Input
 {
-    [CreateAssetMenu(menuName = "Systems/Input Reader")]
-    public class InputReader : ScriptableObject, GameInput.IPlayerMoveActions
+    public class InputReader : MonoBehaviour
     {
         public event Action<Vector2> MoveEvent;
-        public event Action AttackEvent;
+        public event Action CastEvent;
 
-        private GameInput _gameInput;
+        private PlayerInput _playerInput;
+        private InputAction _moveAction;
+        private InputAction _castAction;
+
+        private void Awake()
+        {
+            _playerInput = GetComponent<PlayerInput>();
+            _moveAction = _playerInput.actions["Move"];
+            _castAction = _playerInput.actions["Cast"];
+        }
 
         private void OnEnable()
         {
-            if (_gameInput == null)
-            {
-                _gameInput = new GameInput();
-                _gameInput.PlayerMove.SetCallbacks(this);
-            }
-            _gameInput.PlayerMove.Enable();
+            _moveAction.Enable();
+            _castAction.Enable();
+
+            _moveAction.performed += OnMove;
+            _castAction.performed += OnCast;
         }
 
         private void OnDisable()
         {
-            if (_gameInput != null)
-            {
-                _gameInput.PlayerMove.Disable();
-            }
-        }
+            _moveAction.Disable();
+            _castAction.Disable();
 
+            _moveAction.performed -= OnMove;
+            _castAction.performed -= OnCast;
+        }
         public void OnMove(InputAction.CallbackContext context)
         {
             MoveEvent?.Invoke(context.ReadValue<Vector2>());
         }
-
-        public void OnAttack(InputAction.CallbackContext context)
+        public void OnCast(InputAction.CallbackContext context)
         {
             if (context.performed)
             {
-                AttackEvent?.Invoke();
+                CastEvent?.Invoke();
             }
         }
     }

@@ -1,37 +1,48 @@
 using UnityEngine;
 using Pong.Systems.Input;
+using Pong.Systems;
 
 namespace Pong.Gameplay.Player
 {
+    [RequireComponent(typeof(InputReader))]
     public class PlayerController : MonoBehaviour
     {
         [SerializeField, Range(0f, 10f)] float _speed = 10f;
+        private InputReader _inputReader;
+
+        [Header("Movement")]
         private Vector2 _moveInput;
-        [SerializeField] private InputReader _inputReader;
+        [SerializeField] private PlayerSide _playerSide;
+
+        private void Awake()
+        {
+            _inputReader = GetComponent<InputReader>();
+        }
 
         private void OnEnable()
         {
-            if (_inputReader != null)
-            {
-                _inputReader.MoveEvent += HandleMovement;
-            }
+            _inputReader.MoveEvent += HandleMovement;
         }
 
         private void OnDisable()
         {
-            if (_inputReader != null)
-            {
-                _inputReader.MoveEvent -= HandleMovement;
-            }
+            _inputReader.MoveEvent -= HandleMovement;
         }
         private void HandleMovement(Vector2 movement)
         {
-            _moveInput = movement;
+            if (_playerSide == PlayerSide.West || _playerSide == PlayerSide.East)
+            {
+                _moveInput = new Vector2(0, movement.y);
+            }
+            else
+            {
+                _moveInput = new Vector2(movement.x, 0);
+            }
         }
         private void FixedUpdate()
         {
-            Vector3 movement = new Vector3(_moveInput.x, 0 , _moveInput.y);
-            
+            Vector3 movement = new Vector3(_moveInput.x, 0, _moveInput.y);
+
             transform.Translate(movement * _speed * Time.fixedDeltaTime);
         }
     }
