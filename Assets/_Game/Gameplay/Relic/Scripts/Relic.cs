@@ -3,6 +3,7 @@ using Pong.Gameplay.Actors;
 
 namespace Pong.Gameplay.Relic
 {
+    [RequireComponent(typeof(Rigidbody))]
     public class Relic : MonoBehaviour
     {
         [Header("Speed")]
@@ -14,9 +15,12 @@ namespace Pong.Gameplay.Relic
         private Vector3 _direction;
         private Rigidbody _rigidBody;
 
-        private void Start()
+        private void Awake()
         {
             _rigidBody = GetComponent<Rigidbody>();
+        }
+        private void Start()
+        {
             Launch();
         }
 
