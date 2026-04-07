@@ -23,13 +23,13 @@ namespace Pong.Gameplay.Player
         protected virtual void OnEnable()
         {
             if (_inputReader != null)
-                _inputReader.AttackEvent += HandleAbility;
+                _inputReader.CastEvent += HandleAbility;
         }
 
         protected virtual void OnDisable()
         {
             if (_inputReader != null)
-                _inputReader.AttackEvent -= HandleAbility;
+                _inputReader.CastEvent -= HandleAbility;
         }
 
         private void HandleAbility()
