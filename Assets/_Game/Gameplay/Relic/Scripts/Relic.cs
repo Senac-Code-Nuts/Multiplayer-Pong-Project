@@ -1,7 +1,8 @@
 using UnityEngine;
 using Pong.Gameplay.Actors;
+using Pong.Gameplay.Player;
 
-namespace Pong.Gameplay.Relic
+namespace Pong.Gameplay.Relics
 {
     [RequireComponent(typeof(Rigidbody))]
     public class Relic : MonoBehaviour
@@ -19,6 +20,7 @@ namespace Pong.Gameplay.Relic
         {
             _rigidBody = GetComponent<Rigidbody>();
         }
+
         private void Start()
         {
             Launch();
@@ -29,7 +31,7 @@ namespace Pong.Gameplay.Relic
             float dirX = Random.Range(-1f, 1f);
             float dirZ = Random.Range(-1f, 1f);
 
-            _direction = new Vector3(dirX, 0, dirZ).normalized;
+            _direction = new Vector3(dirX, 0f, dirZ).normalized;
             _rigidBody.linearVelocity = _direction * _speed;
         }
 
@@ -41,8 +43,8 @@ namespace Pong.Gameplay.Relic
         private void OnCollisionEnter(Collision collision)
         {
             Reflect(collision);
-
             TryApplyDamage(collision);
+            TryTriggerFraudCopy(collision);
         }
 
         private void Reflect(Collision collision)
@@ -57,6 +59,14 @@ namespace Pong.Gameplay.Relic
             if (collision.gameObject.TryGetComponent(out IDamageable damageable))
             {
                 damageable.ApplyDamage(_damage);
+            }
+        }
+
+        private void TryTriggerFraudCopy(Collision collision)
+        {
+            if (collision.gameObject.TryGetComponent(out FraudPlayer fraudPlayer))
+            {
+                fraudPlayer.TryCopyRelic(this);
             }
         }
     }
