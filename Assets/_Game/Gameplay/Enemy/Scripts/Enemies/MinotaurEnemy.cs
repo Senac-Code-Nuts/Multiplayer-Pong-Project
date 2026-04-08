@@ -16,6 +16,7 @@ namespace Pong.Gameplay.Enemy
             if (_isReadyToAttack) {
 
                 ExecuteAttack();
+                _isVulnerable = true;
             }
         }
 
@@ -30,6 +31,7 @@ namespace Pong.Gameplay.Enemy
         {
             yield return new WaitForSecondsRealtime(_preAttackTime);
 
+            _isVulnerable = false;
             _isReadyToAttack = true;
         }
 
