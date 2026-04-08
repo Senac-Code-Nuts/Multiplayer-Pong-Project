@@ -14,14 +14,15 @@ namespace Pong.Gameplay.Player
 
         protected override void UseAbility()
         {
+            if (_isCopyModeActive) return;
+
             Debug.Log("Fraud is using ability.");
             ActivateCopyMode();
+            StartCoroutine(AbilityCooldownRoutine());
         }
 
         private void ActivateCopyMode()
         {
-            if (_isCopyModeActive) return;
-
             _isCopyModeActive = true;
             Debug.Log($"{gameObject.name} activated relic copy mode.");
         }

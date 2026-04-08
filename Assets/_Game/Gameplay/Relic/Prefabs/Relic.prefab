@@ -151,3 +151,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _speed: 10
   _damage: 0
+  _isFraudCopy: 0
+  _renderers:
+  - {fileID: 5490657863396633810}
+  _fraudCopyColor: {r: 1, g: 0, b: 1, a: 1}

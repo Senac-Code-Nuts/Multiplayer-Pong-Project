@@ -63,9 +63,22 @@ namespace Pong.Gameplay.Relics
 
             foreach (Renderer currentRenderer in _renderers)
             {
-                if (currentRenderer != null && currentRenderer.material.HasProperty("_Color"))
+                if (currentRenderer == null) continue;
+
+                Material[] materials = currentRenderer.materials;
+
+                foreach (Material currentMaterial in materials)
                 {
-                    currentRenderer.material.color = _fraudCopyColor;
+                    if (currentMaterial.HasProperty("_BaseColor"))
+                    {
+                        currentMaterial.SetColor("_BaseColor", _fraudCopyColor);
+                        continue;
+                    }
+
+                    if (currentMaterial.HasProperty("_Color"))
+                    {
+                        currentMaterial.SetColor("_Color", _fraudCopyColor);
+                    }
                 }
             }
         }
@@ -80,8 +93,8 @@ namespace Pong.Gameplay.Relics
             }
 
             Reflect(collision);
-            TryApplyDamage(collision);
             TryTriggerFraudCopy(collision);
+            TryApplyDamage(collision);
         }
 
         private void Reflect(Collision collision)
@@ -93,6 +106,8 @@ namespace Pong.Gameplay.Relics
 
         private void TryApplyDamage(Collision collision)
         {
+            if (collision.gameObject.GetComponent<PlayerActor>() != null) return;
+
             if (collision.gameObject.TryGetComponent(out IDamageable damageable))
             {
                 damageable.ApplyDamage(_damage);
@@ -109,20 +124,9 @@ namespace Pong.Gameplay.Relics
 
         private bool ShouldDestroyFraudCopy(Collision collision)
         {
-            if (collision.gameObject.GetComponent<EnemyActor>() != null)
-            {
-                return true;
-            }
-
-            if (collision.gameObject.GetComponent<BossActor>() != null)
-            {
-                return true;
-            }
-
-            if (collision.gameObject.CompareTag("Wall"))
-            {
-                return true;
-            }
+            if (collision.gameObject.GetComponent<EnemyActor>() != null) return true;
+            if (collision.gameObject.GetComponent<BossActor>() != null) return true;
+            if (collision.gameObject.CompareTag("Wall")) return true;
 
             return false;
         }
