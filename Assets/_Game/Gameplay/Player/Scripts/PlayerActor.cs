@@ -72,7 +72,7 @@ namespace Pong.Gameplay.Player
             base.ApplyDamage(damage);
         }
 
-        internal void ReceiveShield(GameObject shieldVisualPrefab = null)
+        public void ReceiveShield(GameObject shieldVisualPrefab = null)
         {
             _hasShield = true;
 
@@ -100,7 +100,7 @@ namespace Pong.Gameplay.Player
             Debug.Log($"{gameObject.name} received shield.");
         }
 
-        internal void ConsumeShield()
+        private void ConsumeShield()
         {
             _hasShield = false;
 
