@@ -26,8 +26,7 @@ namespace Pong.Gameplay.Player.Lust
 
         public void Initialize(LustPlayer owner, float bossPullDistance, float stopDistanceFromPlayer)
         {
-            if (_isInitialized)
-                return;
+            if (_isInitialized) return;
 
             _owner = owner;
             _bossPullDistance = bossPullDistance;
@@ -39,81 +38,89 @@ namespace Pong.Gameplay.Player.Lust
 
         private void Update()
         {
-            if (!_isInitialized || _hasHit)
-                return;
+            if (!_isInitialized || _hasHit) return;
 
             transform.position += transform.forward * _speed * Time.deltaTime;
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            if (!_isInitialized || _owner == null || _hasHit)
-                return;
+            if (!_isInitialized || _owner == null || _hasHit) return;
+            if (IsIgnoredTarget(other)) return;
 
-            if (IsIgnoredTarget(other))
-                return;
+            _hasHit = true;
 
             if (other.TryGetComponent(out EnemyActor enemy))
             {
-                _hasHit = true;
-                StartCoroutine(PullEnemyToOwner(enemy.transform));
+                Vector3 directionToOwner = (_owner.transform.position - enemy.transform.position).normalized;
+                Vector3 targetPosition = _owner.transform.position - directionToOwner * _stopDistanceFromPlayer;
+
+                StartCoroutine(PullTargetAndDestroy(enemy.transform, targetPosition));
                 return;
             }
 
             if (other.TryGetComponent(out BossActor boss))
             {
-                _hasHit = true;
-                StartCoroutine(PullBossTowardOwner(boss.transform));
+                Vector3 directionToOwner = (_owner.transform.position - boss.transform.position).normalized;
+                Vector3 targetPosition = boss.transform.position + directionToOwner * _bossPullDistance;
+
+                StartCoroutine(PullTargetAndDestroy(boss.transform, targetPosition));
+                return;
             }
+
+            Destroy(gameObject);
         }
 
         private bool IsIgnoredTarget(Collider other)
         {
-            if (other.GetComponent<PlayerActor>() != null)
-                return true;
-
-            if (other.GetComponent<Relic>() != null)
-                return true;
+            if (other.GetComponent<PlayerActor>() != null) return true;
+            if (other.GetComponent<Relic>() != null) return true;
 
             return false;
         }
 
-        private IEnumerator PullEnemyToOwner(Transform targetTransform)
+        private IEnumerator PullTargetAndDestroy(Transform targetTransform, Vector3 destination)
         {
-            Vector3 directionToOwner = (_owner.transform.position - targetTransform.position).normalized;
-            Vector3 targetPosition = _owner.transform.position - directionToOwner * _stopDistanceFromPlayer;
+            MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
+            Collider projectileCollider = GetComponent<Collider>();
 
-            yield return MoveTarget(targetTransform, targetPosition, _pullDuration);
+            if (meshRenderer != null)
+            {
+                meshRenderer.enabled = false;
+            }
 
-            Debug.Log($"{gameObject.name} pulled enemy {targetTransform.gameObject.name}");
-            Destroy(gameObject);
-        }
+            if (projectileCollider != null)
+            {
+                projectileCollider.enabled = false;
+            }
 
-        private IEnumerator PullBossTowardOwner(Transform targetTransform)
-        {
-            Vector3 directionToOwner = (_owner.transform.position - targetTransform.position).normalized;
-            Vector3 targetPosition = targetTransform.position + directionToOwner * _bossPullDistance;
+            yield return MoveTarget(targetTransform, destination, _pullDuration);
 
-            yield return MoveTarget(targetTransform, targetPosition, _pullDuration);
-
-            Debug.Log($"{gameObject.name} pulled boss {targetTransform.gameObject.name}");
             Destroy(gameObject);
         }
 
         private IEnumerator MoveTarget(Transform targetTransform, Vector3 destination, float duration)
         {
+            if (targetTransform == null) yield break;
+
             Vector3 startPosition = targetTransform.position;
             float elapsedTime = 0f;
 
             while (elapsedTime < duration)
             {
+                if (targetTransform == null) yield break;
+
                 elapsedTime += Time.deltaTime;
                 float t = elapsedTime / duration;
                 targetTransform.position = Vector3.Lerp(startPosition, destination, t);
+
                 yield return null;
             }
 
-            targetTransform.position = destination;
+            if (targetTransform != null)
+            {
+                targetTransform.position = destination;
+            }
         }
     }
 }
