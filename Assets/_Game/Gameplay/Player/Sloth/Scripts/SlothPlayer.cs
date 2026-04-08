@@ -1,5 +1,7 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
+using Pong.Gameplay.Player.Lust;
 
 namespace Pong.Gameplay.Player
 {
@@ -10,20 +12,38 @@ namespace Pong.Gameplay.Player
         [SerializeField] private int _selectedTargetIndex = 0;
         [SerializeField] private bool _isSelectingTarget = false;
 
+        [Header("Shield Settings")]
+        [SerializeField] private GameObject _shieldVisualPrefab;
+
         [Header("Selection")]
-        [SerializeField] private float _selectionInputCooldown = 0.2f;
-        [SerializeField] private GameObject _selectionMarkerPrefab;
-        [SerializeField] private Vector3 _selectionMarkerOffset = new Vector3(0f, 2f, 0f);
+        [SerializeField, Range(0.05f, 1f)] private float _selectionInputCooldown = 0.2f;
+        [SerializeField] private TMP_Text _selectionText;
 
         private bool _canChangeSelection = true;
-        private GameObject _selectionMarkerInstance;
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            if (_selectionText != null)
+            {
+                _selectionText.gameObject.SetActive(false);
+            }
+        }
 
         protected override void OnEnable()
         {
             base.OnEnable();
 
             if (_inputReader != null)
+            {
                 _inputReader.MoveEvent += HandleSelectionMove;
+            }
+
+            if (_selectionText != null)
+            {
+                _selectionText.gameObject.SetActive(false);
+            }
         }
 
         protected override void OnDisable()
@@ -31,7 +51,9 @@ namespace Pong.Gameplay.Player
             base.OnDisable();
 
             if (_inputReader != null)
+            {
                 _inputReader.MoveEvent -= HandleSelectionMove;
+            }
         }
 
         protected override void UseAbility()
@@ -56,8 +78,12 @@ namespace Pong.Gameplay.Player
             _isSelectingTarget = true;
             _canChangeSelection = true;
 
-            ShowSelectionMarker();
-            UpdateSelectionMarker();
+            if (_selectedTargetIndex < 0 || _selectedTargetIndex >= _players.Length)
+            {
+                _selectedTargetIndex = 0;
+            }
+
+            UpdateSelectionVisual();
 
             Debug.Log($"{gameObject.name} entered selection mode.");
             Debug.Log($"{gameObject.name} current target: {_players[_selectedTargetIndex].gameObject.name}");
@@ -66,15 +92,14 @@ namespace Pong.Gameplay.Player
         private void ExitSelectionMode()
         {
             _isSelectingTarget = false;
-            HideSelectionMarker();
+            UpdateSelectionVisual();
 
             Debug.Log($"{gameObject.name} exited selection mode.");
         }
 
         private void HandleSelectionMove(Vector2 input)
         {
-            if (!_isSelectingTarget || !_canChangeSelection)
-                return;
+            if (!_isSelectingTarget || !_canChangeSelection) return;
 
             if (input.x <= -0.5f)
             {
@@ -100,9 +125,11 @@ namespace Pong.Gameplay.Player
             _selectedTargetIndex--;
 
             if (_selectedTargetIndex < 0)
+            {
                 _selectedTargetIndex = _players.Length - 1;
+            }
 
-            UpdateSelectionMarker();
+            UpdateSelectionVisual();
             Debug.Log($"{gameObject.name} selected {_players[_selectedTargetIndex].gameObject.name}");
         }
 
@@ -111,65 +138,48 @@ namespace Pong.Gameplay.Player
             _selectedTargetIndex++;
 
             if (_selectedTargetIndex >= _players.Length)
+            {
                 _selectedTargetIndex = 0;
+            }
 
-            UpdateSelectionMarker();
+            UpdateSelectionVisual();
             Debug.Log($"{gameObject.name} selected {_players[_selectedTargetIndex].gameObject.name}");
         }
 
         private void ConfirmShield()
         {
-            if (_players == null || _players.Length == 0)
-                return;
+            if (_players == null || _players.Length == 0) return;
 
             PlayerActor selectedPlayer = _players[_selectedTargetIndex];
+            selectedPlayer.ReceiveShield(_shieldVisualPrefab);
 
             Debug.Log($"{gameObject.name} granted shield to {selectedPlayer.gameObject.name}");
-
-            // FUTURO:
-            // selectedPlayer.ReceiveShield();
 
             ExitSelectionMode();
         }
 
-        private void ShowSelectionMarker()
+        private void UpdateSelectionVisual()
         {
-            if (_selectionMarkerPrefab == null)
-                return;
+            if (_selectionText == null) return;
 
-            if (_selectionMarkerInstance == null)
-            {
-                _selectionMarkerInstance = Instantiate(_selectionMarkerPrefab);
-            }
+            _selectionText.gameObject.SetActive(_isSelectingTarget);
+
+            if (!_isSelectingTarget || _players == null || _players.Length == 0) return;
+
+            _selectionText.text = GetTargetLabel(_players[_selectedTargetIndex]);
         }
 
-        private void UpdateSelectionMarker()
+        private string GetTargetLabel(PlayerActor targetPlayer)
         {
-            if (_selectionMarkerInstance == null)
-                return;
+            if (targetPlayer == null) return "NONE";
 
-            if (_players == null || _players.Length == 0)
-                return;
+            if (targetPlayer == this) return "ME";
+            if (targetPlayer is LustPlayer) return "LUST";
+            if (targetPlayer is ViolencePlayer) return "VIOLENCE";
+            if (targetPlayer is FraudPlayer) return "FRAUD";
+            if (targetPlayer is SlothPlayer) return "ME";
 
-            Transform target = _players[_selectedTargetIndex].transform;
-            _selectionMarkerInstance.transform.position = target.position + _selectionMarkerOffset;
-        }
-
-        private void HideSelectionMarker()
-        {
-            if (_selectionMarkerInstance != null)
-            {
-                Destroy(_selectionMarkerInstance);
-                _selectionMarkerInstance = null;
-            }
-        }
-
-        private void LateUpdate()
-        {
-            if (_isSelectingTarget)
-            {
-                UpdateSelectionMarker();
-            }
+            return targetPlayer.gameObject.name.ToUpper();
         }
 
         protected override void OnDamageTaken()
