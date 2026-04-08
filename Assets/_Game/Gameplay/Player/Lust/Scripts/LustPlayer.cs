@@ -9,8 +9,8 @@ namespace Pong.Gameplay.Player.Lust
         [SerializeField] private Transform _projectileSpawnPoint;
 
         [Header("Balance Settings")]
-        [SerializeField] private float _bossPullDistance;
-        [SerializeField] private float _stopDistanceFromPlayer;
+        [SerializeField, Range(0.1f, 5f)] private float _bossPullDistance = 1.5f;
+        [SerializeField, Range(0.1f, 3f)] private float _stopDistanceFromPlayer = 1f;
 
         protected override void UseAbility()
         {
@@ -25,10 +25,13 @@ namespace Pong.Gameplay.Player.Lust
                 return;
             }
 
-            LustProjectile.Spawn(
+            LustProjectile projectile = Instantiate(
                 _projectilePrefab,
                 _projectileSpawnPoint.position,
-                _projectileSpawnPoint.rotation,
+                Quaternion.identity
+            );
+
+            projectile.Initialize(
                 this,
                 _bossPullDistance,
                 _stopDistanceFromPlayer

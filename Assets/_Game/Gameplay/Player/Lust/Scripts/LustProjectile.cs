@@ -11,11 +11,11 @@ namespace Pong.Gameplay.Player.Lust
     public class LustProjectile : MonoBehaviour
     {
         [Header("Projectile Movement")]
-        [SerializeField, Range(0, 10)] float _speed;
-        [SerializeField] private float _lifeTime;
+        [SerializeField, Range(0.1f, 30f)] private float _speed = 10f;
+        [SerializeField, Range(0.1f, 10f)] private float _lifeTime = 2f;
 
         [Header("Pull Settings")]
-        [SerializeField] private float _pullDuration;
+        [SerializeField, Range(0.01f, 2f)] private float _pullDuration = 0.2f;
 
         private LustPlayer _owner;
         private float _bossPullDistance;
@@ -24,32 +24,11 @@ namespace Pong.Gameplay.Player.Lust
         private bool _isInitialized = false;
         private bool _hasHit = false;
 
-        public static LustProjectile Spawn(
-            LustProjectile prefab,
-            Vector3 position,
-            Quaternion rotation,
-            LustPlayer owner,
-            float bossPullDistance,
-            float stopDistanceFromPlayer
-        )
+        public void Initialize(LustPlayer owner, float bossPullDistance, float stopDistanceFromPlayer)
         {
-            if (prefab == null)
-            {
-                Debug.LogError("LustProjectile prefab is null.");
-                return null;
-            }
+            if (_isInitialized)
+                return;
 
-            LustProjectile projectile = Instantiate(prefab, position, rotation);
-            projectile.Initialize(owner, bossPullDistance, stopDistanceFromPlayer);
-            return projectile;
-        }
-
-        private void Initialize(
-            LustPlayer owner,
-            float bossPullDistance,
-            float stopDistanceFromPlayer
-        )
-        {
             _owner = owner;
             _bossPullDistance = bossPullDistance;
             _stopDistanceFromPlayer = stopDistanceFromPlayer;
