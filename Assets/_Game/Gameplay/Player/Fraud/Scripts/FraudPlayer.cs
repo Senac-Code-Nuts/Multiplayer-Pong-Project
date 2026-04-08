@@ -7,21 +7,20 @@ namespace Pong.Gameplay.Player
     {
         [Header("Ability")]
         [SerializeField] private bool _isCopyModeActive = false;
-        [SerializeField] private int _copyCount = 1;
+        [SerializeField, Range(1, 4)] private int _copyCount = 1;
         [SerializeField] private Relic _relicPrefab;
 
         public bool IsCopyModeActive => _isCopyModeActive;
 
         protected override void UseAbility()
         {
-            Debug.Log($"Fraud is using ability.");
+            Debug.Log("Fraud is using ability.");
             ActivateCopyMode();
         }
 
         private void ActivateCopyMode()
         {
-            if (_isCopyModeActive)
-                return;
+            if (_isCopyModeActive) return;
 
             _isCopyModeActive = true;
             Debug.Log($"{gameObject.name} activated relic copy mode.");
@@ -29,11 +28,8 @@ namespace Pong.Gameplay.Player
 
         public void TryCopyRelic(Relic relic)
         {
-            if (!_isCopyModeActive)
-                return;
-
-            if (relic == null || _relicPrefab == null)
-                return;
+            if (!_isCopyModeActive) return;
+            if (relic == null || _relicPrefab == null) return;
 
             SpawnCopies(relic);
             ConsumeCopyMode();
@@ -49,7 +45,13 @@ namespace Pong.Gameplay.Player
                     Random.Range(-0.5f, 0.5f)
                 );
 
-                Instantiate(_relicPrefab, originalRelic.transform.position + spawnOffset, Quaternion.identity);
+                Relic copyRelic = Instantiate(
+                    _relicPrefab,
+                    originalRelic.transform.position + spawnOffset,
+                    Quaternion.identity
+                );
+
+                copyRelic.SetAsFraudCopy(true);
             }
         }
 
