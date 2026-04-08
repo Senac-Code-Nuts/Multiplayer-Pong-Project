@@ -156,6 +156,7 @@ namespace Pong.Gameplay.Player
             Debug.Log($"{gameObject.name} granted shield to {selectedPlayer.gameObject.name}");
 
             ExitSelectionMode();
+            StartCoroutine(AbilityCooldownRoutine());
         }
 
         private void UpdateSelectionVisual()

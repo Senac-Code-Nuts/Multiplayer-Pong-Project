@@ -15,6 +15,7 @@ namespace Pong.Gameplay.Player.Lust
         protected override void UseAbility()
         {
             SpawnProjectile();
+            StartCoroutine(AbilityCooldownRoutine());
         }
 
         private void SpawnProjectile()

@@ -49,10 +49,9 @@ namespace Pong.Gameplay.Player
             if (_isDead || _isStunned || !_canUseAbility) return;
 
             UseAbility();
-            StartCoroutine(AbilityCooldownRoutine());
         }
 
-        private IEnumerator AbilityCooldownRoutine()
+        protected IEnumerator AbilityCooldownRoutine()
         {
             _canUseAbility = false;
             yield return new WaitForSeconds(_abilityCooldown);

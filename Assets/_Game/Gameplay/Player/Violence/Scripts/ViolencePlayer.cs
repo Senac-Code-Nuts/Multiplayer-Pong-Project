@@ -16,6 +16,7 @@ namespace Pong.Gameplay.Player
         {
             Debug.Log($"Violence is using ability.");
             StunTargets();
+            StartCoroutine(AbilityCooldownRoutine());
         }
 
         private void StunTargets()
