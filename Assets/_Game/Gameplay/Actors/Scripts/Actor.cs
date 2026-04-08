@@ -5,7 +5,7 @@ namespace Pong.Gameplay.Actors
 {
     public abstract class Actor : MonoBehaviour, IDamageable
     {
-        [Header("Attributes")]
+        [Header("General Attributes")]
         [SerializeField] protected int _maxHealth;
         [SerializeField] protected int _currentHealth;
         [SerializeField] protected int _damage;
