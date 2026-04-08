@@ -14,6 +14,7 @@ namespace Pong.Gameplay.Player
 
         [Header("Shield Settings")]
         [SerializeField] private GameObject _shieldVisualPrefab;
+        [SerializeField] private int _shieldCount = 1;
 
         [Header("Selection")]
         [SerializeField, Range(0.05f, 1f)] private float _selectionInputCooldown = 0.2f;
@@ -29,6 +30,32 @@ namespace Pong.Gameplay.Player
             {
                 _selectionText.gameObject.SetActive(false);
             }
+        }
+
+        protected override void LevelUp()
+        {
+            base.LevelUp();
+            UpgradeShieldCount();
+        }
+
+        private void UpgradeShieldCount()
+        {
+            _shieldCount = _level;
+        }
+
+        private void Update()
+        {
+            if(Input.GetKeyDown(KeyCode.F1))
+            {
+                LevelUp();
+                Debug.Log($"level: {_level} cópias: {_shieldCount}");
+            }
+
+            if(Input.GetKeyDown(KeyCode.S))
+            {
+                UseAbility();
+            }
+
         }
 
         protected override void OnEnable()
@@ -149,12 +176,17 @@ namespace Pong.Gameplay.Player
         private void ConfirmShield()
         {
             if (_players == null || _players.Length == 0) return;
+            int shieldsToAplly = _shieldCount;
 
-            PlayerActor selectedPlayer = _players[_selectedTargetIndex];
-            selectedPlayer.ReceiveShield(_shieldVisualPrefab);
+            for(int i = 0; i < shieldsToAplly; i++)
+            {
+                int index = (_selectedTargetIndex + i) % _players.Length;
+                PlayerActor target = _players[index];
 
-            Debug.Log($"{gameObject.name} granted shield to {selectedPlayer.gameObject.name}");
-
+                target.ReceiveShield(_shieldVisualPrefab);
+                Debug.Log($"{gameObject.name} granted shield to {target.gameObject.name}");
+            }
+            
             ExitSelectionMode();
             StartCoroutine(AbilityCooldownRoutine());
         }

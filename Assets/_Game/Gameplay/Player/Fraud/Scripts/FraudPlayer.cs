@@ -14,11 +14,23 @@ namespace Pong.Gameplay.Player
 
         protected override void UseAbility()
         {
+            Debug.Log($"CopyMode: {_isCopyModeActive}");
             if (_isCopyModeActive) return;
 
             Debug.Log("Fraud is using ability.");
             ActivateCopyMode();
             StartCoroutine(AbilityCooldownRoutine());
+        }
+
+        protected override void LevelUp()
+        {
+            base.LevelUp();
+            UpgradeCopyCount();
+        }
+
+        private void UpgradeCopyCount()
+        {
+            _copyCount = _level;
         }
 
         private void ActivateCopyMode()

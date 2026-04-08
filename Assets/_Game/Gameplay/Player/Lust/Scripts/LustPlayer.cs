@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 
 namespace Pong.Gameplay.Player.Lust
 {
@@ -7,6 +8,7 @@ namespace Pong.Gameplay.Player.Lust
         [Header("Ability")]
         [SerializeField] private LustProjectile _projectilePrefab;
         [SerializeField] private Transform _projectileSpawnPoint;
+        [SerializeField] private int _projectileCount = 1;
 
         [Header("Balance Settings")]
         [SerializeField, Range(0.1f, 5f)] private float _bossPullDistance = 1.5f;
@@ -18,6 +20,18 @@ namespace Pong.Gameplay.Player.Lust
             StartCoroutine(AbilityCooldownRoutine());
         }
 
+        protected override void LevelUp()
+        {
+            base.LevelUp();
+            UpgradeProjectileCount();
+        }
+
+        private void UpgradeProjectileCount()
+        {
+            _projectileCount = _level;
+        }
+
+
         private void SpawnProjectile()
         {
             if (_projectilePrefab == null || _projectileSpawnPoint == null)
@@ -26,17 +40,21 @@ namespace Pong.Gameplay.Player.Lust
                 return;
             }
 
-            LustProjectile projectile = Instantiate(
+            for(int i = 0; i < _projectileCount; i++)
+            {
+                LustProjectile projectile = Instantiate(
                 _projectilePrefab,
                 _projectileSpawnPoint.position,
                 Quaternion.identity
-            );
+                );
 
-            projectile.Initialize(
+                projectile.Initialize(
                 this,
                 _bossPullDistance,
                 _stopDistanceFromPlayer
-            );
+                );
+            }
+
 
             Debug.Log($"{gameObject.name} fired attraction projectile.");
         }

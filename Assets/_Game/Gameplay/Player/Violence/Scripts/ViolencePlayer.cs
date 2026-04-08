@@ -19,6 +19,17 @@ namespace Pong.Gameplay.Player
             StartCoroutine(AbilityCooldownRoutine());
         }
 
+        protected override void LevelUp()
+        {
+            base.LevelUp();
+            UpgradeEnemyTargets();
+        }
+
+        private void UpgradeEnemyTargets()
+        {
+            _maxEnemyTargets = _level;
+        }
+
         private void StunTargets()
         {
             Collider[] hits = Physics.OverlapSphere(transform.position, _stunRadius);

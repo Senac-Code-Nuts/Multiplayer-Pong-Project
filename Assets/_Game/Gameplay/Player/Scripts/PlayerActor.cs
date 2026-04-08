@@ -13,6 +13,9 @@ namespace Pong.Gameplay.Player
         [Header("Ability")]
         [SerializeField, Range(0f, 10f)] protected float _abilityCooldown;
 
+        [Header("Level")]
+        [SerializeField] protected int _level = 1;
+
         [Header("Shield")]
         [SerializeField] protected bool _hasShield = false;
         [SerializeField] protected GameObject _activeShieldVisual;
@@ -26,6 +29,12 @@ namespace Pong.Gameplay.Player
         protected override void Awake()
         {
             base.Awake();
+        }
+
+        protected virtual void LevelUp()
+        {
+            _level++;
+            _level = Mathf.Clamp( _level, 1, 4);
         }
 
         protected virtual void OnEnable()
