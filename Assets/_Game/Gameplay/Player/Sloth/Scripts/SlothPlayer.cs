@@ -43,21 +43,6 @@ namespace Pong.Gameplay.Player
             _shieldCount = _level;
         }
 
-        private void Update()
-        {
-            if(Input.GetKeyDown(KeyCode.F1))
-            {
-                LevelUp();
-                Debug.Log($"level: {_level} cópias: {_shieldCount}");
-            }
-
-            if(Input.GetKeyDown(KeyCode.S))
-            {
-                UseAbility();
-            }
-
-        }
-
         protected override void OnEnable()
         {
             base.OnEnable();

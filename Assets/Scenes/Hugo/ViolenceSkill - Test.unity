@@ -890,7 +890,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8168781483813912929, guid: 133588ec6bfb94a4288aaf4d5aec7078, type: 3}
       propertyPath: _maxEnemyTargets
-      value: 4
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8168781483813912929, guid: 133588ec6bfb94a4288aaf4d5aec7078, type: 3}
       propertyPath: _enemyStunDuration
