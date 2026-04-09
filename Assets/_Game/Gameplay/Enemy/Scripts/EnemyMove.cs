@@ -10,6 +10,7 @@ namespace Pong.Gameplay.Enemy
     {
         [SerializeField] private GraphComponent _graph;
         [SerializeField] private float _speed;
+        [SerializeField] private bool _canMove = true;
 
         private GraphNode _currentNode;
         private List<GraphNode> _path = new List<GraphNode>();
@@ -17,7 +18,6 @@ namespace Pong.Gameplay.Enemy
         private void Start()
         {
             _currentNode = GetClosestNode();
-            Debug.Log($"Current Node: {_currentNode}");
             StartCoroutine(MoveRoutine());
         }
 
@@ -45,6 +45,11 @@ namespace Pong.Gameplay.Enemy
             
             while(true)
             {
+                if(!_canMove)
+                {
+                    yield return null;
+                    continue;
+                }
 
                 GraphNode target = GetRandomNode();
                 _path = FindPath(_currentNode, target);
@@ -57,7 +62,6 @@ namespace Pong.Gameplay.Enemy
                     continue;
                 }
 
-                Debug.Log($"Novo alvo: {target} | Path: {_path.Count}");
 
                 foreach(var node in _path)
                 {
@@ -72,7 +76,6 @@ namespace Pong.Gameplay.Enemy
         private GraphNode GetRandomNode()
         {
             GraphNode targetNode = _graph.Nodes[Random.Range(0, _graph.Nodes.Count)];
-            Debug.Log($"Nó alvo: {targetNode}");
             return targetNode;
         }
 
@@ -91,8 +94,6 @@ namespace Pong.Gameplay.Enemy
             var distance = new Dictionary<GraphNode, float>();
             var previous = new Dictionary<GraphNode, GraphNode>();
             var unvisited = new List<GraphNode>(_graph.Nodes);
-            Debug.Log($"Target: {target}");
-            Debug.Log($"Path size: {_path.Count}");
 
             foreach(var node in _graph.Nodes)
             {
