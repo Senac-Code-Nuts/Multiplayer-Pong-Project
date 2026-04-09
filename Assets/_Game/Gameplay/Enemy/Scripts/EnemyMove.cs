@@ -84,8 +84,6 @@ namespace Pong.Gameplay.Enemy
 
                  yield return null;
             }
-
-           
         }
 
         private List<GraphNode> FindPath(GraphNode start, GraphNode target)
@@ -131,12 +129,8 @@ namespace Pong.Gameplay.Enemy
                         distance[neighbor] = newDistance;
                         previous[neighbor] = current;
                     }
-
                 }
-
-
             }
-
             return ReconstructPath(previous,start,target);
         }
 
