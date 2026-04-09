@@ -14,6 +14,9 @@ namespace Pong.Gameplay.Player.Lust
         [SerializeField, Range(0.1f, 5f)] private float _bossPullDistance = 1.5f;
         [SerializeField, Range(0.1f, 3f)] private float _stopDistanceFromPlayer = 1f;
 
+        [Header("Debug")]
+        [SerializeField] private bool _useDebug;
+
         protected override void UseAbility()
         {
             SpawnProjectile();
@@ -31,6 +34,15 @@ namespace Pong.Gameplay.Player.Lust
             _projectileCount = _level;
         }
 
+        private void Update()
+        {
+            if(Input.GetKeyDown(KeyCode.F1) || _useDebug)
+            {
+                LevelUp();
+                Debug.Log($"level: {_level} projectiles: {_projectileCount}");
+            }
+
+        }
 
         private void SpawnProjectile()
         {

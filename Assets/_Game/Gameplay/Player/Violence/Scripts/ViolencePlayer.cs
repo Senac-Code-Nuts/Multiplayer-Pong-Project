@@ -10,6 +10,9 @@ namespace Pong.Gameplay.Player
         [SerializeField] private float _stunRadius = 5f;
         [SerializeField] private float _enemyStunDuration = 1f;
         [SerializeField] private float _bossStunDuration = 1f;
+
+        [Header("Debug")]
+        [SerializeField] private bool _useDebug;
         private int _maxEnemyTargets = 1;
 
         protected override void UseAbility()
@@ -27,10 +30,10 @@ namespace Pong.Gameplay.Player
         
         private void Update()
         {
-            if(Input.GetKeyDown(KeyCode.F1))
+            if(Input.GetKeyDown(KeyCode.F1) || _useDebug)
             {
                 LevelUp();
-                Debug.Log($"level: {_level} cópias: {_maxEnemyTargets}");
+                Debug.Log($"level: {_level} alvos max: {_maxEnemyTargets}");
             }
 
         }

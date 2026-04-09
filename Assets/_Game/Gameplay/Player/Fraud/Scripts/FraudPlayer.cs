@@ -10,6 +10,9 @@ namespace Pong.Gameplay.Player
         [SerializeField, Range(1, 4)] private int _copyCount = 1;
         [SerializeField] private Relic _relicPrefab;
 
+        [Header("Debug")]
+        [SerializeField] private bool _useDebug;
+
         public bool IsCopyModeActive => _isCopyModeActive;
 
         protected override void UseAbility()
@@ -33,6 +36,20 @@ namespace Pong.Gameplay.Player
             _copyCount = _level;
         }
 
+        private void Update()
+        {
+            if(Input.GetKeyDown(KeyCode.F1) || _useDebug)
+            {
+                LevelUp();
+                Debug.Log($"level: {_level} cópias: {_copyCount}");
+            }
+
+            if(Input.GetKeyDown(KeyCode.F2))
+            {
+                ActivateCopyMode();
+            }
+
+        }
         private void ActivateCopyMode()
         {
             _isCopyModeActive = true;

@@ -20,6 +20,9 @@ namespace Pong.Gameplay.Player
         [SerializeField, Range(0.05f, 1f)] private float _selectionInputCooldown = 0.2f;
         [SerializeField] private TMP_Text _selectionText;
 
+        [Header("Debug")]
+        [SerializeField] private bool _useDebug;
+
         private bool _canChangeSelection = true;
 
         protected override void Awake()
@@ -41,6 +44,16 @@ namespace Pong.Gameplay.Player
         private void UpgradeShieldCount()
         {
             _shieldCount = _level;
+        }
+
+        private void Update()
+        {
+            if(Input.GetKeyDown(KeyCode.F1) || _useDebug)
+            {
+                LevelUp();
+                Debug.Log($"level: {_level} escudos: {_shieldCount}");
+            }
+
         }
 
         protected override void OnEnable()
