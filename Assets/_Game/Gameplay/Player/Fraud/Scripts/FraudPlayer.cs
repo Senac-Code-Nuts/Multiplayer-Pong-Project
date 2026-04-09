@@ -7,7 +7,7 @@ namespace Pong.Gameplay.Player
     {
         [Header("Ability")]
         [SerializeField] private bool _isCopyModeActive = false;
-        [SerializeField, Range(1, 4)] private int _copyCount = 1;
+        private int _copyCount = 1;
         [SerializeField] private Relic _relicPrefab;
 
         [Header("Debug")]
@@ -17,10 +17,8 @@ namespace Pong.Gameplay.Player
 
         protected override void UseAbility()
         {
-            Debug.Log($"CopyMode: {_isCopyModeActive}");
             if (_isCopyModeActive) return;
 
-            Debug.Log("Fraud is using ability.");
             ActivateCopyMode();
             StartCoroutine(AbilityCooldownRoutine());
         }
@@ -41,7 +39,6 @@ namespace Pong.Gameplay.Player
             if(Input.GetKeyDown(KeyCode.F1) || _useDebug)
             {
                 LevelUp();
-                Debug.Log($"level: {_level} cópias: {_copyCount}");
             }
 
             if(Input.GetKeyDown(KeyCode.F2))
@@ -53,7 +50,6 @@ namespace Pong.Gameplay.Player
         private void ActivateCopyMode()
         {
             _isCopyModeActive = true;
-            Debug.Log($"{gameObject.name} activated relic copy mode.");
         }
 
         public void TryCopyRelic(Relic relic)
@@ -88,17 +84,16 @@ namespace Pong.Gameplay.Player
         private void ConsumeCopyMode()
         {
             _isCopyModeActive = false;
-            Debug.Log($"{gameObject.name} consumed relic copy mode.");
         }
 
         protected override void OnDamageTaken()
         {
-            Debug.Log($"{gameObject.name} took damage.");
+
         }
 
         protected override void OnDeath()
         {
-            Debug.Log($"{gameObject.name} died.");
+
         }
     }
 }

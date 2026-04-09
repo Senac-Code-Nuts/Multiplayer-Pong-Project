@@ -514,8 +514,15 @@ MonoBehaviour:
   _isVulnerable: 1
   _isStunned: 0
   _isDead: 0
+  _stunVfxPrefab: {fileID: 0}
+  _stunOffset: {x: 0, y: 1.8, z: 0}
   _inputReader: {fileID: 1511679372}
   _abilityCooldown: 0
+  _level: 1
+  _hasShield: 0
+  _activeShieldVisual: {fileID: 0}
+  _shieldOffset: {x: 0, y: 1.8, z: 0}
+  _shieldVisualScale: {x: 0, y: 0, z: 0}
   _players:
   - {fileID: 2087440563}
   - {fileID: 0}
@@ -523,6 +530,11 @@ MonoBehaviour:
   - {fileID: 1511679371}
   _selectedTargetIndex: 0
   _isSelectingTarget: 0
+  _shieldVisualPrefab: {fileID: 0}
+  _shieldCount: 1
+  _selectionInputCooldown: 0.2
+  _selectionText: {fileID: 0}
+  _useDebug: 0
 --- !u!114 &1511679372 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6522086124894741760, guid: 8e8aa83f77d60b24b97a1aa308b3bba6, type: 3}
@@ -674,6 +686,11 @@ MonoBehaviour:
   _isVulnerable: 1
   _isStunned: 0
   _isDead: 0
+  _stunVfxPrefab: {fileID: 0}
+  _stunOffset: {x: 0, y: 1.8, z: 0}
+  _renderers: []
+  _normalColor: {r: 1, g: 1, b: 1, a: 1}
+  _stunnedColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!114 &2087440563 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4603955107793656813, guid: cfba0d379938102488c285751e1ba0ce, type: 3}
@@ -754,6 +771,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4603955107793656813, guid: cfba0d379938102488c285751e1ba0ce, type: 3}
+      propertyPath: _useDebug
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4603955107793656813, guid: cfba0d379938102488c285751e1ba0ce, type: 3}
+      propertyPath: _bossPullDistance
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 7474512790362384098, guid: cfba0d379938102488c285751e1ba0ce, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.8000002

@@ -28,10 +28,13 @@ namespace Pong.Gameplay.Player.Lust
         {
             if (_isInitialized) return;
 
+
             _owner = owner;
             _bossPullDistance = bossPullDistance;
             _stopDistanceFromPlayer = stopDistanceFromPlayer;
             _isInitialized = true;
+
+            
 
             Destroy(gameObject, _lifeTime);
         }

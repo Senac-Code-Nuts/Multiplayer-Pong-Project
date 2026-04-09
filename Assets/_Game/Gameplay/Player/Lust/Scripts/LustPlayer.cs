@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 
 namespace Pong.Gameplay.Player.Lust
 {
@@ -8,7 +7,8 @@ namespace Pong.Gameplay.Player.Lust
         [Header("Ability")]
         [SerializeField] private LustProjectile _projectilePrefab;
         [SerializeField] private Transform _projectileSpawnPoint;
-        [SerializeField] private int _projectileCount = 1;
+        [SerializeField] private float _spreadAngle = 30f;
+        private int _projectileCount = 1;
 
         [Header("Balance Settings")]
         [SerializeField, Range(0.1f, 5f)] private float _bossPullDistance = 1.5f;
@@ -36,28 +36,31 @@ namespace Pong.Gameplay.Player.Lust
 
         private void Update()
         {
-            if(Input.GetKeyDown(KeyCode.F1) || _useDebug)
+            if(Input.GetKeyDown(KeyCode.F1) && _useDebug)
             {
                 LevelUp();
-                Debug.Log($"level: {_level} projectiles: {_projectileCount}");
             }
-
         }
 
         private void SpawnProjectile()
         {
             if (_projectilePrefab == null || _projectileSpawnPoint == null)
             {
-                Debug.LogWarning($"{gameObject.name} is missing projectile setup.");
                 return;
             }
 
             for(int i = 0; i < _projectileCount; i++)
             {
+                float angleStep = _projectileCount > 1 ? _spreadAngle / (_projectileCount - 1) : 0;
+                float angle = -_spreadAngle / 2 + angleStep * i;
+
+                Quaternion rotation = _projectileSpawnPoint.rotation * Quaternion.Euler(0,angle,0);
+
+
                 LustProjectile projectile = Instantiate(
                 _projectilePrefab,
                 _projectileSpawnPoint.position,
-                Quaternion.identity
+                rotation
                 );
 
                 projectile.Initialize(
@@ -66,19 +69,16 @@ namespace Pong.Gameplay.Player.Lust
                 _stopDistanceFromPlayer
                 );
             }
-
-
-            Debug.Log($"{gameObject.name} fired attraction projectile.");
         }
 
         protected override void OnDamageTaken()
         {
-            Debug.Log($"{gameObject.name} took damage.");
+
         }
 
         protected override void OnDeath()
         {
-            Debug.Log($"{gameObject.name} died.");
+
         }
     }
 }

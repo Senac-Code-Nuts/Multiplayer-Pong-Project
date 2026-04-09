@@ -17,7 +17,6 @@ namespace Pong.Gameplay.Player
 
         protected override void UseAbility()
         {
-            Debug.Log($"Violence is using ability.");
             StunTargets();
             StartCoroutine(AbilityCooldownRoutine());
         }
@@ -33,7 +32,6 @@ namespace Pong.Gameplay.Player
             if(Input.GetKeyDown(KeyCode.F1) || _useDebug)
             {
                 LevelUp();
-                Debug.Log($"level: {_level} alvos max: {_maxEnemyTargets}");
             }
 
         }
@@ -58,15 +56,12 @@ namespace Pong.Gameplay.Player
 
                     enemy.ApplyStun(_enemyStunDuration);
                     stunnedEnemies++;
-
-                    Debug.Log($"{gameObject.name} stunned enemy {hit.gameObject.name}");
                     continue;
                 }
 
                 if (hit.TryGetComponent(out BossActor boss))
                 {
                     boss.ApplyStun(_bossStunDuration);
-                    Debug.Log($"{gameObject.name} stunned boss {hit.gameObject.name}");
                 }
             }
         }
@@ -79,12 +74,12 @@ namespace Pong.Gameplay.Player
 
         protected override void OnDamageTaken()
         {
-            Debug.Log($"{gameObject.name} took damage.");
+
         }
 
         protected override void OnDeath()
         {
-            Debug.Log($"{gameObject.name} died.");
+
         }
     }
 }
