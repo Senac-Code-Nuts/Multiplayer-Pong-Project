@@ -29,7 +29,7 @@ namespace Pong.Gameplay.Player
         
         private void Update()
         {
-            if(Input.GetKeyDown(KeyCode.F1) || _useDebug)
+            if(Input.GetKeyDown(KeyCode.F1) && _useDebug)
             {
                 LevelUp();
             }
