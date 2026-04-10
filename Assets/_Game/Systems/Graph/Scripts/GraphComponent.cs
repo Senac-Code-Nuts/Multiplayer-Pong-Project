@@ -100,7 +100,7 @@ namespace Pong.Systems.Graph
                 {
                     if(connection.nodeA != node) continue;
 
-                    float randomWeight = Random.Range(minWeight, maxWeight);
+                    float randomWeight = Random.Range(_minWeight, _maxWeight);
                     connection.weight = randomWeight;
                 }
             }
