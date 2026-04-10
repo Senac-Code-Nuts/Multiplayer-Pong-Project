@@ -22,11 +22,13 @@ namespace Pong.Gameplay.Player
         private void OnEnable()
         {
             _inputReader.MoveEvent += HandleMovement;
+            _inputReader.PauseEvent += OpenPauseMenu;
         }
 
         private void OnDisable()
         {
             _inputReader.MoveEvent -= HandleMovement;
+            _inputReader.PauseEvent -= OpenPauseMenu;
         }
         private void HandleMovement(Vector2 movement)
         {
@@ -45,6 +47,9 @@ namespace Pong.Gameplay.Player
 
             transform.Translate(movement * _speed * Time.fixedDeltaTime);
         }
+        private void OpenPauseMenu()
+        {
+            PauseMenuManager.Instance.TogglePauseMenu();
+        }
     }
-
 }
