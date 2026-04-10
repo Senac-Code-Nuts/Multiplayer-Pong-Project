@@ -138,9 +138,18 @@ MonoBehaviour:
   _isVulnerable: 1
   _isStunned: 0
   _isDead: 0
+  _stunVfxPrefab: {fileID: 0}
+  _stunOffset: {x: 0, y: 1.8, z: 0}
   _inputReader: {fileID: 2450279282847157629}
   _abilityCooldown: 2.5
+  _level: 1
+  _hasShield: 0
+  _activeShieldVisual: {fileID: 0}
+  _shieldOffset: {x: 0, y: 1.8, z: 0}
+  _shieldVisualScale: {x: 0, y: 0, z: 0}
   _projectilePrefab: {fileID: 8037289407857997159, guid: 39f152a65843ca641b3786badedb2401, type: 3}
   _projectileSpawnPoint: {fileID: 3056947927799754466}
-  _bossPullDistance: 10
+  _spreadAngle: 30
+  _bossPullDistance: 3
   _stopDistanceFromPlayer: 1.5
+  _useDebug: 0
