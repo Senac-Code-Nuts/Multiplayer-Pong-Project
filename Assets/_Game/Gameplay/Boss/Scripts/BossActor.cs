@@ -1,0 +1,25 @@
+using UnityEngine;
+using Pong.Gameplay.Actors;
+
+namespace Pong.Gameplay.Boss
+{
+    public abstract class BossActor : Actor
+    {
+        [Header("Boss")]
+        [SerializeField, Range(0, 3)] protected int _phase;
+
+        public int Phase => _phase;
+
+        public abstract void ExecuteAttack();
+
+        protected override void OnDamageTaken()
+        {
+            Debug.Log($"{gameObject.name} boss took damage.");
+        }
+
+        protected override void OnDeath()
+        {
+            Debug.Log($"{gameObject.name} boss died.");
+        }
+    }
+}
