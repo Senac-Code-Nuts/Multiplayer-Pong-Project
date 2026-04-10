@@ -1,7 +1,6 @@
 using System.Collections;
-using TMPro;
+using System.Collections.Generic;
 using UnityEngine;
-using Pong.Gameplay.Player.Lust;
 
 namespace Pong.Gameplay.Player
 {
@@ -9,31 +8,25 @@ namespace Pong.Gameplay.Player
     {
         [Header("Ability")]
         [SerializeField] private PlayerActor[] _players;
-        [SerializeField] private int _selectedTargetIndex = 0;
         [SerializeField] private bool _isSelectingTarget = false;
 
         [Header("Shield Settings")]
         [SerializeField] private GameObject _shieldVisualPrefab;
         private int _shieldCount = 1;
 
-        [Header("Selection")]
-        [SerializeField, Range(0.05f, 1f)] private float _selectionInputCooldown = 0.2f;
-        [SerializeField] private TMP_Text _selectionText;
+        [Header("Selection Markers")]
+        [SerializeField] private GameObject _selectionMarkerPrefab;
+        [SerializeField, Range(0.1f, 2f)] private float _rotationInterval = 0.5f;
+        [SerializeField] private Vector3 _markerOffset = new Vector3(0f, 2f, 0f);
 
         [Header("Debug")]
         [SerializeField] private bool _useDebug;
 
-        private bool _canChangeSelection = true;
+        private readonly List<GameObject> _activeMarkers = new List<GameObject>();
+        private readonly List<int> _currentMarkedIndexes = new List<int>();
 
-        protected override void Awake()
-        {
-            base.Awake();
-
-            if (_selectionText != null)
-            {
-                _selectionText.gameObject.SetActive(false);
-            }
-        }
+        private Coroutine _selectionRoutine;
+        private int _currentStartIndex = 0;
 
         protected override void LevelUp()
         {
@@ -48,35 +41,9 @@ namespace Pong.Gameplay.Player
 
         private void Update()
         {
-            if(Input.GetKeyDown(KeyCode.F1) && _useDebug)
+            if (Input.GetKeyDown(KeyCode.F1) && _useDebug)
             {
                 LevelUp();
-            }
-
-        }
-
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-
-            if (_inputReader != null)
-            {
-                _inputReader.MoveEvent += HandleSelectionMove;
-            }
-
-            if (_selectionText != null)
-            {
-                _selectionText.gameObject.SetActive(false);
-            }
-        }
-
-        protected override void OnDisable()
-        {
-            base.OnDisable();
-
-            if (_inputReader != null)
-            {
-                _inputReader.MoveEvent -= HandleSelectionMove;
             }
         }
 
@@ -93,120 +60,120 @@ namespace Pong.Gameplay.Player
 
         private void EnterSelectionMode()
         {
-            if (_players == null || _players.Length == 0)
-            {
-                return;
-            }
+            if (_players == null || _players.Length == 0) return;
+            if (_selectionMarkerPrefab == null) return;
 
             _isSelectingTarget = true;
-            _canChangeSelection = true;
+            _currentStartIndex = 0;
 
-            if (_selectedTargetIndex < 0 || _selectedTargetIndex >= _players.Length)
-            {
-                _selectedTargetIndex = 0;
-            }
+            CreateMarkers();
+            UpdateMarkerTargets();
 
-            UpdateSelectionVisual();
+            _selectionRoutine = StartCoroutine(SelectionRotationRoutine());
         }
 
         private void ExitSelectionMode()
         {
             _isSelectingTarget = false;
-            UpdateSelectionVisual();
 
-        }
-
-        private void HandleSelectionMove(Vector2 input)
-        {
-            if (!_isSelectingTarget || !_canChangeSelection) return;
-
-            if (input.x <= -0.5f)
+            if (_selectionRoutine != null)
             {
-                SelectLeftTarget();
-                StartCoroutine(SelectionInputCooldownRoutine());
-            }
-            else if (input.x >= 0.5f)
-            {
-                SelectRightTarget();
-                StartCoroutine(SelectionInputCooldownRoutine());
-            }
-        }
-
-        private IEnumerator SelectionInputCooldownRoutine()
-        {
-            _canChangeSelection = false;
-            yield return new WaitForSeconds(_selectionInputCooldown);
-            _canChangeSelection = true;
-        }
-
-        private void SelectLeftTarget()
-        {
-            _selectedTargetIndex--;
-
-            if (_selectedTargetIndex < 0)
-            {
-                _selectedTargetIndex = _players.Length - 1;
+                StopCoroutine(_selectionRoutine);
+                _selectionRoutine = null;
             }
 
-            UpdateSelectionVisual();
+            DestroyMarkers();
+            _currentMarkedIndexes.Clear();
         }
 
-        private void SelectRightTarget()
+        private IEnumerator SelectionRotationRoutine()
         {
-            _selectedTargetIndex++;
-
-            if (_selectedTargetIndex >= _players.Length)
+            while (_isSelectingTarget)
             {
-                _selectedTargetIndex = 0;
+                yield return new WaitForSeconds(_rotationInterval);
+
+                _currentStartIndex++;
+                if (_currentStartIndex >= _players.Length)
+                {
+                    _currentStartIndex = 0;
+                }
+
+                UpdateMarkerTargets();
+            }
+        }
+
+        private void CreateMarkers()
+        {
+            DestroyMarkers();
+
+            int markerCount = Mathf.Clamp(_shieldCount, 1, _players.Length);
+
+            for (int i = 0; i < markerCount; i++)
+            {
+                GameObject marker = Instantiate(
+                    _selectionMarkerPrefab,
+                    Vector3.zero,
+                    Quaternion.identity
+                );
+
+                _activeMarkers.Add(marker);
+            }
+        }
+
+        private void DestroyMarkers()
+        {
+            for (int i = 0; i < _activeMarkers.Count; i++)
+            {
+                if (_activeMarkers[i] != null)
+                {
+                    Destroy(_activeMarkers[i]);
+                }
             }
 
-            UpdateSelectionVisual();
+            _activeMarkers.Clear();
+        }
+
+        private void UpdateMarkerTargets()
+        {
+            _currentMarkedIndexes.Clear();
+
+            int markerCount = Mathf.Clamp(_shieldCount, 1, _players.Length);
+
+            for (int i = 0; i < markerCount; i++)
+            {
+                int playerIndex = (_currentStartIndex + i) % _players.Length;
+                _currentMarkedIndexes.Add(playerIndex);
+
+                PlayerActor target = _players[playerIndex];
+                GameObject marker = _activeMarkers[i];
+
+                if (target == null || marker == null) continue;
+
+                marker.transform.position = target.transform.position + _markerOffset;
+            }
         }
 
         private void ConfirmShield()
         {
             if (_players == null || _players.Length == 0) return;
-            int shieldsToAplly = _shieldCount;
+            if (_currentMarkedIndexes.Count == 0) return;
 
-            for(int i = 0; i < shieldsToAplly; i++)
+            for (int i = 0; i < _currentMarkedIndexes.Count; i++)
             {
-                int index = (_selectedTargetIndex + i) % _players.Length;
+                int index = _currentMarkedIndexes[i];
                 PlayerActor target = _players[index];
+
+                if (target == null) continue;
 
                 target.ReceiveShield(_shieldVisualPrefab);
             }
-            
+
             ExitSelectionMode();
             StartCoroutine(AbilityCooldownRoutine());
         }
 
-        private void UpdateSelectionVisual()
-        {
-            if (_selectionText == null) return;
-
-            _selectionText.gameObject.SetActive(_isSelectingTarget);
-
-            if (!_isSelectingTarget || _players == null || _players.Length == 0) return;
-
-            _selectionText.text = GetTargetLabel(_players[_selectedTargetIndex]);
-        }
-
-        private string GetTargetLabel(PlayerActor targetPlayer)
-        {
-            if (targetPlayer == null) return "NONE";
-
-            if (targetPlayer == this) return "ME";
-            if (targetPlayer is LustPlayer) return "LUST";
-            if (targetPlayer is ViolencePlayer) return "VIOLENCE";
-            if (targetPlayer is FraudPlayer) return "FRAUD";
-            if (targetPlayer is SlothPlayer) return "ME";
-
-            return targetPlayer.gameObject.name.ToUpper();
-        }
-
         protected override void OnDamageTaken()
         {
-            
         }
 
         protected override void OnDeath()
