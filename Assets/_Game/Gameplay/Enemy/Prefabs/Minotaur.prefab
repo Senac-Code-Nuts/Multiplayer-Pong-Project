@@ -129,3 +129,5 @@ MonoBehaviour:
   _isDead: 0
   _isReadyToAttack: 0
   _preAttackTime: 1
+  _relic: {fileID: 0}
+  _renderer: {fileID: 5757859302629954293}

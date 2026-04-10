@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using Pong.Gameplay.Player;
 
 namespace Pong.Gameplay.Enemy
 {
@@ -8,26 +9,43 @@ namespace Pong.Gameplay.Enemy
         [Header("Specific Attributes")]
         [SerializeField] private float _preAttackTime;
         [SerializeField] private float _atackCooldown;
+        [SerializeField] private float _atackRadius;
+        
+        [Header("Components")]
+        [SerializeField] private Renderer _renderer;
 
         private void OnEnable()
         {
-            StartCoroutine(ActCoroutine());
-        }
-
-        private void OnDisable()
-        {
-            StopAllCoroutines();
+            StartCoroutine(AtackCoroutine());
         }
 
         public override void ExecuteAttack()
         {
-            Debug.Log($"{gameObject.name} executed circular attack.");
+            Collider[] colididos = Physics.OverlapSphere(transform.position, _atackRadius);
+            _renderer.material.color = Color.grey;
+
+            for (int i = 0; colididos.Length > 0; i++)
+            {
+                if (colididos[i].TryGetComponent<PlayerController>(out PlayerController player))
+                {
+
+                    // causar dano aos jogadores
+
+                }
+            }
         }
-        
+
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = new Vector4(1,0,0,0.5f);
+            Gizmos.DrawSphere(transform.position, _atackRadius);
+        }
+
         private void ExecutePreAttack()
         {
 
             Debug.Log($"{gameObject.name} executou o pré ataque");
+            _renderer.material.color = Color.yellow;
 
         }
 
@@ -38,21 +56,13 @@ namespace Pong.Gameplay.Enemy
 
         }
 
-        private IEnumerator ActCoroutine()
+        private IEnumerator AtackCoroutine()
         {
-
-            ExecuteMove();
-
             ExecutePreAttack();
 
             yield return new WaitForSecondsRealtime(_preAttackTime);
 
             ExecuteAttack();
-
-            yield return new WaitForSecondsRealtime(_atackCooldown);
-
-            StopAllCoroutines();
-            StartCoroutine(ActCoroutine());
-        } 
+        }
     }
 }

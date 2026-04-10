@@ -1,7 +1,8 @@
 using UnityEngine;
 using Pong.Gameplay.Actors;
+using Pong.Gameplay.Enemy;
 
-namespace Pong.Gameplay.Relic
+namespace Pong.Gameplay.Relics
 {
     [RequireComponent(typeof(Rigidbody))]
     public class Relic : MonoBehaviour
@@ -40,9 +41,30 @@ namespace Pong.Gameplay.Relic
 
         private void OnCollisionEnter(Collision collision)
         {
-            Reflect(collision);
+
+            if (collision.gameObject.TryGetComponent<MinotaurEnemy>(out var m))
+            {
+                if (m.IsReadyToAttack)
+                {
+                    TryApplyDamage(collision);
+                    return;
+                }
+            }
+
+            if (collision.gameObject.TryGetComponent<CondemnedSoulEnemy>(out CondemnedSoulEnemy c))
+            {
+                if (c.IsAttacking)
+                {
+                    TryApplyDamage(collision);
+                    return;
+                }
+
+            }
 
             TryApplyDamage(collision);
+
+            Reflect(collision);
+
         }
 
         private void Reflect(Collision collision)
@@ -58,6 +80,13 @@ namespace Pong.Gameplay.Relic
             {
                 damageable.ApplyDamage(_damage);
             }
+        }
+
+        public void InvertDirection()
+        {
+         
+
+
         }
     }
 }

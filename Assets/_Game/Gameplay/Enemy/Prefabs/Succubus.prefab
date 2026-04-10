@@ -128,4 +128,6 @@ MonoBehaviour:
   _isStunned: 0
   _isDead: 0
   _preAttackTime: 1
-  _moveSpeed: 3
+  _atackCooldown: 5
+  _atackRadius: 4
+  _renderer: {fileID: 7448004307726693196}

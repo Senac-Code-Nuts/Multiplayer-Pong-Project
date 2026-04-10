@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using Pong.Gameplay.Relics;
 
 namespace Pong.Gameplay.Enemy
 {
@@ -9,14 +10,26 @@ namespace Pong.Gameplay.Enemy
         [SerializeField] private bool _isReadyToAttack;
         [SerializeField] private float _preAttackTime;
 
+        [Header("Components")]
+        [SerializeField] private Relic _relic;
+        [SerializeField] private Renderer _renderer;
+
+        private void OnEnable()
+        {
+            StartCoroutine(PreAttackCoroutine());
+        }
+
+        public bool IsReadyToAttack => _isReadyToAttack;       
         public override void ApplyDamage(int damage)
         {
             base.ApplyDamage(damage);
 
-            if (_isReadyToAttack) {
-
+            if (_isReadyToAttack)
+            {
                 ExecuteAttack();
                 _isVulnerable = true;
+                _isReadyToAttack = false;
+                _renderer.material.color = Color.gray;
             }
         }
 
@@ -33,11 +46,12 @@ namespace Pong.Gameplay.Enemy
 
             _isVulnerable = false;
             _isReadyToAttack = true;
+            _renderer.material.color = Color.yellow;
         }
 
         public override void ExecuteAttack()
         {
-            Debug.Log($"{gameObject.name} reflected the relic.");
+            _relic.InvertDirection();
         }
     }
 }
