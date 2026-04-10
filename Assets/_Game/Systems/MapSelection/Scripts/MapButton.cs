@@ -9,16 +9,17 @@ namespace Pong.Systems.MapSelection
         [Header("Proxima Cena")]
         [Tooltip("Coloque o nome CORRETO da cena que será chamada")]
         [SerializeField] private string _scene;
+        [Tooltip("Para ordenar qual será a fase de forma sequencial")]
         [SerializeField] private int _numberScene;
 
-        [Header("Componentes")]
-        [SerializeField] private Button _Button;
-        [SerializeField] private Image _ButtonImage;
+        [Header("Componentes da UI")]
+        [SerializeField] private Button _button;
+        [SerializeField] private Image _buttonImage;
 
         [Header("Cores")]
         [SerializeField] private Color _colorActualphase = Color.white;
         [SerializeField] private Color _colorUnlockedPhase = Color.green;
-        [SerializeField] private Color _colorlockedPhase = Color.black;
+        [SerializeField] private Color _colorLockedPhase = Color.black;
         /// <summary> 
         /// (PlayerPrefs)
         /// GetInt vai retornar um valor pra mim da etiqueta
@@ -29,32 +30,31 @@ namespace Pong.Systems.MapSelection
         {
             ButtonSetting();    
         }
-        public void ButtonSetting()
+        private void ButtonSetting()
         {
-            int Phase = PlayerPrefs.GetInt("NewPhase", 0);
-            if(_numberScene == Phase)
+            int _phase = PlayerPrefs.GetInt("NewPhase", 0);
+            if(_numberScene == _phase)
             {
-                activeButton(false, _colorActualphase);
+                ActiveButton(false, _colorActualphase);
             }
-            else if(_numberScene == Phase + 1)
+            else if(_numberScene == _phase + 1)
             {
-                activeButton(true, _colorUnlockedPhase);
+                ActiveButton(true, _colorUnlockedPhase);
             }
             else
             {
-                activeButton(false, _colorlockedPhase);
+                ActiveButton(false, _colorLockedPhase);
             }
-
         }
-        private void activeButton(bool Isinteractable, Color color)
+        private void ActiveButton(bool interactable, Color color)
         {
-            if (_Button != null) 
+            if (_button != null) 
             {
-                _Button.interactable = Isinteractable;
+                _button.interactable = interactable;
             }
-            if (_ButtonImage != null) 
+            if (_buttonImage != null) 
             {
-                _ButtonImage.color = color;
+                _buttonImage.color = color;
             }
         }
         
@@ -72,7 +72,7 @@ namespace Pong.Systems.MapSelection
             }
         }
 
-        public void DeleteAllScenes()
+        public void DeleteAllSaves()
         {
             if (!string.IsNullOrEmpty(_scene))
             {

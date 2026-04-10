@@ -6,7 +6,7 @@ namespace Pong.Systems.MapSelection
     public class MapSelectionInput : MonoBehaviour
     {
         [SerializeField] private InputActionReference _mapInput;
-        [SerializeField] private CanvasGroup _MapSelectionScreen;
+        [SerializeField] private CanvasGroup _mapSelectionScreen;
         private bool _isMapOpen = false;
         private void OnEnable()
         {
@@ -27,11 +27,11 @@ namespace Pong.Systems.MapSelection
             _isMapOpen = !_isMapOpen;
             if (_isMapOpen)
             {
-                Uimanager.Instance.Show(_MapSelectionScreen);
+                Uimanager.Instance.Show(_mapSelectionScreen);
             }
             else
             {
-                Uimanager.Instance.Hide(_MapSelectionScreen);
+                Uimanager.Instance.Hide(_mapSelectionScreen);
             }
         }
     }
