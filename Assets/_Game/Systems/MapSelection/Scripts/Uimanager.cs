@@ -4,19 +4,16 @@ namespace Pong.Systems.MapSelection
 {
     public class Uimanager : MonoBehaviour
     {
-        #region Singleton
-        public static Uimanager Instance {  get; private set; }
-        private static Uimanager _instance;
-        void Awake() 
+        public static Uimanager Instance { get; private set; }
+        private void Awake() 
         {
-            if(_instance != null && Instance != this)
+            if(Instance != null && Instance != this)
             {
                 Destroy(gameObject);
                 return;
             }
             Instance = this;
         }
-        #endregion
 
         public void Show(CanvasGroup canvasGroup)
         {
