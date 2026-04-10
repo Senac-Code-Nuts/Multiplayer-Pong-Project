@@ -6,17 +6,17 @@ namespace Pong.Systems.MapSelection
 {
     public class MapButton : MonoBehaviour
     {
-        [Header("Proxima Cena")]
+        [Header("Next Scenes")]
         [Tooltip("Coloque o nome CORRETO da cena que será chamada")]
         [SerializeField] private string _scene;
         [Tooltip("Para ordenar qual será a fase de forma sequencial")]
         [SerializeField] private int _numberScene;
 
-        [Header("Componentes da UI")]
+        [Header("UI Components")]
         [SerializeField] private Button _button;
         [SerializeField] private Image _buttonImage;
 
-        [Header("Cores")]
+        [Header("Colors")]
         [SerializeField] private Color _colorActualphase = Color.white;
         [SerializeField] private Color _colorUnlockedPhase = Color.green;
         [SerializeField] private Color _colorLockedPhase = Color.black;
