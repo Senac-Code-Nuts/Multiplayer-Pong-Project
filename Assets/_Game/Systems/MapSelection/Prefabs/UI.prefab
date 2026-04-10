@@ -36,7 +36,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -45}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -350}
+  m_AnchoredPosition: {x: -400, y: 0}
   m_SizeDelta: {x: 130, y: 130}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7522717710078257523
@@ -146,7 +146,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _scene: BossRoom_1
-  _button: {fileID: 0}
+  _numberScene: 2
+  _Button: {fileID: 2980300704618977626}
+  _ButtonImage: {fileID: 1831889420783787865}
+  _colorActualphase: {r: 0.90943396, g: 0.80819505, b: 0.80819505, a: 1}
+  _colorUnlockedPhase: {r: 0, g: 1, b: 0, a: 1}
+  _colorlockedPhase: {r: 0, g: 0, b: 0, a: 1}
 --- !u!1 &1526761659474921065
 GameObject:
   m_ObjectHideFlags: 0
@@ -159,6 +164,7 @@ GameObject:
   - component: {fileID: 8771386150265469803}
   - component: {fileID: 311047052517146800}
   - component: {fileID: 6443556348694259193}
+  - component: {fileID: 4648582852686690550}
   m_Layer: 5
   m_Name: CentralRoomButton
   m_TagString: Untagged
@@ -182,7 +188,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -45}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 50}
+  m_AnchoredPosition: {x: -800, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8771386150265469803
@@ -267,7 +273,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 4648582852686690550}
         m_TargetAssemblyTypeName: Pong.Systems.MapSelection.MapButton, Pong.Systems
         m_MethodName: ToNextScene
         m_Mode: 1
@@ -279,6 +285,25 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &4648582852686690550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1526761659474921065}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a1d70930645bdb40959f733cb94171e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _scene: 
+  _numberScene: 0
+  _Button: {fileID: 6443556348694259193}
+  _ButtonImage: {fileID: 311047052517146800}
+  _colorActualphase: {r: 0.90943396, g: 0.80819505, b: 0.80819505, a: 1}
+  _colorUnlockedPhase: {r: 0, g: 1, b: 0, a: 1}
+  _colorlockedPhase: {r: 0, g: 0, b: 0, a: 1}
 --- !u!1 &2523637143985204274
 GameObject:
   m_ObjectHideFlags: 0
@@ -417,7 +442,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -45}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -950}
+  m_AnchoredPosition: {x: 200, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3104520404820092939
@@ -502,7 +527,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 9071738073281154436}
+      - m_Target: {fileID: 4162385568055838153}
         m_TargetAssemblyTypeName: Pong.Systems.MapSelection.MapButton, Pong.Systems
         m_MethodName: ToNextScene
         m_Mode: 1
@@ -527,7 +552,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _scene: EnemyRoom_2
-  _button: {fileID: 0}
+  _numberScene: 5
+  _Button: {fileID: 269596753209945117}
+  _ButtonImage: {fileID: 3592446208493127656}
+  _colorActualphase: {r: 0.90943396, g: 0.80819505, b: 0.80819505, a: 1}
+  _colorUnlockedPhase: {r: 0, g: 1, b: 0, a: 1}
+  _colorlockedPhase: {r: 0, g: 0, b: 0, a: 1}
 --- !u!1 &4558639685807669395
 GameObject:
   m_ObjectHideFlags: 0
@@ -643,7 +673,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -45}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -150}
+  m_AnchoredPosition: {x: -600, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4838675287487259086
@@ -728,7 +758,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 9071738073281154436}
+      - m_Target: {fileID: 6811507544636082413}
         m_TargetAssemblyTypeName: Pong.Systems.MapSelection.MapButton, Pong.Systems
         m_MethodName: ToNextScene
         m_Mode: 1
@@ -753,7 +783,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _scene: EnemyRoom_1
-  _button: {fileID: 0}
+  _numberScene: 1
+  _Button: {fileID: 5827978411822273919}
+  _ButtonImage: {fileID: 4812626811246299339}
+  _colorActualphase: {r: 0.90943396, g: 0.80819505, b: 0.80819505, a: 1}
+  _colorUnlockedPhase: {r: 0, g: 1, b: 0, a: 1}
+  _colorlockedPhase: {r: 0, g: 0, b: 0, a: 1}
 --- !u!1 &6782210837289944778
 GameObject:
   m_ObjectHideFlags: 0
@@ -790,7 +825,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -45}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -1150}
+  m_AnchoredPosition: {x: 400, y: 0}
   m_SizeDelta: {x: 130, y: 130}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8372189523660191962
@@ -874,7 +909,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3793603030924811513}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5460258359820798605}
+        m_TargetAssemblyTypeName: Pong.Systems.MapSelection.MapButton, Pong.Systems
+        m_MethodName: ToNextScene
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &5460258359820798605
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -888,7 +935,164 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _scene: BossRoom_3
-  _button: {fileID: 0}
+  _numberScene: 6
+  _Button: {fileID: 9100204467034282308}
+  _ButtonImage: {fileID: 3793603030924811513}
+  _colorActualphase: {r: 0.90943396, g: 0.80819505, b: 0.80819505, a: 1}
+  _colorUnlockedPhase: {r: 0, g: 1, b: 0, a: 1}
+  _colorlockedPhase: {r: 0, g: 0, b: 0, a: 1}
+--- !u!1 &7350523761369230354
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6128211730282463558}
+  - component: {fileID: 8060103344998614812}
+  - component: {fileID: 3482649717520300106}
+  - component: {fileID: 8065444779814416845}
+  - component: {fileID: 7369036687050869880}
+  m_Layer: 5
+  m_Name: delette
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &6128211730282463558
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7350523761369230354}
+  m_LocalRotation: {x: -0, y: -0, z: -0.38268343, w: 0.92387956}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 552866237385804113}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -45}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 600, y: 0}
+  m_SizeDelta: {x: 130, y: 130}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &8060103344998614812
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7350523761369230354}
+  m_CullTransparentMesh: 1
+--- !u!114 &3482649717520300106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7350523761369230354}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.9169811, g: 0.13668199, b: 0.13668199, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!114 &8065444779814416845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7350523761369230354}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 0.17735851, g: 0.17100036, b: 0.17100036, a: 1}
+    m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 3482649717520300106}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7369036687050869880}
+        m_TargetAssemblyTypeName: Pong.Systems.MapSelection.MapButton, Pong.Systems
+        m_MethodName: DeleteAllScenes
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &7369036687050869880
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7350523761369230354}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a1d70930645bdb40959f733cb94171e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _scene: StartRoom
+  _numberScene: 7
+  _Button: {fileID: 8065444779814416845}
+  _ButtonImage: {fileID: 3482649717520300106}
+  _colorActualphase: {r: 0.90943396, g: 0.80819505, b: 0.80819505, a: 1}
+  _colorUnlockedPhase: {r: 0, g: 1, b: 0, a: 1}
+  _colorlockedPhase: {r: 0, g: 0, b: 0, a: 1}
 --- !u!1 &8459840468589571222
 GameObject:
   m_ObjectHideFlags: 0
@@ -925,7 +1129,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -45}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -750}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 130, y: 130}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6470333585280162926
@@ -1010,7 +1214,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 9071738073281154436}
+      - m_Target: {fileID: 8761119335328890219}
         m_TargetAssemblyTypeName: Pong.Systems.MapSelection.MapButton, Pong.Systems
         m_MethodName: ToNextScene
         m_Mode: 1
@@ -1035,7 +1239,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _scene: BossRoom_2
-  _button: {fileID: 0}
+  _numberScene: 4
+  _Button: {fileID: 187112131059448172}
+  _ButtonImage: {fileID: 61361622268194034}
+  _colorActualphase: {r: 0.90943396, g: 0.80819505, b: 0.80819505, a: 1}
+  _colorUnlockedPhase: {r: 0, g: 1, b: 0, a: 1}
+  _colorlockedPhase: {r: 0, g: 0, b: 0, a: 1}
 --- !u!1 &8894652102882126282
 GameObject:
   m_ObjectHideFlags: 0
@@ -1072,7 +1281,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -550}
+  m_AnchoredPosition: {x: -200, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7716084882133256384
@@ -1157,7 +1366,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 9071738073281154436}
+      - m_Target: {fileID: 2109632076144210519}
         m_TargetAssemblyTypeName: Pong.Systems.MapSelection.MapButton, Pong.Systems
         m_MethodName: ToNextScene
         m_Mode: 1
@@ -1182,7 +1391,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _scene: PowerUpRoom_1
-  _button: {fileID: 0}
+  _numberScene: 3
+  _Button: {fileID: 568468123576501259}
+  _ButtonImage: {fileID: 1427866446400538592}
+  _colorActualphase: {r: 0.90943396, g: 0.80819505, b: 0.80819505, a: 1}
+  _colorUnlockedPhase: {r: 0, g: 1, b: 0, a: 1}
+  _colorlockedPhase: {r: 0, g: 0, b: 0, a: 1}
 --- !u!1 &8962314517605174414
 GameObject:
   m_ObjectHideFlags: 0
@@ -1193,7 +1407,6 @@ GameObject:
   m_Component:
   - component: {fileID: 552866237385804113}
   - component: {fileID: 2261994724583525865}
-  - component: {fileID: 5491707876611921249}
   - component: {fileID: 7602572402209980725}
   m_Layer: 5
   m_Name: "Sele\xE7\xE3oDeMapa"
@@ -1221,6 +1434,7 @@ RectTransform:
   - {fileID: 8032138440810346284}
   - {fileID: 4898992877776531937}
   - {fileID: 9069101734966738195}
+  - {fileID: 6128211730282463558}
   m_Father: {fileID: 7494274736189093359}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1236,36 +1450,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8962314517605174414}
   m_CullTransparentMesh: 1
---- !u!114 &5491707876611921249
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8962314517605174414}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!225 &7602572402209980725
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -1289,7 +1473,6 @@ GameObject:
   - component: {fileID: 832824285615842720}
   - component: {fileID: 7041906364378804557}
   - component: {fileID: 239531083204570860}
-  - component: {fileID: 1666499438419039460}
   m_Layer: 0
   m_Name: UI
   m_TagString: Untagged
@@ -1338,17 +1521,5 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 92473b75b1a83bb4b954ae9847ceed58, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1666499438419039460
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9098605191757957439}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ddadb75ffd0bb243b5f43bbebc1f947, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

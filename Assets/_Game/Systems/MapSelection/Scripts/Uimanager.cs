@@ -6,7 +6,7 @@ namespace Pong.Systems.MapSelection
     {
         #region Singleton
         private static Uimanager _instance;
-        void Start() 
+        void Awake() 
         {
             if(_instance == null)
             {
