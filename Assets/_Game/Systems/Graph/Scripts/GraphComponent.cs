@@ -13,8 +13,8 @@ namespace Pong.Systems.Graph
 
         [Header("Weight Color")]
         [SerializeField] private Gradient _weightGradient;
-        [SerializeField] private float minWeight;
-        [SerializeField] private float maxWeight;
+        [SerializeField] private float _minWeight;
+        [SerializeField] private float _maxWeight;
 
         public float GetDynamicCost(GraphNode from, Connection conn)
         {
