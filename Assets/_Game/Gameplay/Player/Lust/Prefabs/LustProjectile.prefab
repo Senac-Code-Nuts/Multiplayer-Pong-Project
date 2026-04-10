@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3336654419205733801}
   - component: {fileID: 8037289407857997159}
   - component: {fileID: -8838223440848298406}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: LustProjectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -125,7 +125,6 @@ MonoBehaviour:
   _speed: 10
   _lifeTime: 2
   _pullDuration: 0.5
-  _stopDistanceFromPlayer: 1.5
 --- !u!54 &-8838223440848298406
 Rigidbody:
   m_ObjectHideFlags: 0

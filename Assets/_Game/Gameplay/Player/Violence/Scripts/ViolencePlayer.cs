@@ -10,13 +10,36 @@ namespace Pong.Gameplay.Player
         [SerializeField] private float _stunRadius = 5f;
         [SerializeField] private float _enemyStunDuration = 1f;
         [SerializeField] private float _bossStunDuration = 1f;
-        [SerializeField] private int _maxEnemyTargets = 1;
+
+        [Header("Debug")]
+        [SerializeField] private bool _useDebug;
+        private int _maxEnemyTargets = 1;
 
         protected override void UseAbility()
         {
-            Debug.Log($"Violence is using ability.");
             StunTargets();
             StartCoroutine(AbilityCooldownRoutine());
+        }
+
+        protected override void LevelUp()
+        {
+            base.LevelUp();
+            UpgradeEnemyTargets();
+        }
+        
+        private void Update()
+        {
+            if(Input.GetKeyDown(KeyCode.F1) && _useDebug)
+            {
+                LevelUp();
+            }
+
+        }
+
+
+        private void UpgradeEnemyTargets()
+        {
+            _maxEnemyTargets = _level;
         }
 
         private void StunTargets()
@@ -33,15 +56,12 @@ namespace Pong.Gameplay.Player
 
                     enemy.ApplyStun(_enemyStunDuration);
                     stunnedEnemies++;
-
-                    Debug.Log($"{gameObject.name} stunned enemy {hit.gameObject.name}");
                     continue;
                 }
 
                 if (hit.TryGetComponent(out BossActor boss))
                 {
                     boss.ApplyStun(_bossStunDuration);
-                    Debug.Log($"{gameObject.name} stunned boss {hit.gameObject.name}");
                 }
             }
         }
@@ -54,12 +74,12 @@ namespace Pong.Gameplay.Player
 
         protected override void OnDamageTaken()
         {
-            Debug.Log($"{gameObject.name} took damage.");
+
         }
 
         protected override void OnDeath()
         {
-            Debug.Log($"{gameObject.name} died.");
+
         }
     }
 }

@@ -14,10 +14,14 @@ namespace Pong.Gameplay.Player
 
         [Header("Shield Settings")]
         [SerializeField] private GameObject _shieldVisualPrefab;
+        private int _shieldCount = 1;
 
         [Header("Selection")]
         [SerializeField, Range(0.05f, 1f)] private float _selectionInputCooldown = 0.2f;
         [SerializeField] private TMP_Text _selectionText;
+
+        [Header("Debug")]
+        [SerializeField] private bool _useDebug;
 
         private bool _canChangeSelection = true;
 
@@ -29,6 +33,26 @@ namespace Pong.Gameplay.Player
             {
                 _selectionText.gameObject.SetActive(false);
             }
+        }
+
+        protected override void LevelUp()
+        {
+            base.LevelUp();
+            UpgradeShieldCount();
+        }
+
+        private void UpgradeShieldCount()
+        {
+            _shieldCount = _level;
+        }
+
+        private void Update()
+        {
+            if(Input.GetKeyDown(KeyCode.F1) && _useDebug)
+            {
+                LevelUp();
+            }
+
         }
 
         protected override void OnEnable()
@@ -71,7 +95,6 @@ namespace Pong.Gameplay.Player
         {
             if (_players == null || _players.Length == 0)
             {
-                Debug.LogWarning($"{gameObject.name} has no players assigned.");
                 return;
             }
 
@@ -84,9 +107,6 @@ namespace Pong.Gameplay.Player
             }
 
             UpdateSelectionVisual();
-
-            Debug.Log($"{gameObject.name} entered selection mode.");
-            Debug.Log($"{gameObject.name} current target: {_players[_selectedTargetIndex].gameObject.name}");
         }
 
         private void ExitSelectionMode()
@@ -94,7 +114,6 @@ namespace Pong.Gameplay.Player
             _isSelectingTarget = false;
             UpdateSelectionVisual();
 
-            Debug.Log($"{gameObject.name} exited selection mode.");
         }
 
         private void HandleSelectionMove(Vector2 input)
@@ -130,7 +149,6 @@ namespace Pong.Gameplay.Player
             }
 
             UpdateSelectionVisual();
-            Debug.Log($"{gameObject.name} selected {_players[_selectedTargetIndex].gameObject.name}");
         }
 
         private void SelectRightTarget()
@@ -143,18 +161,21 @@ namespace Pong.Gameplay.Player
             }
 
             UpdateSelectionVisual();
-            Debug.Log($"{gameObject.name} selected {_players[_selectedTargetIndex].gameObject.name}");
         }
 
         private void ConfirmShield()
         {
             if (_players == null || _players.Length == 0) return;
+            int shieldsToAplly = _shieldCount;
 
-            PlayerActor selectedPlayer = _players[_selectedTargetIndex];
-            selectedPlayer.ReceiveShield(_shieldVisualPrefab);
+            for(int i = 0; i < shieldsToAplly; i++)
+            {
+                int index = (_selectedTargetIndex + i) % _players.Length;
+                PlayerActor target = _players[index];
 
-            Debug.Log($"{gameObject.name} granted shield to {selectedPlayer.gameObject.name}");
-
+                target.ReceiveShield(_shieldVisualPrefab);
+            }
+            
             ExitSelectionMode();
             StartCoroutine(AbilityCooldownRoutine());
         }
@@ -185,12 +206,11 @@ namespace Pong.Gameplay.Player
 
         protected override void OnDamageTaken()
         {
-            Debug.Log($"{gameObject.name} took damage.");
+            
         }
 
         protected override void OnDeath()
         {
-            Debug.Log($"{gameObject.name} died.");
             ExitSelectionMode();
         }
     }
