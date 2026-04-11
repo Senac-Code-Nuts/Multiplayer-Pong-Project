@@ -11,6 +11,7 @@ namespace MenuManager
 
         public enum StateType
         {
+            Null,
             Padrao,
             config,
             credit

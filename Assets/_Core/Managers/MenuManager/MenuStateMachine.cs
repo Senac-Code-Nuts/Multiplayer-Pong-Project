@@ -20,7 +20,7 @@ namespace MenuManager
         /// <summary>
         /// inital state, can be set to null
         /// </summary>
-        [SerializeField] private MenuState _StarterState = null;
+        [SerializeField] private MenuState.StateType _StarterState = MenuState.StateType.Null;
 
         /// <summary>
         /// the machines current state
@@ -35,13 +35,16 @@ namespace MenuManager
 
         void Start()
         {
-            if (_StarterState == null)
+            if (_StarterState == MenuState.StateType.Null)
             {
                 _CurrenteState = null;
                 return;
             }
-            _CurrenteState = _StarterState;
-            _CurrenteState.LocalReady();
+            else
+            {
+                ChangeState(null,_StarterState);
+            }
+            
         }
 
 
@@ -62,12 +65,16 @@ namespace MenuManager
         }
         public void ChangeState(MenuState OldState, MenuState.StateType NewState)
         {
-            if (OldState != _CurrenteState || OldState == null)
+            if (OldState != _CurrenteState)
             {
                 return;
             }
+            
             var _NewState = _States.FirstOrDefault(o => o._StateType == NewState);
-            _CurrenteState.OnChange();
+            if (OldState != null)
+            {
+                _CurrenteState.OnChange();
+            }
 
             _NewState.LocalReady();
 
