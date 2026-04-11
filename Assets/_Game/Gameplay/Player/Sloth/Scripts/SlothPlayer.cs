@@ -31,6 +31,10 @@ namespace Pong.Gameplay.Player
         {
             base.Awake();
             UpgradeShieldCount();
+        }
+
+        private void Start()
+        {
             CachePlayers();
         }
 
@@ -56,12 +60,26 @@ namespace Pong.Gameplay.Player
         private void CachePlayers()
         {
             _players = FindObjectsByType<PlayerActor>(FindObjectsSortMode.None);
+
+            System.Array.Sort(_players, (a, b) => a.PlayerOrder.CompareTo(b.PlayerOrder));
+        }
+
+        private void SetStartIndexToSelf()
+        {
+            for (int i = 0; i < _players.Length; i++)
+            {
+                if (_players[i] == this)
+                {
+                    _currentStartIndex = i;
+                    return;
+                }
+            }
+
+            _currentStartIndex = 0;
         }
 
         protected override void UseAbility()
         {
-            Debug.Log("Sloth UseAbility called");
-
             if (!_isSelectingTarget)
             {
                 EnterSelectionMode();
@@ -75,7 +93,7 @@ namespace Pong.Gameplay.Player
 
         private void EnterSelectionMode()
         {
-            Debug.Log("EnterSelectionMode called");
+            CachePlayers();
 
             if (_players == null || _players.Length == 0) return;
 
@@ -90,7 +108,8 @@ namespace Pong.Gameplay.Player
 
             _isSelectingTarget = true;
             _canConfirmSelection = false;
-            _currentStartIndex = 0;
+
+            SetStartIndexToSelf();
 
             CreateMarkers();
             UpdateMarkerTargets();
@@ -148,8 +167,6 @@ namespace Pong.Gameplay.Player
                 GameObject marker = Instantiate(_selectionMarkerPrefab);
                 _activeMarkers.Add(marker);
             }
-
-            Debug.Log($"Created markers: {markerCount}");
         }
 
         private void DestroyMarkers()
@@ -187,8 +204,6 @@ namespace Pong.Gameplay.Player
                 marker.transform.SetParent(target.transform);
                 marker.transform.localPosition = _markerOffset;
                 marker.transform.localRotation = Quaternion.identity;
-
-                Debug.Log($"Marker {i} -> {target.gameObject.name}");
             }
         }
 
