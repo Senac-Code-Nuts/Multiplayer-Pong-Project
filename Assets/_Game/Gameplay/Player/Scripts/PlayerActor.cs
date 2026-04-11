@@ -7,6 +7,9 @@ namespace Pong.Gameplay.Player
 {
     public abstract class PlayerActor : Actor
     {
+        [Header("Player Info")]
+        [SerializeField] protected int _playerOrder = -1;
+
         [Header("Input")]
         [SerializeField] protected InputReader _inputReader;
 
@@ -25,6 +28,7 @@ namespace Pong.Gameplay.Player
 
         protected bool _canUseAbility = true;
 
+        public int PlayerOrder => _playerOrder;
         public bool HasShield => _hasShield;
 
         protected override void Awake()
@@ -32,10 +36,15 @@ namespace Pong.Gameplay.Player
             base.Awake();
         }
 
+        public void SetPlayerOrder(int playerOrder)
+        {
+            _playerOrder = playerOrder;
+        }
+
         protected virtual void LevelUp()
         {
             _level++;
-            _level = Mathf.Clamp( _level, 1, 4);
+            _level = Mathf.Clamp(_level, 1, 4);
         }
 
         protected virtual void OnEnable()

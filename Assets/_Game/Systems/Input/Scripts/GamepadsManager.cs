@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
+using Pong.Core;
 
 namespace Pong.Systems.Input
 {
@@ -11,6 +12,7 @@ namespace Pong.Systems.Input
         public Transform SpawnPoint;
         public PlayerSide PlayerSide;
     }
+
     public class GamepadsManager : MonoBehaviour
     {
         private const int MAX_PLAYERS = 4;
@@ -23,7 +25,6 @@ namespace Pong.Systems.Input
 
         [SerializeField, Range(2, 4)] private int _playerCount = DEFAULT_PLAYERS;
         [SerializeField] private bool _enableKeyboardForTesting = false;
-
 
         private int PlayerCount
         {
@@ -55,6 +56,7 @@ namespace Pong.Systems.Input
         {
             InputSystem.onDeviceChange -= OnDeviceChange;
         }
+
         private void OnValidate()
         {
             if (_playerCount != MIN_PLAYERS && _playerCount != MAX_PLAYERS)
@@ -74,7 +76,6 @@ namespace Pong.Systems.Input
             if (change == InputDeviceChange.Removed)
             {
                 int index = FindPlayerIndexForDevice(device);
-
                 if (index == -1) return;
 
                 if (_activePlayers[index]?.Instance != null)
@@ -87,6 +88,7 @@ namespace Pong.Systems.Input
                 Debug.Log($"{GAMEPAD_TAG} Device removed: {device.displayName} (Index: {index})");
             }
         }
+
         private void SpawnPlayerForDevice(InputDevice device)
         {
             if (IsDeviceAlreadyPaired(device)) return;
@@ -114,6 +116,8 @@ namespace Pong.Systems.Input
                 Side = slot.PlayerSide
             };
 
+            PlayerSpawnEvents.RaisePlayerSpawned(playerInput.gameObject, index);
+
             Debug.Log($"{GAMEPAD_TAG} Spawned player for device: {device.displayName} at index {index}");
         }
 
@@ -125,6 +129,7 @@ namespace Pong.Systems.Input
                 if (_activePlayers[i] != null && _activePlayers[i].Device == device)
                     return i;
             }
+
             return -1;
         }
 
@@ -134,8 +139,10 @@ namespace Pong.Systems.Input
             {
                 if (_activePlayers[i] == null) return i;
             }
+
             return -1;
         }
+
         private bool IsDeviceAlreadyPaired(InputDevice device)
         {
             return FindPlayerIndexForDevice(device) != -1;
