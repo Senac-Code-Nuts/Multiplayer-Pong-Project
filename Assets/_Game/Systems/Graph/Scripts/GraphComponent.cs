@@ -7,14 +7,16 @@ namespace Pong.Systems.Graph
     [ExecuteInEditMode]
     public class GraphComponent : MonoBehaviour
     {
-        [SerializeField] private List<GraphNode> _nodes;
+        [field : SerializeField] public List<GraphNode> Nodes {get; private set;}
 
         [SerializeField] private InfluenceSystem _influenceSystem;
 
         [Header("Weight Color")]
         [SerializeField] private Gradient _weightGradient;
+        [SerializeField] private float _minWeight;
+        [SerializeField] private float _maxWeight;
 
-        private float GetDynamicCost(GraphNode from, Connection conn)
+        public float GetDynamicCost(GraphNode from, Connection conn)
         {
            GraphNode toNode = conn.GetOther(from);
 
@@ -30,14 +32,14 @@ namespace Pong.Systems.Graph
 
         private void OnDrawGizmos()
         {
-            if (_nodes == null) return;
+           if (Nodes == null) return;
 
             float minCost = float.MaxValue;
             float maxCost = float.MinValue;
             List<(GraphNode, GraphNode, float)> debugEdges = new();
 
 
-            foreach (var node in _nodes)
+            foreach (var node in Nodes)
             {
                 if (node == null) continue;
                 Gizmos.color = Color.red;
@@ -87,6 +89,35 @@ namespace Pong.Systems.Graph
             float normalizedWeight = Mathf.InverseLerp(min, max, weight);
 
             return _weightGradient.Evaluate(normalizedWeight);
+        }
+
+        [ContextMenu("Randomize Weights")]
+        private void RandomizeWeights()
+        {
+            foreach(var node in Nodes)
+            {
+                foreach(var connection in node.connections)
+                {
+                    if(connection.nodeA != node) continue;
+
+                    float randomWeight = Random.Range(_minWeight, _maxWeight);
+                    connection.weight = randomWeight;
+                }
+            }
+        }
+
+        [ContextMenu("Reset Weights")]
+        private void ResetWeights()
+        {
+            foreach(var node in Nodes)
+            {
+                foreach(var connection in node.connections)
+                {
+                    if(connection.nodeA != node) continue;
+
+                    connection.weight = 1;
+                }
+            }
         }
     }
 }
