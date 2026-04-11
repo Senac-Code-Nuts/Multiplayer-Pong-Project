@@ -513,6 +513,37 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
+--- !u!1 &803048079
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 803048080}
+  m_Layer: 0
+  m_Name: Center
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &803048080
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 803048079}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -11.54}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1213230336
 GameObject:
   m_ObjectHideFlags: 0
@@ -527,9 +558,9 @@ GameObject:
   - component: {fileID: 1213230339}
   - component: {fileID: 1213230338}
   - component: {fileID: 1213230337}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bola
-  m_TagString: Untagged
+  m_TagString: Relic
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -946,7 +977,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4007164939212634296, guid: 6b45a76a6041f8140894b362c6412b2a, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3
+      value: -12.95
       objectReference: {fileID: 0}
     - target: {fileID: 4007164939212634296, guid: 6b45a76a6041f8140894b362c6412b2a, type: 3}
       propertyPath: m_LocalPosition.y
@@ -954,7 +985,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4007164939212634296, guid: 6b45a76a6041f8140894b362c6412b2a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -12
+      value: -17.95
       objectReference: {fileID: 0}
     - target: {fileID: 4007164939212634296, guid: 6b45a76a6041f8140894b362c6412b2a, type: 3}
       propertyPath: m_LocalRotation.w
@@ -988,8 +1019,29 @@ PrefabInstance:
       propertyPath: m_Name
       value: Cerberus
       objectReference: {fileID: 0}
+    - target: {fileID: 7527777348739844291, guid: 6b45a76a6041f8140894b362c6412b2a, type: 3}
+      propertyPath: _maxHealth
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527777348739844291, guid: 6b45a76a6041f8140894b362c6412b2a, type: 3}
+      propertyPath: _shotPrefab
+      value: 
+      objectReference: {fileID: 8875277083881041835, guid: 2a57d69f49391594fb64939f4173d105, type: 3}
+    - target: {fileID: 7527777348739844291, guid: 6b45a76a6041f8140894b362c6412b2a, type: 3}
+      propertyPath: _graphCenter
+      value: 
+      objectReference: {fileID: 803048080}
+    - target: {fileID: 7527777348739844291, guid: 6b45a76a6041f8140894b362c6412b2a, type: 3}
+      propertyPath: _projectileSpawnPoint
+      value: 
+      objectReference: {fileID: 1996041840}
+    - target: {fileID: 7527777348739844291, guid: 6b45a76a6041f8140894b362c6412b2a, type: 3}
+      propertyPath: _playerLayerMask.m_Bits
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 3984076243394914149, guid: 6b45a76a6041f8140894b362c6412b2a, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6b45a76a6041f8140894b362c6412b2a, type: 3}
@@ -1129,6 +1181,11 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
+--- !u!4 &1996041840 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4007164939212634296, guid: 6b45a76a6041f8140894b362c6412b2a, type: 3}
+  m_PrefabInstance: {fileID: 1774478028}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1141,3 +1198,4 @@ SceneRoots:
   - {fileID: 1952782828}
   - {fileID: 1213230342}
   - {fileID: 1774478028}
+  - {fileID: 803048080}
