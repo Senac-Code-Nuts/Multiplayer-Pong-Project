@@ -7,21 +7,26 @@ namespace Pong.Gameplay.Enemy.Succubus
     {
         private float _interval;
         private float _lastTriggerTime;
+        private bool _isWaiting = false; 
 
         public IntervalStrategy(float interval)
         {
             _interval = interval;
-            _lastTriggerTime = Time.time; 
         }
 
         public Node.Status Process()
         {
+            if (!_isWaiting)
+            {
+                _lastTriggerTime = Time.time;
+                _isWaiting = true;
+            }
+
             float elapsedTime = Time.time - _lastTriggerTime;
             
             if (elapsedTime >= _interval)
             {
-                _lastTriggerTime = Time.time;
-                Debug.Log($"Interval triggered! ({_interval}s)");
+                _isWaiting = false; 
                 return Node.Status.Success;
             }
 

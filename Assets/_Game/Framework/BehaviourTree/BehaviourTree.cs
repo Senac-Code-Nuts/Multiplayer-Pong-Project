@@ -6,12 +6,18 @@ namespace Pong.Framework.BehaviourTree
 
         public override Status Process()
         {
+            if (currentChild >= children.Count)
+            {
+                Reset();
+            }
+
             while (currentChild < children.Count)
-            { 
+            {
                 var status = children[currentChild].Process();
                 if (status != Status.Success) return status;
                 currentChild++;
             }
+            Reset();
             return Status.Success;
         }
     }

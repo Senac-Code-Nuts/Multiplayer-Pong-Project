@@ -8,18 +8,24 @@ namespace Pong.Framework.BehaviourTree
         {
             if (currentChild < children.Count)
             {
-                switch(children[currentChild].Process())
+                switch (children[currentChild].Process())
                 {
                     case Status.Running:
                         return Status.Running;
                     case Status.Failure:
                         Reset();
                         return Status.Failure;
-                    default:
+                    default: 
                         currentChild++;
-                        return currentChild == children.Count ? Status.Success : Status.Running;
+                        if (currentChild == children.Count)
+                        {
+                            Reset(); 
+                            return Status.Success;
+                        }
+                        return Status.Running;
                 }
             }
+
             Reset();
             return Status.Success;
         }
