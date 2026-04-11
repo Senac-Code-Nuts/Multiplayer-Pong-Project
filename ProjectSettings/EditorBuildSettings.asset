@@ -6,8 +6,29 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+    path: Assets/Scenes/Fisica-Basica.unity
+    guid: c5e0610a1debe1641899a93aa1bcb9d8
+  - enabled: 1
+    path: Assets/Scenes/Felipe/StartRoom.unity
+    guid: f7e6b9313ff290f4d98883ae2da9de9d
+  - enabled: 1
+    path: Assets/Scenes/Felipe/BossRoom_1.unity
+    guid: 50ebe99111e98b240b693629077546a0
+  - enabled: 1
+    path: Assets/Scenes/Felipe/BossRoom_2.unity
+    guid: a2a150337ac8434499cc1876bb78309a
+  - enabled: 1
+    path: Assets/Scenes/Felipe/BossRoom_3.unity
+    guid: 162313e85617ee44c914cfac488f6231
+  - enabled: 1
+    path: Assets/Scenes/Felipe/EnemyRoom_1.unity
+    guid: 83d38514bed66b74e804f35f96c4e8f6
+  - enabled: 1
+    path: Assets/Scenes/Felipe/EnemyRoom_2.unity
+    guid: f365874ca57e1b1458d820f4eeccd381
+  - enabled: 1
+    path: Assets/Scenes/Felipe/PowerUpRoom_1.unity
+    guid: 07284803873b84b40aa9836afa6bfea6
   m_configObjects:
-    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 5c2d47a0b8c069d4ba9fd0d178686d99, type: 3}
   m_UseUCBPForAssetBundles: 0
