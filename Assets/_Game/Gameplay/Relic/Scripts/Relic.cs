@@ -42,25 +42,6 @@ namespace Pong.Gameplay.Relics
         private void OnCollisionEnter(Collision collision)
         {
 
-            if (collision.gameObject.TryGetComponent<MinotaurEnemy>(out var m))
-            {
-                if (m.IsReadyToAttack)
-                {
-                    TryApplyDamage(collision);
-                    return;
-                }
-            }
-
-            if (collision.gameObject.TryGetComponent<CondemnedSoulEnemy>(out CondemnedSoulEnemy c))
-            {
-                if (c.IsAttacking)
-                {
-                    TryApplyDamage(collision);
-                    return;
-                }
-
-            }
-
             TryApplyDamage(collision);
 
             Reflect(collision);
