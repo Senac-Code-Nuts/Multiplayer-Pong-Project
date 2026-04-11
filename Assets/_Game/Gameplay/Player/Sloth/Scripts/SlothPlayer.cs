@@ -10,10 +10,6 @@ namespace Pong.Gameplay.Player
         [SerializeField] private PlayerActor[] _players;
         [SerializeField] private bool _isSelectingTarget = false;
 
-        [Header("Shield Settings")]
-        [SerializeField] private GameObject _shieldVisualPrefab;
-        private int _shieldCount = 1;
-
         [Header("Selection Markers")]
         [SerializeField] private GameObject _selectionMarkerPrefab;
         [SerializeField, Range(0.1f, 2f)] private float _rotationInterval = 0.5f;
@@ -22,11 +18,20 @@ namespace Pong.Gameplay.Player
         [Header("Debug")]
         [SerializeField] private bool _useDebug;
 
+        private int _shieldCount = 1;
+
         private readonly List<GameObject> _activeMarkers = new List<GameObject>();
         private readonly List<int> _currentMarkedIndexes = new List<int>();
 
         private Coroutine _selectionRoutine;
         private int _currentStartIndex = 0;
+        private bool _canConfirmSelection = false;
+
+        protected override void Awake()
+        {
+            base.Awake();
+            UpgradeShieldCount();
+        }
 
         protected override void LevelUp()
         {
@@ -49,32 +54,49 @@ namespace Pong.Gameplay.Player
 
         protected override void UseAbility()
         {
+            Debug.Log("Sloth UseAbility called");
+
             if (!_isSelectingTarget)
             {
                 EnterSelectionMode();
                 return;
             }
 
+            if (!_canConfirmSelection) return;
+
             ConfirmShield();
         }
 
         private void EnterSelectionMode()
         {
+            Debug.Log("EnterSelectionMode called");
+
             if (_players == null || _players.Length == 0) return;
+
+            if (_shieldCount >= _players.Length)
+            {
+                ApplyShieldToAllPlayers();
+                StartCoroutine(AbilityCooldownRoutine());
+                return;
+            }
+
             if (_selectionMarkerPrefab == null) return;
 
             _isSelectingTarget = true;
+            _canConfirmSelection = false;
             _currentStartIndex = 0;
 
             CreateMarkers();
             UpdateMarkerTargets();
 
             _selectionRoutine = StartCoroutine(SelectionRotationRoutine());
+            StartCoroutine(EnableConfirmNextFrame());
         }
 
         private void ExitSelectionMode()
         {
             _isSelectingTarget = false;
+            _canConfirmSelection = false;
 
             if (_selectionRoutine != null)
             {
@@ -86,6 +108,12 @@ namespace Pong.Gameplay.Player
             _currentMarkedIndexes.Clear();
         }
 
+        private IEnumerator EnableConfirmNextFrame()
+        {
+            yield return null;
+            _canConfirmSelection = true;
+        }
+
         private IEnumerator SelectionRotationRoutine()
         {
             while (_isSelectingTarget)
@@ -93,6 +121,7 @@ namespace Pong.Gameplay.Player
                 yield return new WaitForSeconds(_rotationInterval);
 
                 _currentStartIndex++;
+
                 if (_currentStartIndex >= _players.Length)
                 {
                     _currentStartIndex = 0;
@@ -110,14 +139,11 @@ namespace Pong.Gameplay.Player
 
             for (int i = 0; i < markerCount; i++)
             {
-                GameObject marker = Instantiate(
-                    _selectionMarkerPrefab,
-                    Vector3.zero,
-                    Quaternion.identity
-                );
-
+                GameObject marker = Instantiate(_selectionMarkerPrefab);
                 _activeMarkers.Add(marker);
             }
+
+            Debug.Log($"Created markers: {markerCount}");
         }
 
         private void DestroyMarkers()
@@ -147,9 +173,16 @@ namespace Pong.Gameplay.Player
                 PlayerActor target = _players[playerIndex];
                 GameObject marker = _activeMarkers[i];
 
-                if (target == null || marker == null) continue;
+                if (target == null || marker == null)
+                {
+                    continue;
+                }
 
-                marker.transform.position = target.transform.position + _markerOffset;
+                marker.transform.SetParent(target.transform);
+                marker.transform.localPosition = _markerOffset;
+                marker.transform.localRotation = Quaternion.identity;
+
+                Debug.Log($"Marker {i} -> {target.gameObject.name}");
             }
         }
 
@@ -165,11 +198,23 @@ namespace Pong.Gameplay.Player
 
                 if (target == null) continue;
 
-                target.ReceiveShield(_shieldVisualPrefab);
+                target.ReceiveShield();
             }
 
             ExitSelectionMode();
             StartCoroutine(AbilityCooldownRoutine());
+        }
+
+        private void ApplyShieldToAllPlayers()
+        {
+            for (int i = 0; i < _players.Length; i++)
+            {
+                PlayerActor target = _players[i];
+
+                if (target == null) continue;
+
+                target.ReceiveShield();
+            }
         }
 
         protected override void OnDamageTaken()

@@ -17,10 +17,11 @@ namespace Pong.Gameplay.Player
         [SerializeField] protected int _level = 1;
 
         [Header("Shield")]
+        [SerializeField] protected GameObject _shieldVisualPrefab;
         [SerializeField] protected bool _hasShield = false;
-        [SerializeField] protected GameObject _activeShieldVisual;
         [SerializeField] protected Vector3 _shieldOffset = new Vector3(0f, 1.8f, 0f);
-        [SerializeField] protected Vector3 _shieldVisualScale = new Vector3(0f, 0f, 0f);
+        [SerializeField] protected Vector3 _shieldVisualScale = new Vector3(0.5f, 0.5f, 0.5f);
+        protected GameObject _activeShieldVisual;
 
         protected bool _canUseAbility = true;
 
@@ -81,19 +82,20 @@ namespace Pong.Gameplay.Player
             base.ApplyDamage(damage);
         }
 
-        public void ReceiveShield(GameObject shieldVisualPrefab = null)
+        public void ReceiveShield()
         {
             _hasShield = true;
 
             if (_activeShieldVisual != null)
             {
                 Destroy(_activeShieldVisual);
+                _activeShieldVisual = null;
             }
 
-            if (shieldVisualPrefab != null)
+            if (_shieldVisualPrefab != null)
             {
                 _activeShieldVisual = Instantiate(
-                    shieldVisualPrefab,
+                    _shieldVisualPrefab,
                     transform.position + _shieldOffset,
                     Quaternion.identity
                 );
