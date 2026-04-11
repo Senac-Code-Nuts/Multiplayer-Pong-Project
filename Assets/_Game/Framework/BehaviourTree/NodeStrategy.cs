@@ -2,7 +2,7 @@ using Pong.Framework.Strategy;
 
 namespace Pong.Framework.BehaviourTree
 {
-    public interface INodeStrategy : IStrategy
+    public interface INodeStrategy
     {
         /// <summary>
         /// Processa o nó e retorna seus status.
@@ -13,6 +13,6 @@ namespace Pong.Framework.BehaviourTree
         /// <summary>
         /// Reseta o estado do nó para permitir que ele seja processado novamente.
         /// </summary>
-        void Reset();
+        void Reset() { }
     }
 }
