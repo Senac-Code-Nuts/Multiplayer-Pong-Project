@@ -5,36 +5,56 @@ namespace Pong.Gameplay.Enemy
 {
     public class CerberusShot : MonoBehaviour
     {
+        [Header("Specific Attributes")]
+        [SerializeField] private float _lifetime = 4f;
+        [SerializeField] private float _bounceAngleLimit = 80f;
+
         private Vector3 _direction;
-        private int _damage;
-        [SerializeField] private float _speed;
+        private float _speed;
+        private float _lifeTimer;
 
-        public void Initialize(Vector3 postion, Vector3 direction, int damage)
+        public void Initialize(Vector3 direction, float speed)
         {
-            gameObject.SetActive(true);
-            transform.position = postion;
-            _direction = direction;
-            _damage = damage;
-
+            _direction = direction.normalized;
+            _speed = speed;
+            _lifeTimer = 0f;
         }
 
-        void FixedUpdate()
+        private void Update()
         {
-            transform.Translate(_direction * _speed * Time.fixedDeltaTime);
+            transform.position += _direction * _speed * Time.deltaTime;
+
+            _lifeTimer += Time.deltaTime;
+            if (_lifeTimer >= _lifetime)
+            {
+                Destroy(gameObject);
+            }
+        }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            if (collision.contacts.Length == 0) return;
+
+            Vector3 normal = collision.contacts[0].normal;
+            Vector3 reflectedDirection = Vector3.Reflect(_direction, normal).normalized;
+
+            float angleToForward = Vector3.Angle(Vector3.forward, reflectedDirection);
+            if (angleToForward <= _bounceAngleLimit)
+            {
+                _direction = reflectedDirection;
+                transform.rotation = Quaternion.LookRotation(_direction, Vector3.up);
+                return;
+            }
+
+            Destroy(gameObject);
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            if (other.TryGetComponent<PlayerController>(out PlayerController player))
+            if (other.TryGetComponent<PlayerActor>(out PlayerActor player))
             {
-
-                // causar dano aos jogadores
-
+                player.ApplyDamage(1);
             }
-
-            gameObject.SetActive(false);
         }
-
-
     }
 }

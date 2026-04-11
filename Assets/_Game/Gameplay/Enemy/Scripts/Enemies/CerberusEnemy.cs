@@ -6,81 +6,106 @@ namespace Pong.Gameplay.Enemy
     public class CerberusEnemy : EnemyActor
     {
         [Header("Specific Attributes")]
-        [SerializeField] private float _preAttackTime;
-        [SerializeField] private float _atackCooldown;
+        [SerializeField, Range(0.1f, 5f)] private float _preAttackTime = 0.5f;
+        [SerializeField, Range(0.1f, 10f)] private float _attackCooldown = 2f;
+        [SerializeField, Range(1f, 50f)] private float _projectileSpeed = 12f;
+        [SerializeField, Range(1, 32)] private int _projectileCount = 7;
+        [SerializeField, Range(0f, 180f)] private float _coneAngle = 120f;
+
+        [Header("Components")]
+        [SerializeField] private Transform _graphCenter;
+        [SerializeField] private Transform _projectileSpawnPoint;
+        [SerializeField] private CerberusShot _shotPrefab;
         [SerializeField] private Renderer _renderer;
 
-        [Header("Shots Attributs")]
-        [SerializeField] private int _numberOfShots;
-        [SerializeField] private GameObject _shotPrefab;
-        [SerializeField] private CerberusShot[] _shots;
-        [SerializeField] private Transform _targetDirection;
-        [SerializeField] private float _angleDiff;
+        private Color _defaultColor;
 
         protected override void Awake()
         {
             base.Awake();
-            _shots = new CerberusShot[_numberOfShots];
-
-            for (int i = 0; i < _numberOfShots; i++)
-            {
-                var shot = Instantiate(_shotPrefab);
-                _shots[i] = shot.GetComponent<CerberusShot>();
-                shot.SetActive(false);
-            }
-
+            _renderer = GetComponent<Renderer>();
+            _defaultColor = _renderer.material.color;
         }
+
         private void OnEnable()
         {
-            StartCoroutine(ActCoroutine());
+            StopAllCoroutines();
+            StartCoroutine(AttackRoutine());
+        }
+
+        public override void ExecuteAttack()
+        {
+            if (_shotPrefab == null) return;
+
+            Transform spawnPoint = _projectileSpawnPoint != null ? _projectileSpawnPoint : transform;
+            Vector3 forward = _graphCenter != null ? (_graphCenter.position - transform.position) : transform.forward;
+            forward.y = 0f;
+
+            if (forward.sqrMagnitude < 0.0001f)
+            {
+                forward = transform.forward;
+            }
+
+            forward.Normalize();
+
+            float angleStep = _projectileCount > 1 ? _coneAngle / (_projectileCount - 1) : 0f;
+            float startAngle = -_coneAngle * 0.5f;
+
+            for (int i = 0; i < _projectileCount; i++)
+            {
+                float currentAngle = startAngle + angleStep * i;
+                Vector3 shotDirection = Quaternion.Euler(0f, currentAngle, 0f) * forward;
+
+                CerberusShot shot = Instantiate(
+                    _shotPrefab, 
+                    spawnPoint.position, 
+                    Quaternion.LookRotation(shotDirection, Vector3.up)
+                );
+
+
+                shot.Initialize(shotDirection, _projectileSpeed);
+            }
+
+            _renderer.material.color = _defaultColor;
+        }
+
+        private IEnumerator AttackRoutine()
+        {
+            while (isActiveAndEnabled)
+            {
+                FaceGraphCenter();
+                ExecutePreAttack();
+
+                yield return new WaitForSecondsRealtime(_preAttackTime);
+
+                ExecuteAttack();
+
+                yield return new WaitForSecondsRealtime(_attackCooldown);
+            }
+        }
+
+        private void FaceGraphCenter()
+        {
+            if (_graphCenter == null) return;
+
+            Vector3 lookDirection = _graphCenter.position - transform.position;
+            lookDirection.y = 0f;
+
+            if (lookDirection.sqrMagnitude < 0.0001f) return;
+
+            transform.rotation = Quaternion.LookRotation(lookDirection.normalized, Vector3.up);
+        }
+
+        private void ExecutePreAttack()
+        {
+            _renderer.material.color = Color.yellow;
         }
 
         private void OnDisable()
         {
             StopAllCoroutines();
-        }
 
-        private void ExecutePreAttack()
-        {
-
-            _renderer.material.color = Color.yellow;
-
-        }
-
-        public override void ExecuteAttack()
-        {
-            _renderer.material.color = Color.grey;
-
-            for (int i = 0; i < _numberOfShots; i++)
-            {
-
-                float dirX = _targetDirection.position.x - transform.position.x;
-                float dirZ = _targetDirection.position.z - transform.position.z;
-
-                float angleDiff = _angleDiff - (i * _angleDiff);
-
-                Vector3 direction = new Vector3(dirX, 0, dirZ);
-                Vector3 finalDirection = Quaternion.AngleAxis(angleDiff, Vector3.up) * direction;
-
-                _shots[i].Initialize(transform.position, finalDirection.normalized, _damage);
-
-            }
-        }
-
-        private IEnumerator ActCoroutine()
-        {
-
-            ExecutePreAttack();
-
-            yield return new WaitForSecondsRealtime(_preAttackTime);
-
-            ExecuteAttack();
-
-            yield return new WaitForSecondsRealtime(_atackCooldown);
-
-            StopAllCoroutines();
-            StartCoroutine(ActCoroutine());
-
+            _renderer.material.color = _defaultColor;
         }
     }
 }
