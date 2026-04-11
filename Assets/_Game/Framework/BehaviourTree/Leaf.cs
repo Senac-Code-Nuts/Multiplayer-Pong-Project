@@ -6,7 +6,7 @@ namespace Pong.Framework.BehaviourTree
     {
         private readonly INodeStrategy strategy;
 
-        public Leaf(string name, INodeStrategy strategy) : base(name)
+        public Leaf(string name, INodeStrategy strategy, int priority = 0) : base(name, priority)
         {
             this.strategy = strategy;
         }

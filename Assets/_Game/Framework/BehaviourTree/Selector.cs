@@ -1,8 +1,8 @@
 namespace Pong.Framework.BehaviourTree
 {
-    public class Sequence : Node
+    public class Selector : Node
     {
-        public Sequence(string name = "Sequence", int priority = 0) : base(name, priority) { }
+        public Selector(string name = "Selector") : base(name) { }
 
         public override Status Process()
         {
@@ -12,16 +12,16 @@ namespace Pong.Framework.BehaviourTree
                 {
                     case Status.Running:
                         return Status.Running;
-                    case Status.Failure:
+                    case Status.Success:
                         Reset();
-                        return Status.Failure;
+                        return Status.Success;
                     default:
                         currentChild++;
-                        return currentChild == children.Count ? Status.Success : Status.Running;
+                        return Status.Running;
                 }
             }
             Reset();
-            return Status.Success;
+            return Status.Failure;
         }
     }
 }
