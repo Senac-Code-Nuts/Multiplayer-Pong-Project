@@ -2,6 +2,7 @@ using UnityEngine;
 using Pong.Framework.BehaviourTree;
 using Pong.Systems.Graph;
 using Pong.Gameplay.Player;
+using Pong.Core.Gizmo;
 
 namespace Pong.Gameplay.Enemy.Succubus
 {
@@ -60,19 +61,16 @@ namespace Pong.Gameplay.Enemy.Succubus
 
         private void Update()
         {
-            // Aumenta intensidade vermelha gradualmente (0 a 1 em 5 segundos)
             _colorRedIntensity = Mathf.Clamp01(_colorRedIntensity + Time.deltaTime / 5f);
             UpdateMeshColor();
 
             _tree.Process();
             
-            // Se o ataque começou a fase de Recovery, reseta a cor
             if (_attackStrategy != null && _attackStrategy.IsInRecovery)
             {
                 ResetMeshColor();
             }
             
-            // Se o ataque acabou de terminar, reseta o patrol
             if (_attackStrategy != null && _attackStrategy.JustFinished && _patrolStrategy != null)
             {
                 _patrolStrategy.Reset();
@@ -84,7 +82,6 @@ namespace Pong.Gameplay.Enemy.Succubus
         {
             if (_meshMaterial == null) return;
 
-            // Interpola de branco (1,1,1) para vermelho (1,0,0)
             Color color = Color.Lerp(Color.white, Color.red, _colorRedIntensity);
             _meshMaterial.color = color;
         }
@@ -108,31 +105,19 @@ namespace Pong.Gameplay.Enemy.Succubus
             
             if (!gizmoData.IsInTelegraph) return;
 
-            // Círculo que cresce (amarelo → vermelho)
-            Gizmos.color = Color.Lerp(Color.yellow, Color.red, gizmoData.ChargeProgress);
-            DrawCircleGizmo(transform.position, gizmoData.CurrentRadius, 32);
+            Color chargeColor = Color.Lerp(Color.yellow, Color.red, gizmoData.ChargeProgress);
 
-            // Raio máximo em branco tracejado
-            Gizmos.color = new Color(1, 1, 1, 0.3f);
-            DrawCircleGizmo(transform.position, gizmoData.MaxRadius, 32);
+            GizmoDrawer.DrawChargingCircle(
+                transform.position, 
+                gizmoData.CurrentRadius, 
+                gizmoData.MaxRadius, 
+                chargeColor, 
+                Color.white, 
+                segments: 32
+            );
 
-            // Ponto vermelho no centro
-            Gizmos.color = Color.red;
-            Gizmos.DrawSphere(transform.position, 0.2f);
-        }
-
-        private void DrawCircleGizmo(Vector3 position, float radius, int segments)
-        {
-            float angleStep = 360f / segments;
-            Vector3 prevPoint = position + new Vector3(radius, 0, 0);
-
-            for (int i = 1; i <= segments; i++)
-            {
-                float angle = angleStep * i * Mathf.Deg2Rad;
-                Vector3 newPoint = position + new Vector3(Mathf.Cos(angle) * radius, 0, Mathf.Sin(angle) * radius);
-                Gizmos.DrawLine(prevPoint, newPoint);
-                prevPoint = newPoint;
-            }
+            // Ponto no centro
+            GizmoDrawer.DrawPoint(transform.position, 0.2f, Color.red);
         }
     }
 }

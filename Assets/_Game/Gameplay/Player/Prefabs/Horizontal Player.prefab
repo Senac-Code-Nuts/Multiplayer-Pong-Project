@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 3427831262410433437}
   - component: {fileID: 426822721179788484}
   - component: {fileID: 6522086124894741760}
+  - component: {fileID: -7186806496286198566}
   m_Layer: 3
   m_Name: Horizontal Player
   m_TagString: Player
@@ -125,6 +126,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _speed: 10
   _playerSide: 0
+  _influenceSystem: {fileID: 0}
 --- !u!114 &426822721179788484
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -222,6 +224,10 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 9caa3d8a-6b2f-4e8e-8bad-6ede561bd9be
     m_ActionName: UI/TrackedDeviceOrientation
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 831c736f-ac46-4726-8948-d5d6203aa8da
+    m_ActionName: 'Player/Pause[/Keyboard/escape,/XInputControllerWindows/start]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -239,3 +245,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c142579762e9874ca45e9656e9e47e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-7186806496286198566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1558463620509405343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e69c4d6feb198184cb3f3d07a901d053, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Radius>k__BackingField: 9
+  weightMultiplier: 2
+  _fallof:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.40981406
+      outSlope: 0.40981406
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.5017873
+      value: 0.2056395
+      inSlope: 1.0021173
+      outSlope: 1.0021173
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1.5944204
+      outSlope: 1.5944204
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4

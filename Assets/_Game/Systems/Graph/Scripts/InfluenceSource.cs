@@ -1,3 +1,4 @@
+using Pong.Core.Gizmo;
 using UnityEngine;
 
 namespace Pong.Systems.Graph
@@ -19,8 +20,14 @@ namespace Pong.Systems.Graph
 
         private void OnDrawGizmos()
         {
-            Gizmos.color = Color.blue;
-            Gizmos.DrawWireSphere(transform.position, Radius);
+            // Círculo com fio azul
+            GizmoDrawer.DrawCircle(transform.position, Radius, new Color(0, 0, 1, 0.5f), 32);
+
+            // Círculo com falloff gradiente
+            GizmoDrawer.DrawCircleWithFalloff(transform.position, Radius, _fallof, Color.blue, Color.green, 64);
+
+            // Ponto no centro
+            GizmoDrawer.DrawPoint(transform.position, 0.3f, Color.cyan);
         }
     }
 
