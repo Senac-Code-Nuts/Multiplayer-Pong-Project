@@ -31,6 +31,7 @@ namespace Pong.Gameplay.Player
         {
             base.Awake();
             UpgradeShieldCount();
+            CachePlayers();
         }
 
         protected override void LevelUp()
@@ -50,6 +51,11 @@ namespace Pong.Gameplay.Player
             {
                 LevelUp();
             }
+        }
+
+        private void CachePlayers()
+        {
+            _players = FindObjectsByType<PlayerActor>(FindObjectsSortMode.None);
         }
 
         protected override void UseAbility()
