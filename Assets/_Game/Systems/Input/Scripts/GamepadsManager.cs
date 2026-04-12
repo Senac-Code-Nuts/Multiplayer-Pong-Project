@@ -13,6 +13,8 @@ namespace Pong.Systems.Input
     }
     public class GamepadsManager : MonoBehaviour
     {
+        public static GamepadsManager Instance { get; private set; }
+
         private const int MAX_PLAYERS = 4;
         private const int MIN_PLAYERS = 2;
         private const int DEFAULT_PLAYERS = 2;
@@ -32,6 +34,16 @@ namespace Pong.Systems.Input
             {
                 return _playerCount;
             }
+        }
+
+        private void Awake()
+        {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            Instance = this;
         }
 
         private void Start()
@@ -154,6 +166,16 @@ namespace Pong.Systems.Input
             };
 
             Debug.Log($"{GAMEPAD_TAG} <color=orange>Spawned test player at index {index} (no device)</color>");
+        }
+
+        public GameObject[] GetActivePlayerControllers()
+        {
+            var playerObjects = new GameObject[_activePlayers.Length];
+            for (int i = 0; i < _activePlayers.Length; i++)
+            {
+                playerObjects[i] = _activePlayers[i]?.Instance;
+            }
+            return playerObjects;
         }
 
         #region Device Helpers
