@@ -258,7 +258,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <Radius>k__BackingField: 9
-  weightMultiplier: 2
+  weightMultiplier: 3
   _fallof:
     serializedVersion: 2
     m_Curve:
@@ -292,3 +292,4 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  _type: 1

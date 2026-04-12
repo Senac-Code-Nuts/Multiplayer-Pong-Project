@@ -121,7 +121,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77261adbabd6790478d0088b82d06c1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxHealth: 1
+  _maxHealth: 4
   _currentHealth: 0
   _damage: 0
   _isVulnerable: 1
@@ -130,12 +130,14 @@ MonoBehaviour:
   _stunVfxPrefab: {fileID: 0}
   _stunOffset: {x: 0, y: 1.8, z: 0}
   _patrolSpeed: 3
+  _graphComponent: {fileID: 0}
+  _timeBetweenAttacks: 5
   _preAttackTime: 2
   _attackCooldown: 2
   _projectileSpeed: 12
   _projectileCount: 7
   _coneAngle: 120
   _graphCenter: {fileID: 0}
-  _projectileSpawnPoint: {fileID: 0}
-  _shotPrefab: {fileID: 2496175975819590668, guid: 2a57d69f49391594fb64939f4173d105, type: 3}
+  _projectileSpawnPoint: {fileID: 4007164939212634296}
+  _shotPrefab: {fileID: 8875277083881041835, guid: 2a57d69f49391594fb64939f4173d105, type: 3}
   _renderer: {fileID: 5985844116899033504}

@@ -121,13 +121,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 724b2e8a44fdc484cb3f37084eb39f2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxHealth: 1
+  _maxHealth: 5
   _currentHealth: 0
   _damage: 0
   _isVulnerable: 1
   _isStunned: 0
   _isDead: 0
-  _isReadyToAttack: 0
-  _preAttackTime: 1
+  _stunVfxPrefab: {fileID: 0}
+  _stunOffset: {x: 0, y: 1.8, z: 0}
+  _movementSpeed: 3
+  _pathDecisionDelay: 1.25
+  _parryModeSpeedMultiplier: 2
+  _preAttackTime: 4
+  _counterWindowTimeout: 5
+  _attackBoostMultiplier: 1.6
+  _graphComponent: {fileID: 0}
   _relic: {fileID: 0}
   _renderer: {fileID: 5757859302629954293}

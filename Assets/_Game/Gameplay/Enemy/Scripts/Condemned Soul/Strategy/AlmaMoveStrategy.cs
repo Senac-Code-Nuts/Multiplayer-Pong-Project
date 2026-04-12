@@ -5,28 +5,22 @@ using Pong.Systems.Graph;
 
 namespace Pong.Gameplay.Enemy
 {
-    public class AlmaMoveStrategy : INodeStrategy
+    public class AlmaMoveStrategy : EnemyPathStrategyBase
     {
-        private readonly CondemnedSoulEnemy _enemy;
-        private readonly EnemyPathFinder _pathFinder;
-
-        private List<GraphNode> _currentPath;
-        private int _currentPathIndex;
-        private GraphNode _currentTargetNode;
+        private readonly CondemnedSoulEnemy _condemnedSoul;
         private float _decisionTimer;
         private bool _isWaitingForDecision;
 
         public AlmaMoveStrategy(CondemnedSoulEnemy enemy, EnemyPathFinder pathFinder)
+            : base(enemy, pathFinder, () => enemy != null ? enemy.MovementSpeed : 0f)
         {
-            _enemy = enemy;
-            _pathFinder = pathFinder;
-            _currentPath = new List<GraphNode>();
+            _condemnedSoul = enemy;
             Reset();
         }
 
-        public Node.Status Process()
+        public override Node.Status Process()
         {
-            if (_enemy == null || _pathFinder == null)
+            if (_condemnedSoul == null || _pathFinder == null)
             {
                 return Node.Status.Failure;
             }
@@ -35,7 +29,7 @@ namespace Pong.Gameplay.Enemy
             {
                 _decisionTimer += Time.deltaTime;
 
-                if (_decisionTimer < _enemy.PathDecisionDelay)
+                if (_decisionTimer < _condemnedSoul.PathDecisionDelay)
                 {
                     return Node.Status.Running;
                 }
@@ -76,7 +70,7 @@ namespace Pong.Gameplay.Enemy
 
         private bool TryBuildPath()
         {
-            var startNode = _pathFinder.GetClosestNode(_enemy.transform.position);
+            var startNode = GetClosestNode(_condemnedSoul.transform.position);
 
             if (startNode == null)
             {
@@ -95,9 +89,10 @@ namespace Pong.Gameplay.Enemy
                 return false;
             }
 
-            _currentPath = path;
-            _currentPathIndex = _currentPath.Count > 1 ? 1 : 0;
-            _currentTargetNode = _currentPath[_currentPathIndex];
+            if (!TrySetPath(path, path.Count > 1 ? 1 : 0))
+            {
+                return false;
+            }
 
             if (_currentPathIndex >= _currentPath.Count)
             {
@@ -109,7 +104,7 @@ namespace Pong.Gameplay.Enemy
 
         private GraphNode SelectTargetNode(GraphNode startNode)
         {
-            List<GraphNode> nodes = _pathFinder.GetAllNodes();
+            List<GraphNode> nodes = GetAllNodes();
 
             if (nodes == null || nodes.Count == 0)
             {
@@ -135,20 +130,6 @@ namespace Pong.Gameplay.Enemy
             return candidates[randomIndex];
         }
 
-        private void MoveTowardNode(GraphNode targetNode)
-        {
-            Vector3 currentPosition = _enemy.transform.position;
-            Vector3 targetPosition = targetNode.transform.position;
-            float step = _enemy.MovementSpeed * Time.deltaTime;
-
-            _enemy.transform.position = Vector3.MoveTowards(currentPosition, targetPosition, step);
-        }
-
-        private bool HasReachedTarget(GraphNode targetNode)
-        {
-            return (targetNode.transform.position - _enemy.transform.position).sqrMagnitude < 0.25f;
-        }
-
         private void BeginDecisionWait()
         {
             _isWaitingForDecision = true;
@@ -157,14 +138,12 @@ namespace Pong.Gameplay.Enemy
 
         private void ResetPathState()
         {
-            _currentPath.Clear();
-            _currentPathIndex = 0;
-            _currentTargetNode = null;
+            ResetPath();
             _isWaitingForDecision = false;
             _decisionTimer = 0f;
         }
 
-        public void Reset()
+        public override void Reset()
         {
             ResetPathState();
         }

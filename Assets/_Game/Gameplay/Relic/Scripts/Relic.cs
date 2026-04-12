@@ -75,7 +75,6 @@ namespace Pong.Gameplay.Relics
                 return;
             }
 
-            Debug.Log("<color=white>[Relic] Normal collision. Reflecting and restoring base speed if boosted.</color>");
             Reflect(collision);
 
             if (_returnToBaseSpeedOnNextCollision)
