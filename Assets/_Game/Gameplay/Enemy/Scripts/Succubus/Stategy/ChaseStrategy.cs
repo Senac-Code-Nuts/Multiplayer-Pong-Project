@@ -3,6 +3,7 @@ using UnityEngine;
 using Pong.Systems.Graph;
 using Pong.Gameplay.Player;
 using Pong.Framework.BehaviourTree;
+using Pong.Systems.Input;
 
 namespace Pong.Gameplay.Enemy.Succubus
 {
@@ -24,7 +25,7 @@ namespace Pong.Gameplay.Enemy.Succubus
             _pathFinder = pathFinder;
             _currentPath = new List<GraphNode>();
             _currentPathIndex = 0;
-            _cachedPlayers = null; 
+            _cachedPlayers = null;
         }
 
         public void SetTarget()
@@ -37,12 +38,21 @@ namespace Pong.Gameplay.Enemy.Succubus
         {
             if (_cachedPlayers != null) return;
 
-            GameObject[] playerObjects = GameObject.FindGameObjectsWithTag("Player");
-            
-            _cachedPlayers = new PlayerController[playerObjects.Length];
-            for (int i = 0; i < playerObjects.Length; i++)
+            var manager = GamepadsManager.Instance;
+            if (manager != null)
             {
-                _cachedPlayers[i] = playerObjects[i].GetComponent<PlayerController>();
+                GameObject[] gameObjects = manager.GetActivePlayerControllers();
+                
+                _cachedPlayers = new PlayerController[gameObjects.Length];
+                for (int i = 0; i < gameObjects.Length; i++)
+                {
+                    _cachedPlayers[i] = gameObjects[i]?.GetComponent<PlayerController>();
+                }
+            }
+            else
+            {
+                Debug.LogWarning("[Chase] GamepadsManager não encontrado na cena!");
+                _cachedPlayers = new PlayerController[0];
             }
         }
 
@@ -120,7 +130,7 @@ namespace Pong.Gameplay.Enemy.Succubus
                 if (_currentPathIndex >= _currentPath.Count)
                 {
                     Debug.Log("[Chase] ✓ Chegou no alvo!");
-                    return Node.Status.Success; 
+                    return Node.Status.Success;
                 }
             }
 

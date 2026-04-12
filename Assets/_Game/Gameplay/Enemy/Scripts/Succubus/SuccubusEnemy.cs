@@ -17,7 +17,6 @@ namespace Pong.Gameplay.Enemy.Succubus
 
         [Header("Pathfinding")]
         [SerializeField] private GraphComponent _graphComponent;
-        [SerializeField] private float _pathfindRecalculateInterval = 0.5f;
 
         private BehaviourTree _tree;
         private ChaseStrategy _chaseStrategy;
