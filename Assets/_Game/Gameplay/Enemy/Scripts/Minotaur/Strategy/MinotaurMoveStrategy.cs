@@ -89,16 +89,44 @@ namespace Pong.Gameplay.Enemy
                 return false;
             }
 
-            var path = _pathFinder.FindPath(currentNode, targetNode, preferHighWeight: true);
-            if (path == null || path.Count == 0)
+            // Parry Mode: define comportamento de movimento
+            if (_enemy.IsInParryMode)
             {
-                return false;
+                // EM PARRY MODE: Procura a relic em áreas de ALTO peso (onde o player está)
+                var highWeightTarget = _pathFinder.GetClosestHighWeightNode(_enemy.TargetRelic.transform.position);
+                targetNode = highWeightTarget ?? targetNode;
+                
+                // Usa preferHighWeight: true para priorizar caminhos pesados
+                var path = _pathFinder.FindPath(currentNode, targetNode, preferHighWeight: true);
+                if (path == null || path.Count == 0)
+                {
+                    return false;
+                }
+
+                _currentPath = path;
+                _currentPathIndex = _currentPath.Count > 1 ? 1 : 0;
+                return true;
             }
+            else
+            {
+                // FORA DE PARRY MODE: Evita a relic, procura em áreas de BAIXO peso (longe do player)
+                var lowWeightTarget = _pathFinder.GetClosestLowWeightNode(_enemy.TargetRelic.transform.position);
+                if (lowWeightTarget != null)
+                {
+                    targetNode = lowWeightTarget;
+                }
+                
+                // Usa preferHighWeight: false para evitar pesos altos
+                var path = _pathFinder.FindPath(currentNode, targetNode, preferHighWeight: false);
+                if (path == null || path.Count == 0)
+                {
+                    return false;
+                }
 
-            _currentPath = path;
-            _currentPathIndex = _currentPath.Count > 1 ? 1 : 0;
-
-            return true;
+                _currentPath = path;
+                _currentPathIndex = _currentPath.Count > 1 ? 1 : 0;
+                return true;
+            }
         }
 
         private GraphNode GetRelicTargetNode()
@@ -140,7 +168,7 @@ namespace Pong.Gameplay.Enemy
         {
             Vector3 currentPosition = _enemy.transform.position;
             Vector3 targetPosition = targetNode.transform.position;
-            float step = _enemy.MovementSpeed * Time.deltaTime;
+            float step = _enemy.CurrentMovementSpeed * Time.deltaTime;
 
             _enemy.transform.position = Vector3.MoveTowards(currentPosition, targetPosition, step);
         }

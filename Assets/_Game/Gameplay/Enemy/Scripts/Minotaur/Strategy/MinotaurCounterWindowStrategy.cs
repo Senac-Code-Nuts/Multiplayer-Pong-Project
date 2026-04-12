@@ -10,7 +10,7 @@ namespace Pong.Gameplay.Enemy
         private bool _isArmed;
         private bool _isCharging;
 
-        public MinotaurCounterWindowStrategy(MinotaurEnemy enemy)
+        public bool IsArmed => _isArmed;        public MinotaurCounterWindowStrategy(MinotaurEnemy enemy)
         {
             _enemy = enemy;
             Reset();
