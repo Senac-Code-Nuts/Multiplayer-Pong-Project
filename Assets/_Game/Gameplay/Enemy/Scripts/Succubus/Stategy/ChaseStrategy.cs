@@ -1,31 +1,22 @@
-using Pong.Framework.Strategy;
-using Pong.Framework.BehaviourTree;
-using System.Collections.Generic;
 using UnityEngine;
-using Pong.Systems.Graph;
 using Pong.Gameplay.Player;
+using Pong.Framework.BehaviourTree;
+using Pong.Systems.Input;
 
 namespace Pong.Gameplay.Enemy.Succubus
 {
-    public class ChaseStrategy : INodeStrategy
+    public class ChaseStrategy : EnemyPathStrategyBase
     {
-        private readonly SuccubusEnemy _enemy;
-        private readonly EnemyPathFinder _pathFinder;
+        private readonly SuccubusEnemy _succubusEnemy;
         private Transform _target;
-
-        private List<GraphNode> _currentPath;
-        private int _currentPathIndex;
-        private GraphNode _currentTargetNode;
 
         private PlayerController[] _cachedPlayers; // Cache dos players
 
         public ChaseStrategy(SuccubusEnemy enemy, EnemyPathFinder pathFinder)
+            : base(enemy, pathFinder, () => enemy != null ? enemy.ChaseSpeed : 0f)
         {
-            _enemy = enemy;
-            _pathFinder = pathFinder;
-            _currentPath = new List<GraphNode>();
-            _currentPathIndex = 0;
-            _cachedPlayers = null; 
+            _succubusEnemy = enemy;
+            _cachedPlayers = null;
         }
 
         public void SetTarget()
@@ -38,12 +29,21 @@ namespace Pong.Gameplay.Enemy.Succubus
         {
             if (_cachedPlayers != null) return;
 
-            GameObject[] playerObjects = GameObject.FindGameObjectsWithTag("Player");
-            
-            _cachedPlayers = new PlayerController[playerObjects.Length];
-            for (int i = 0; i < playerObjects.Length; i++)
+            var manager = GamepadsManager.Instance;
+            if (manager != null)
             {
-                _cachedPlayers[i] = playerObjects[i].GetComponent<PlayerController>();
+                GameObject[] gameObjects = manager.GetActivePlayerControllers();
+                
+                _cachedPlayers = new PlayerController[gameObjects.Length];
+                for (int i = 0; i < gameObjects.Length; i++)
+                {
+                    _cachedPlayers[i] = gameObjects[i]?.GetComponent<PlayerController>();
+                }
+            }
+            else
+            {
+                Debug.LogWarning("[Chase] GamepadsManager não encontrado na cena!");
+                _cachedPlayers = new PlayerController[0];
             }
         }
 
@@ -62,7 +62,7 @@ namespace Pong.Gameplay.Enemy.Succubus
             {
                 if (player != null)
                 {
-                    float distance = Vector3.Distance(_enemy.transform.position, player.transform.position);
+                    float distance = Vector3.Distance(_succubusEnemy.transform.position, player.transform.position);
                     if (distance > maxDistance)
                     {
                         maxDistance = distance;
@@ -77,8 +77,13 @@ namespace Pong.Gameplay.Enemy.Succubus
             return farthestPlayer;
         }
 
-        public Node.Status Process()
+        public override Node.Status Process()
         {
+            if (!IsReady)
+            {
+                return Node.Status.Failure;
+            }
+
             if (_target == null)
             {
                 SetTarget();
@@ -89,8 +94,8 @@ namespace Pong.Gameplay.Enemy.Succubus
                 return Node.Status.Failure;
             }
 
-            var currentNode = _pathFinder.GetClosestNode(_enemy.transform.position);
-            var targetNode = _pathFinder.GetClosestNode(_target.position);
+            var currentNode = GetClosestNode(_succubusEnemy.transform.position);
+            var targetNode = GetClosestNode(_target.position);
 
             if (currentNode == null || targetNode == null)
             {
@@ -100,10 +105,7 @@ namespace Pong.Gameplay.Enemy.Succubus
 
             if (_currentPath.Count == 0 || _currentPathIndex >= _currentPath.Count)
             {
-                _currentPath = _pathFinder.FindPath(currentNode, targetNode);
-                _currentPathIndex = 0;
-
-                if (_currentPath.Count == 0)
+                if (!TryBuildPath(currentNode, targetNode))
                 {
                     Debug.LogWarning("[Chase] Caminho vazio!");
                     return Node.Status.Failure;
@@ -114,14 +116,14 @@ namespace Pong.Gameplay.Enemy.Succubus
 
             _currentTargetNode = _currentPath[_currentPathIndex];
 
-            if ((_currentTargetNode.transform.position - _enemy.transform.position).sqrMagnitude < 0.25f)
+            if ((_currentTargetNode.transform.position - _succubusEnemy.transform.position).sqrMagnitude < 0.25f)
             {
                 _currentPathIndex++;
 
                 if (_currentPathIndex >= _currentPath.Count)
                 {
                     Debug.Log("[Chase] ✓ Chegou no alvo!");
-                    return Node.Status.Success; 
+                    return Node.Status.Success;
                 }
             }
 
@@ -130,20 +132,9 @@ namespace Pong.Gameplay.Enemy.Succubus
             return Node.Status.Running;
         }
 
-        private void MoveTowardNode(GraphNode targetNode)
+        public override void Reset()
         {
-            Vector3 targetPos = targetNode.transform.position;
-            Vector3 currentPos = _enemy.transform.position;
-
-            float step = _enemy.ChaseSpeed * Time.deltaTime;
-            _enemy.transform.position = Vector3.MoveTowards(currentPos, targetPos, step);
-        }
-
-        public void Reset()
-        {
-            _currentPath.Clear();
-            _currentPathIndex = 0;
-            _currentTargetNode = null;
+            base.Reset();
             _target = null;
         }
     }

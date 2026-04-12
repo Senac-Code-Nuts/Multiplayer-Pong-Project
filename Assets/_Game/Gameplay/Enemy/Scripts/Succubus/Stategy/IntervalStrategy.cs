@@ -1,31 +1,22 @@
 using Pong.Framework.BehaviourTree;
-using UnityEngine;
 
 namespace Pong.Gameplay.Enemy.Succubus
 {
-    public class IntervalStrategy : INodeStrategy
+    public class IntervalStrategy : EnemyTimerStrategyBase
     {
-        private float _interval;
-        private float _lastTriggerTime;
+        public IntervalStrategy(float interval): base(interval){}
 
-        public IntervalStrategy(float interval)
+        protected override Node.Status WaitingStatus => Node.Status.Failure;
+
+        protected override Node.Status CompletionStatus => Node.Status.Success;
+
+        public override Node.Status Process()
         {
-            _interval = interval;
-            _lastTriggerTime = Time.time; 
+            return base.Process();
         }
 
-        public Node.Status Process()
+        public override void Reset()
         {
-            float elapsedTime = Time.time - _lastTriggerTime;
-            
-            if (elapsedTime >= _interval)
-            {
-                _lastTriggerTime = Time.time;
-                Debug.Log($"Interval triggered! ({_interval}s)");
-                return Node.Status.Success;
-            }
-
-            return Node.Status.Failure;
         }
     }
 }

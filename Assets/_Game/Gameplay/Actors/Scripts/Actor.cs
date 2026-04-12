@@ -15,6 +15,12 @@ namespace Pong.Gameplay.Actors
         [SerializeField] protected bool _isStunned = false;
         [SerializeField] protected bool _isDead = false;
 
+        [Header("Stun Visual")]
+        [SerializeField] protected GameObject _stunVfxPrefab;
+        [SerializeField] protected Vector3 _stunOffset = new Vector3(0f, 1.8f, 0f);
+
+        protected GameObject _activeStunVfx;
+
         public int CurrentHealth => _currentHealth;
         public int Damage => _damage;
         public bool IsDead => _isDead;
@@ -63,8 +69,7 @@ namespace Pong.Gameplay.Actors
         #region Stun
         public virtual void ApplyStun(float duration)
         {
-            if (_isDead || _isStunned)
-                return;
+            if (_isDead || _isStunned) return;
 
             StartCoroutine(StunRoutine(duration));
         }
@@ -73,8 +78,37 @@ namespace Pong.Gameplay.Actors
         private IEnumerator StunRoutine(float duration)
         {
             _isStunned = true;
+            ShowStunVfx();
+
             yield return new WaitForSeconds(duration);
+
             _isStunned = false;
+            HideStunVfx();
+        }
+
+        protected virtual void ShowStunVfx()
+        {
+            if (_stunVfxPrefab == null) return;
+            if (_activeStunVfx != null) return;
+
+            _activeStunVfx = Instantiate(
+                _stunVfxPrefab,
+                transform.position + _stunOffset,
+                Quaternion.identity
+            );
+
+            if (_activeStunVfx.TryGetComponent(out StunVfxFollower follower))
+            {
+                follower.Initialize(transform, _stunOffset);
+            }
+        }
+
+        protected virtual void HideStunVfx()
+        {
+            if (_activeStunVfx == null) return;
+
+            Destroy(_activeStunVfx);
+            _activeStunVfx = null;
         }
 
         #endregion
