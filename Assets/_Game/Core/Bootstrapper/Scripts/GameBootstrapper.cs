@@ -4,7 +4,7 @@ namespace Pong.Core
 {
     public static class GameBootstrapper
     {
-        private const string BOOTSTRAP_TAG = "<color=green><b>Bootstrapper</b></color>";
+        private const string BOOTSTRAP_TAG = "<color=green><b>[Bootstrapper]</b></color>";
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Initialize()

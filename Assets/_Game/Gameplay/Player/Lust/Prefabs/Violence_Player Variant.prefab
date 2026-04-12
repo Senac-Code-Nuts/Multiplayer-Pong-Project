@@ -162,6 +162,6 @@ MonoBehaviour:
   _projectilePrefab: {fileID: 8037289407857997159, guid: 39f152a65843ca641b3786badedb2401, type: 3}
   _projectileSpawnPoint: {fileID: 3056947927799754466}
   _spreadAngle: 30
-  _bossPullDistance: 3
+  _bossPullDistance: 1
   _stopDistanceFromPlayer: 1.5
   _useDebug: 0

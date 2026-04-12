@@ -4,15 +4,15 @@
 TagManager:
   serializedVersion: 3
   tags:
-  - Wall
+  - Relic
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Player
   - Water
   - UI
-  - Lust Projectile
+  - Relic
   - 
   - 
   - 

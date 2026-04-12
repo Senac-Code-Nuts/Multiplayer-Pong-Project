@@ -15,6 +15,8 @@ namespace Pong.Systems.Input
 
     public class GamepadsManager : MonoBehaviour
     {
+        public static GamepadsManager Instance { get; private set; }
+
         private const int MAX_PLAYERS = 4;
         private const int MIN_PLAYERS = 2;
         private const int DEFAULT_PLAYERS = 2;
@@ -25,6 +27,7 @@ namespace Pong.Systems.Input
 
         [SerializeField, Range(2, 4)] private int _playerCount = DEFAULT_PLAYERS;
         [SerializeField] private bool _enableKeyboardForTesting = false;
+        [SerializeField] private bool _forceFourPlayersForTesting = false;
 
         private int PlayerCount
         {
@@ -32,6 +35,16 @@ namespace Pong.Systems.Input
             {
                 return _playerCount;
             }
+        }
+
+        private void Awake()
+        {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            Instance = this;
         }
 
         private void Start()
@@ -44,6 +57,19 @@ namespace Pong.Systems.Input
             if (_enableKeyboardForTesting && Keyboard.current != null)
             {
                 SpawnPlayerForDevice(Keyboard.current);
+            }
+
+            if (_forceFourPlayersForTesting)
+            {
+                int playersToSpawn = Mathf.Min(4, MAX_PLAYERS);
+                for (int i = 0; i < playersToSpawn; i++)
+                {
+                    if (_activePlayers[i] == null)
+                    {
+                        SpawnPlayerForTestingWithoutDevice(i);
+                    }
+                }
+                Debug.Log($"{GAMEPAD_TAG} <color=orange>Força 4 players para testes ativada!</color>");
             }
         }
 
@@ -119,6 +145,41 @@ namespace Pong.Systems.Input
             PlayerSpawnEvents.RaisePlayerSpawned(playerInput.gameObject, index);
 
             Debug.Log($"{GAMEPAD_TAG} Spawned player for device: {device.displayName} at index {index}");
+        }
+
+        private void SpawnPlayerForTestingWithoutDevice(int index)
+        {
+            var slot = _playerSlots[index];
+            if (slot.Prefab == null || slot.SpawnPoint == null) return;
+
+            // Spawna sem parear com device (apenas para testes)
+            var playerInput = PlayerInput.Instantiate(
+                slot.Prefab,
+                playerIndex: index,
+                pairWithDevice: null
+            );
+
+            playerInput.transform.position = slot.SpawnPoint.position;
+            playerInput.name = $"Player {index + 1} (Test)";
+
+            _activePlayers[index] = new PlayerData
+            {
+                Instance = playerInput.gameObject,
+                Device = null,
+                Side = slot.PlayerSide
+            };
+
+            Debug.Log($"{GAMEPAD_TAG} <color=orange>Spawned test player at index {index} (no device)</color>");
+        }
+
+        public GameObject[] GetActivePlayerControllers()
+        {
+            var playerObjects = new GameObject[_activePlayers.Length];
+            for (int i = 0; i < _activePlayers.Length; i++)
+            {
+                playerObjects[i] = _activePlayers[i]?.Instance;
+            }
+            return playerObjects;
         }
 
         #region Device Helpers
