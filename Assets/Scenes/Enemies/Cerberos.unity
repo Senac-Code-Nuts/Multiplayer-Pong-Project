@@ -1982,6 +1982,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  _type: 0
 --- !u!114 &1329989145
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1995,6 +1996,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _speed: 10
+  _attackBoostMultiplier: 1.5
+  _renderer: {fileID: 0}
+  _boostColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   _damage: 1
 --- !u!54 &1329989146
 Rigidbody:
@@ -2385,14 +2389,6 @@ PrefabInstance:
       value: Cerberus
       objectReference: {fileID: 0}
     - target: {fileID: 7527777348739844291, guid: 6b45a76a6041f8140894b362c6412b2a, type: 3}
-      propertyPath: _maxHealth
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 7527777348739844291, guid: 6b45a76a6041f8140894b362c6412b2a, type: 3}
-      propertyPath: _shotPrefab
-      value: 
-      objectReference: {fileID: 8875277083881041835, guid: 2a57d69f49391594fb64939f4173d105, type: 3}
-    - target: {fileID: 7527777348739844291, guid: 6b45a76a6041f8140894b362c6412b2a, type: 3}
       propertyPath: _graphCenter
       value: 
       objectReference: {fileID: 428596565}
@@ -2400,14 +2396,6 @@ PrefabInstance:
       propertyPath: _graphComponent
       value: 
       objectReference: {fileID: 940876052}
-    - target: {fileID: 7527777348739844291, guid: 6b45a76a6041f8140894b362c6412b2a, type: 3}
-      propertyPath: _timeBetweenAttacks
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7527777348739844291, guid: 6b45a76a6041f8140894b362c6412b2a, type: 3}
-      propertyPath: _projectileSpawnPoint
-      value: 
-      objectReference: {fileID: 2000654214}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2662,6 +2650,7 @@ MonoBehaviour:
     PlayerSide: 3
   _playerCount: 4
   _enableKeyboardForTesting: 1
+  _forceFourPlayersForTesting: 0
 --- !u!4 &1623748153
 Transform:
   m_ObjectHideFlags: 0
@@ -3040,11 +3029,6 @@ MonoBehaviour:
     weight: 1
   _autoTarget: {fileID: 433491550}
   _autoWeight: 1
---- !u!4 &2000654214 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4007164939212634296, guid: 6b45a76a6041f8140894b362c6412b2a, type: 3}
-  m_PrefabInstance: {fileID: 1528366906}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2097111190
 GameObject:
   m_ObjectHideFlags: 0
