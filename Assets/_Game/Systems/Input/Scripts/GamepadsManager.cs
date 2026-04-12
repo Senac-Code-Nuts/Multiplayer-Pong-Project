@@ -29,6 +29,8 @@ namespace Pong.Systems.Input
         [SerializeField] private bool _enableKeyboardForTesting = false;
         [SerializeField] private bool _forceFourPlayersForTesting = false;
 
+        [SerializeField] private Transform _playerContainer;
+
         private int PlayerCount
         {
             get
@@ -134,6 +136,7 @@ namespace Pong.Systems.Input
 
             playerInput.transform.position = slot.SpawnPoint.position;
             playerInput.name = $"Player {index + 1}";
+            playerInput.transform.SetParent(_playerContainer, true);
 
             _activePlayers[index] = new PlayerData
             {
