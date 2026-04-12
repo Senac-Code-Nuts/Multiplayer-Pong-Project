@@ -23,7 +23,7 @@ namespace Pong.Gameplay.Player
         {
             _inputReader = GetComponent<InputReader>();
             _influenceSource = GetComponent<InfluenceSource>();
-            _influenceSystem = FindObjectOfType<InfluenceSystem>();
+            _influenceSystem = FindFirstObjectByType<InfluenceSystem>();
         }
         private void Start()
         {
