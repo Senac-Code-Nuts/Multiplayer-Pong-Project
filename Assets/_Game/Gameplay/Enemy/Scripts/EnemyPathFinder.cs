@@ -47,7 +47,7 @@ namespace Pong.Gameplay.Enemy
         /// <summary>
         /// Calcula o caminho entre dois nodes usando Dijkstra.
         /// </summary>
-        public List<GraphNode> FindPath(GraphNode start, GraphNode target)
+        public List<GraphNode> FindPath(GraphNode start, GraphNode target, bool preferHighWeight = false)
         {
             if (start == null || target == null || _graph == null)
                 return new List<GraphNode>();
@@ -80,7 +80,8 @@ namespace Pong.Gameplay.Enemy
                     if (neighbor == null) continue;
 
                     float cost = _graph.GetDynamicCost(current, connection);
-                    float newDistance = distance[current] + cost;
+                    float traversalCost = preferHighWeight ? 1f / Mathf.Max(cost, 0.001f) : cost;
+                    float newDistance = distance[current] + traversalCost;
 
                     if (newDistance < distance[neighbor])
                     {
@@ -110,15 +111,12 @@ namespace Pong.Gameplay.Enemy
             return nextBest;
         }
 
-    /// <summary>
-    /// Retorna todos os nodes do grafo.
-    /// </summary>
-    public List<GraphNode> GetAllNodes()
-    {
-        return _graph?.Nodes;
-    }
+        public List<GraphNode> GetAllNodes()
+        {
+            return _graph?.Nodes;
+        }
 
-    private List<GraphNode> ReconstructPath(Dictionary<GraphNode, GraphNode> previous, GraphNode start, GraphNode target)
+        private List<GraphNode> ReconstructPath(Dictionary<GraphNode, GraphNode> previous, GraphNode start, GraphNode target)
         {
             List<GraphNode> path = new List<GraphNode>();
             var current = target;
@@ -131,7 +129,7 @@ namespace Pong.Gameplay.Enemy
                 current = previous[current];
             }
 
-            path.Add(start); // Adiciona o nó de início
+            path.Add(start);
             path.Reverse();
             return path;
         }
