@@ -13,7 +13,7 @@ namespace Pong.Gameplay.Enemy.Cerberus
 
         [Header("Pathfinding")]
         [SerializeField] private GraphComponent _graphComponent;
-        
+
         [Header("Specific Attributes")]
         [SerializeField, Range(0.1f, 10f)] private float _timeBetweenAttacks = 3f;
         [SerializeField, Range(0.1f, 5f)] private float _preAttackTime = 0.5f;
@@ -72,7 +72,10 @@ namespace Pong.Gameplay.Enemy.Cerberus
                 Debug.Log("<color=cyan>[Cerberus] Voltando a patrulhar após ataque!</color>");
             }
         }
-
+        private void OnDisable()
+        {
+            _renderer.material.color = _defaultColor;
+        }
         public override void ExecuteAttack()
         {
             if (_shotPrefab == null) return;
@@ -125,6 +128,7 @@ namespace Pong.Gameplay.Enemy.Cerberus
             _renderer.material.color = Color.yellow;
         }
 
+        #region Gizmos
         private GizmoData GetGizmoData()
         {
             if (_attackStrategy == null)
@@ -146,7 +150,7 @@ namespace Pong.Gameplay.Enemy.Cerberus
             if (_attackStrategy == null) return;
 
             var gizmoData = GetGizmoData();
-            
+
             if (!gizmoData.IsInTelegraph) return;
 
             Color coneColor = Color.Lerp(Color.yellow, Color.red, gizmoData.TelegraphProgress);
@@ -190,10 +194,6 @@ namespace Pong.Gameplay.Enemy.Cerberus
             public Vector3 SpawnPosition;
             public Vector3 Direction;
         }
-
-        private void OnDisable()
-        {
-            _renderer.material.color = _defaultColor;
-        }
+        #endregion
     }
 }

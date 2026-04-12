@@ -33,10 +33,7 @@ namespace Pong.Gameplay.Enemy
 
         public float MovementSpeed => _movementSpeed;
         public float PathDecisionDelay => _pathDecisionDelay;
-        
-        /// <summary>
-        /// Retorna a velocidade de movimento, aumentada em parry mode.
-        /// </summary>
+
         public float CurrentMovementSpeed => IsInParryMode ? _movementSpeed * _parryModeSpeedMultiplier : _movementSpeed;
         public float PreAttackTime => _preAttackTime;
         public float CounterWindowTimeout => _counterWindowTimeout;
@@ -45,9 +42,7 @@ namespace Pong.Gameplay.Enemy
         public Relic TargetRelic => _relic;
         public bool IsCounterAttackReady => _isCounterAttackReady;
         
-        /// <summary>
-        /// Indica se o Minotaur está em "parry mode" (janela de counter ativa).
-        /// </summary>
+
         public bool IsInParryMode => _counterWindowStrategy != null && _counterWindowStrategy.IsArmed;
 
         protected override void Awake()

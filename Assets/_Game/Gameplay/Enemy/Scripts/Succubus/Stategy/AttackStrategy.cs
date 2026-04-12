@@ -6,14 +6,14 @@ namespace Pong.Gameplay.Enemy.Succubus
     public class AttackStrategy : INodeStrategy
     {
         private readonly SuccubusEnemy _enemy;
-        
-        private float _telegraphTime = 1.0f; 
+
+        private float _telegraphTime = 1.0f;
         private float _recoveryTime = 1.5f;
         private float _attackRadius = 3.0f;
-        
+
         private float _timer = 0f;
         private bool _justFinished = false;
-        
+
         private enum AttackState { Telegraph, Recovery }
         private AttackState _currentState;
 
@@ -44,7 +44,7 @@ namespace Pong.Gameplay.Enemy.Succubus
                     {
                         _justFinished = true;
                         Reset();
-                        return Node.Status.Success; 
+                        return Node.Status.Success;
                     }
                     return Node.Status.Running;
             }
@@ -56,6 +56,29 @@ namespace Pong.Gameplay.Enemy.Succubus
 
         public bool IsInRecovery => _currentState == AttackState.Recovery;
 
+        private void ExecuteHit()
+        {
+            Debug.Log("<color=red>[Attack] Succubus usou Ataque em Área!</color>");
+
+            Collider[] hitColliders = Physics.OverlapSphere(_enemy.transform.position, _attackRadius);
+
+            foreach (var hit in hitColliders)
+            {
+                if (hit.CompareTag("Player"))
+                {
+                    Debug.Log($"<color=orange>Acertou no jogador: {hit.name}</color>");
+                }
+            }
+        }
+
+        public void Reset()
+        {
+            _currentState = AttackState.Telegraph;
+            _timer = 0f;
+            _justFinished = false;
+        }
+
+        #region Gizmos
         public struct GizmoData
         {
             public bool IsInTelegraph;
@@ -74,27 +97,6 @@ namespace Pong.Gameplay.Enemy.Succubus
                 MaxRadius = _attackRadius
             };
         }
-
-        private void ExecuteHit()
-        {
-            Debug.Log("<color=red>[Attack] Succubus usou Ataque em Área!</color>");
-            
-            Collider[] hitColliders = Physics.OverlapSphere(_enemy.transform.position, _attackRadius);
-            
-            foreach (var hit in hitColliders)
-            {
-                if (hit.CompareTag("Player"))
-                {
-                    Debug.Log($"<color=orange>Acertou no jogador: {hit.name}</color>");
-                }
-            }
-        }
-
-        public void Reset()
-        {
-            _currentState = AttackState.Telegraph;
-            _timer = 0f;
-            _justFinished = false;
-        }
+        #endregion
     }
 }
