@@ -23,6 +23,7 @@ namespace Pong.Systems.Input
 
         [SerializeField, Range(2, 4)] private int _playerCount = DEFAULT_PLAYERS;
         [SerializeField] private bool _enableKeyboardForTesting = false;
+        [SerializeField] private bool _forceFourPlayersForTesting = false;
 
 
         private int PlayerCount
@@ -43,6 +44,19 @@ namespace Pong.Systems.Input
             if (_enableKeyboardForTesting && Keyboard.current != null)
             {
                 SpawnPlayerForDevice(Keyboard.current);
+            }
+
+            if (_forceFourPlayersForTesting)
+            {
+                int playersToSpawn = Mathf.Min(4, MAX_PLAYERS);
+                for (int i = 0; i < playersToSpawn; i++)
+                {
+                    if (_activePlayers[i] == null)
+                    {
+                        SpawnPlayerForTestingWithoutDevice(i);
+                    }
+                }
+                Debug.Log($"{GAMEPAD_TAG} <color=orange>Força 4 players para testes ativada!</color>");
             }
         }
 
@@ -115,6 +129,31 @@ namespace Pong.Systems.Input
             };
 
             Debug.Log($"{GAMEPAD_TAG} Spawned player for device: {device.displayName} at index {index}");
+        }
+
+        private void SpawnPlayerForTestingWithoutDevice(int index)
+        {
+            var slot = _playerSlots[index];
+            if (slot.Prefab == null || slot.SpawnPoint == null) return;
+
+            // Spawna sem parear com device (apenas para testes)
+            var playerInput = PlayerInput.Instantiate(
+                slot.Prefab,
+                playerIndex: index,
+                pairWithDevice: null
+            );
+
+            playerInput.transform.position = slot.SpawnPoint.position;
+            playerInput.name = $"Player {index + 1} (Test)";
+
+            _activePlayers[index] = new PlayerData
+            {
+                Instance = playerInput.gameObject,
+                Device = null,
+                Side = slot.PlayerSide
+            };
+
+            Debug.Log($"{GAMEPAD_TAG} <color=orange>Spawned test player at index {index} (no device)</color>");
         }
 
         #region Device Helpers
