@@ -1,7 +1,7 @@
 using Pong.Gameplay.Player;
 using UnityEngine;
 
-namespace Pong.Gameplay.Enemy
+namespace Pong.Gameplay.Enemy.Cerberus
 {
     public class CerberusShot : MonoBehaviour
     {

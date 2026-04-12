@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using Pong.Systems.Graph;
 
-namespace Pong.Gameplay.Enemy.Succubus
+namespace Pong.Gameplay.Enemy.Cerberus
 {
-    public class PatrolStrategy : INodeStrategy
+    public class CerberusPatrolStrategy : INodeStrategy
     {
-        private readonly SuccubusEnemy _enemy;
+        private readonly CerberusEnemy _enemy;
         private readonly EnemyPathFinder _pathFinder;
 
         private List<GraphNode> _currentPath;
@@ -17,7 +17,7 @@ namespace Pong.Gameplay.Enemy.Succubus
         
         public int NodesBeforeReset { get; set; } = 2;
 
-        public PatrolStrategy(SuccubusEnemy enemy, EnemyPathFinder pathFinder)
+        public CerberusPatrolStrategy(CerberusEnemy enemy, EnemyPathFinder pathFinder)
         {
             _enemy = enemy;
             _pathFinder = pathFinder;

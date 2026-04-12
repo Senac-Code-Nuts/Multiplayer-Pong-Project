@@ -1,7 +1,5 @@
-using Pong.Framework.Strategy;
 using Pong.Framework.BehaviourTree;
 using UnityEngine;
-using Pong.Gameplay.Player; // Assumindo que o PlayerController está aqui
 
 namespace Pong.Gameplay.Enemy.Succubus
 {
