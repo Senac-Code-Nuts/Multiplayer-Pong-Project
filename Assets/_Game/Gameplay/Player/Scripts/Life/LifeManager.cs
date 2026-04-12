@@ -4,9 +4,11 @@ namespace Pong.Gameplay.Life
 {
     public class LifeManager : MonoBehaviour
     {
-        private static int _life;
+        public static LifeManager Instance { get; private set; }
+
+        private int _life;
         [SerializeField] private int _maxLife;
-        public static int Life => _life;
+        public int Life => _life;
         public int MaxLife => _maxLife;
 
         public delegate void OnLifeChangeDelegate(int changeValue);
@@ -17,10 +19,17 @@ namespace Pong.Gameplay.Life
 
         private void Awake()
         {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            Instance = this;
+
             _life = _maxLife;
         }
 
-        public static void ApplyDamage(int damage)
+        public void ApplyDamage(int damage)
         {
             if (damage == 0) return;
 
@@ -33,29 +42,18 @@ namespace Pong.Gameplay.Life
                 return;
             }
 
-            _life = newLife;            
+            _life = newLife;
 
             // checar se o evento tem algum listener
-            if (OnLifeChangeEvent != null)
-            {
-                OnLifeChangeEvent.Invoke(newLife);
-            }           
-        }        
+            OnLifeChangeEvent?.Invoke(newLife);
+        }
 
-        private static void Die()
+        private void Die()
         {
             // checa se o evento tem algum listener
-            if (OnDieEvent != null) { 
-            
-                OnDieEvent.Invoke();
-            
-            }
+            OnDieEvent?.Invoke();
 
-            if (OnLifeChangeEvent != null) {
-
-                OnLifeChangeEvent(0);
-
-            }
+            OnLifeChangeEvent?.Invoke(0);
         }
     }
 }
