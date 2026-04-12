@@ -116,6 +116,119 @@ namespace Pong.Gameplay.Enemy
             return _graph?.Nodes;
         }
 
+        /// <summary>
+        /// Calcula a média de peso das conexões de um nó (influência dinâmica).
+        /// </summary>
+        private float GetNodeAverageWeight(GraphNode node)
+        {
+            if (node == null || node.connections == null || node.connections.Count == 0)
+                return 1f;
+
+            float totalCost = 0f;
+            foreach (var conn in node.connections)
+            {
+                if (conn == null) continue;
+                float cost = _graph.GetDynamicCost(node, conn);
+                totalCost += cost;
+            }
+
+            return totalCost / node.connections.Count;
+        }
+
+        /// <summary>
+        /// Retorna apenas nós com peso médio acima de 1.0 (áreas influenciadas positivamente).
+        /// </summary>
+        public List<GraphNode> GetHighWeightNodes()
+        {
+            var result = new List<GraphNode>();
+            if (_graph?.Nodes == null) return result;
+
+            foreach (var node in _graph.Nodes)
+            {
+                if (node != null && GetNodeAverageWeight(node) > 1f)
+                {
+                    result.Add(node);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Encontra o node de alto peso mais próximo de uma posição.
+        /// Usado para pathfinding restrito em parry mode.
+        /// </summary>
+        public GraphNode GetClosestHighWeightNode(Vector3 position)
+        {
+            var highWeightNodes = GetHighWeightNodes();
+            if (highWeightNodes.Count == 0)
+                return GetClosestNode(position); // Fallback: qualquer node
+
+            GraphNode closest = null;
+            float minDistance = float.MaxValue;
+
+            foreach (var node in highWeightNodes)
+            {
+                if (node == null) continue;
+
+                float distance = Vector3.Distance(position, node.transform.position);
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    closest = node;
+                }
+            }
+
+            return closest ?? GetClosestNode(position);
+        }
+
+        /// <summary>
+        /// Retorna apenas nós com peso médio abaixo de 1.0 (áreas leves, sem influência).
+        /// </summary>
+        public List<GraphNode> GetLowWeightNodes()
+        {
+            var result = new List<GraphNode>();
+            if (_graph?.Nodes == null) return result;
+
+            foreach (var node in _graph.Nodes)
+            {
+                if (node != null && GetNodeAverageWeight(node) < 1f)
+                {
+                    result.Add(node);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Encontra o node de baixo peso mais próximo de uma posição.
+        /// Usado quando Minotaur NÃO está em parry mode (evita player).
+        /// </summary>
+        public GraphNode GetClosestLowWeightNode(Vector3 position)
+        {
+            var lowWeightNodes = GetLowWeightNodes();
+            if (lowWeightNodes.Count == 0)
+                return GetClosestNode(position); // Fallback: qualquer node
+
+            GraphNode closest = null;
+            float minDistance = float.MaxValue;
+
+            foreach (var node in lowWeightNodes)
+            {
+                if (node == null) continue;
+
+                float distance = Vector3.Distance(position, node.transform.position);
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    closest = node;
+                }
+            }
+
+            return closest ?? GetClosestNode(position);
+        }
+
         private List<GraphNode> ReconstructPath(Dictionary<GraphNode, GraphNode> previous, GraphNode start, GraphNode target)
         {
             List<GraphNode> path = new List<GraphNode>();
