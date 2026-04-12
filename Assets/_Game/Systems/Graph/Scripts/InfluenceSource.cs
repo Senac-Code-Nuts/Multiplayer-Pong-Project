@@ -5,16 +5,25 @@ namespace Pong.Systems.Graph
 {
     public class InfluenceSource : MonoBehaviour
     {
-        [field : SerializeField]public float Radius {get; private set;}
+        [field: SerializeField] public float Radius { get; private set; }
         public float weightMultiplier = 2f;
         [SerializeField] private AnimationCurve _fallof;
+
+        public enum InfluenceType { Repulsive, Attractive }
+
+        [SerializeField] private InfluenceType _type = InfluenceType.Repulsive;
+
 
         public float Evaluate(float distance)
         {
             float normalizedDistance = distance / Radius;
-
             float curveValue = _fallof.Evaluate(normalizedDistance);
 
+            if (_type == InfluenceType.Attractive)
+            {
+                return Mathf.Lerp(0.5f, 1f, curveValue);
+            }
+            
             return Mathf.Lerp(weightMultiplier, 1f, curveValue);
         }
 
