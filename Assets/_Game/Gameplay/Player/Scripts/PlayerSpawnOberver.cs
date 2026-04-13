@@ -1,6 +1,7 @@
 using UnityEngine;
 using Pong.Core;
 using Pong.Gameplay.Player;
+using Pong.Systems;
 
 namespace Pong.Gameplay
 {
@@ -16,7 +17,7 @@ namespace Pong.Gameplay
             PlayerSpawnEvents.OnPlayerSpawned -= HandlePlayerSpawned;
         }
 
-        private void HandlePlayerSpawned(GameObject playerObject, int playerIndex)
+        private void HandlePlayerSpawned(GameObject playerObject, int playerIndex, int playerSide)
         {
             if (playerObject == null) return;
 
@@ -24,6 +25,12 @@ namespace Pong.Gameplay
             if (playerActor == null) return;
 
             playerActor.SetPlayerOrder(playerIndex);
+
+            PlayerController playerController = playerObject.GetComponent<PlayerController>();
+            if (playerController != null)
+            {
+                playerController.SetPlayerSide((PlayerSide)playerSide);
+            }
         }
     }
 }

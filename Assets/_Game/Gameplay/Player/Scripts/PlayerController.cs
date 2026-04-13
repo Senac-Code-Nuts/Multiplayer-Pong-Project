@@ -47,6 +47,10 @@ namespace Pong.Gameplay.Player
             _inputReader.MoveEvent -= HandleMovement;
             _inputReader.PauseEvent -= OpenPauseMenu;
         }
+        public void SetPlayerSide(PlayerSide side)
+        {
+            _playerSide = side;
+        }
         private void HandleMovement(Vector2 movement)
         {
             if (_playerSide == PlayerSide.West || _playerSide == PlayerSide.East)
