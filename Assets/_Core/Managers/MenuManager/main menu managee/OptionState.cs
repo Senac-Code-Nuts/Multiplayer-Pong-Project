@@ -24,9 +24,13 @@ namespace MenuManager
 
         public override void LocalStart()
         {
-            float masterLevel = PlayerPrefs.GetFloat("MasterVolume");
-            float musicLevel = PlayerPrefs.GetFloat("MusicVolume");
-            float sfxLevel = PlayerPrefs.GetFloat("SFXVolume");
+
+            int masterLevel = PlayerPrefs.GetInt("MasterVolume");
+            int musicLevel = PlayerPrefs.GetInt("MusicVolume");
+            int sfxLevel = PlayerPrefs.GetInt("SFXVolume");
+            Debug.Log(masterLevel);
+            Debug.Log(musicLevel);
+            Debug.Log(sfxLevel);
             MasterSlid.value = masterLevel;
             MusicSlid.value = musicLevel;
             EffectSlid.value = sfxLevel;
@@ -39,20 +43,23 @@ namespace MenuManager
 
         public void Masterchanged()
         {
-            AudioManager.Instance.SetMasterVolume(MasterSlid.value* 0.25f,false);
-            PlayerPrefs.SetFloat("MasterVolume",MasterSlid.value);
+            AudioManager.Instance.SetMasterVolume(MasterSlid.value, false);
+            PlayerPrefs.SetInt("MasterVolume", (int)(MasterSlid.value));
+            PlayerPrefs.Save();
         }
 
         public void Musichanged()
         {
-            AudioManager.Instance.SetMusicVolume(MusicSlid.value* 0.25f,false);
-            PlayerPrefs.SetFloat("MusicVolume",MusicSlid.value);
+            AudioManager.Instance.SetMusicVolume(MusicSlid.value, false);
+            PlayerPrefs.SetInt("MusicVolume", (int)(MusicSlid.value));
+            PlayerPrefs.Save();
         }
 
         public void EffectsChanged()
         {
-            AudioManager.Instance.SetSFXVolume(EffectSlid.value* 0.25f,false);
-            PlayerPrefs.SetFloat("SFXVolume",EffectSlid.value);
+            AudioManager.Instance.SetSFXVolume(EffectSlid.value, false);
+            PlayerPrefs.SetInt("SFXVolume", (int)(EffectSlid.value));
+            PlayerPrefs.Save();
         }
     }
 }
