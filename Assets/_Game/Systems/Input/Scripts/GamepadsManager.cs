@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
@@ -30,6 +32,13 @@ namespace Pong.Systems.Input
         [SerializeField] private bool _forceFourPlayersForTesting = false;
 
         [SerializeField] private Transform _playerContainer;
+        [SerializeField] private GameObject _spawnVfxPrefab;
+        [SerializeField, Min(0f)] private float _spawnVfxDuration = 0.35f;
+        [SerializeField, Min(0f)] private float _spawnVfxLifetime = 2f;
+        [SerializeField, Min(0f)] private float _spawnSequenceGap = 0.15f;
+
+        private bool _initialSpawnCompleted;
+        private int _pendingInitialSpawns;
 
         private int PlayerCount
         {
@@ -51,27 +60,46 @@ namespace Pong.Systems.Input
 
         private void Start()
         {
+            _initialSpawnCompleted = false;
+            _pendingInitialSpawns = 0;
+
+            var initialDevices = new List<InputDevice>();
+            var hasSpawnRequests = false;
+
             foreach (var gamepad in Gamepad.all)
             {
-                SpawnPlayerForDevice(gamepad);
+                initialDevices.Add(gamepad);
             }
 
             if (_enableKeyboardForTesting && Keyboard.current != null)
             {
-                SpawnPlayerForDevice(Keyboard.current);
+                initialDevices.Add(Keyboard.current);
             }
 
             if (_forceFourPlayersForTesting)
             {
+                hasSpawnRequests = true;
+                _playerCount = MAX_PLAYERS;
                 int playersToSpawn = Mathf.Min(4, MAX_PLAYERS);
                 for (int i = 0; i < playersToSpawn; i++)
                 {
                     if (_activePlayers[i] == null)
                     {
-                        SpawnPlayerForTestingWithoutDevice(i);
+                        StartCoroutine(SpawnPlayerTestRoutine(i, _playerSlots[i], true));
                     }
                 }
                 Debug.Log($"{GAMEPAD_TAG} <color=orange>Força 4 players para testes ativada!</color>");
+            }
+
+            if (initialDevices.Count > 0)
+            {
+                hasSpawnRequests = true;
+                StartCoroutine(SpawnInitialPlayersSequence(initialDevices));
+            }
+
+            if (!hasSpawnRequests)
+            {
+                _initialSpawnCompleted = true;
             }
         }
 
@@ -98,7 +126,7 @@ namespace Pong.Systems.Input
             if (change == InputDeviceChange.Added && (device is Gamepad || (_enableKeyboardForTesting && device is Keyboard)))
             {
                 Debug.Log($"{GAMEPAD_TAG} Device added: {device.displayName}");
-                SpawnPlayerForDevice(device);
+                StartCoroutine(SpawnPlayerRoutine(device, false));
             }
 
             if (change == InputDeviceChange.Removed)
@@ -117,16 +145,42 @@ namespace Pong.Systems.Input
             }
         }
 
-        private void SpawnPlayerForDevice(InputDevice device)
+        private IEnumerator SpawnInitialPlayersSequence(List<InputDevice> initialDevices)
         {
-            if (IsDeviceAlreadyPaired(device)) return;
+            for (int i = 0; i < initialDevices.Count; i++)
+            {
+                yield return SpawnPlayerRoutine(initialDevices[i], true);
+
+                if (_spawnSequenceGap > 0f)
+                {
+                    yield return new WaitForSeconds(_spawnSequenceGap);
+                }
+            }
+        }
+
+        private IEnumerator SpawnPlayerRoutine(InputDevice device, bool countsAsInitialSpawn)
+        {
+            if (device == null || IsDeviceAlreadyPaired(device))
+            {
+                yield break;
+            }
 
             int index = GetFirstEmptyIndex();
-            if (index == -1) return;
-            if (index >= PlayerCount) return;
+            if (index == -1 || index >= PlayerCount)
+            {
+                yield break;
+            }
 
             var slot = _playerSlots[index];
-            if (slot.Prefab == null || slot.SpawnPoint == null) return;
+            if (slot.Prefab == null || slot.SpawnPoint == null)
+            {
+                yield break;
+            }
+
+            if (countsAsInitialSpawn)
+            {
+                _pendingInitialSpawns++;
+            }
 
             var playerInput = PlayerInput.Instantiate(
                 slot.Prefab,
@@ -138,6 +192,11 @@ namespace Pong.Systems.Input
             playerInput.name = $"Player {index + 1}";
             playerInput.transform.SetParent(_playerContainer, true);
 
+            if (countsAsInitialSpawn)
+            {
+                playerInput.gameObject.SetActive(false);
+            }
+
             _activePlayers[index] = new PlayerData
             {
                 Instance = playerInput.gameObject,
@@ -148,12 +207,29 @@ namespace Pong.Systems.Input
             PlayerSpawnEvents.RaisePlayerSpawned(playerInput.gameObject, index);
 
             Debug.Log($"{GAMEPAD_TAG} Spawned player for device: {device.displayName} at index {index}");
+
+            if (countsAsInitialSpawn)
+            {
+                _pendingInitialSpawns = Mathf.Max(0, _pendingInitialSpawns - 1);
+
+                if (_pendingInitialSpawns == 0)
+                {
+                    _initialSpawnCompleted = true;
+                }
+            }
         }
 
-        private void SpawnPlayerForTestingWithoutDevice(int index)
+        private IEnumerator SpawnPlayerTestRoutine(int index, PlayerSlot slot, bool countsAsInitialSpawn)
         {
-            var slot = _playerSlots[index];
-            if (slot.Prefab == null || slot.SpawnPoint == null) return;
+            if (slot.Prefab == null || slot.SpawnPoint == null)
+            {
+                yield break;
+            }
+
+            if (countsAsInitialSpawn)
+            {
+                _pendingInitialSpawns++;
+            }
 
             // Spawna sem parear com device (apenas para testes)
             var playerInput = PlayerInput.Instantiate(
@@ -165,6 +241,11 @@ namespace Pong.Systems.Input
             playerInput.transform.position = slot.SpawnPoint.position;
             playerInput.name = $"Player {index + 1} (Test)";
 
+            if (countsAsInitialSpawn)
+            {
+                playerInput.gameObject.SetActive(false);
+            }
+
             _activePlayers[index] = new PlayerData
             {
                 Instance = playerInput.gameObject,
@@ -173,6 +254,76 @@ namespace Pong.Systems.Input
             };
 
             Debug.Log($"{GAMEPAD_TAG} <color=orange>Spawned test player at index {index} (no device)</color>");
+
+            if (countsAsInitialSpawn)
+            {
+                _pendingInitialSpawns = Mathf.Max(0, _pendingInitialSpawns - 1);
+
+                if (_pendingInitialSpawns == 0)
+                {
+                    _initialSpawnCompleted = true;
+                }
+            }
+        }
+
+        public IEnumerator RevealPlayerRoutine(int index)
+        {
+            if (index < 0 || index >= _activePlayers.Length)
+            {
+                yield break;
+            }
+
+            PlayerData playerData = _activePlayers[index];
+            if (playerData == null || playerData.Instance == null)
+            {
+                yield break;
+            }
+
+            Transform spawnPoint = _playerSlots[index].SpawnPoint;
+            if (spawnPoint != null && _spawnVfxPrefab != null)
+            {
+                GameObject vfxInstance = Instantiate(
+                    _spawnVfxPrefab,
+                    spawnPoint.position,
+                    spawnPoint.rotation
+                );
+
+                if (_spawnVfxLifetime > 0f)
+                {
+                    Destroy(vfxInstance, _spawnVfxLifetime);
+                }
+
+                if (_spawnVfxDuration > 0f)
+                {
+                    yield return new WaitForSeconds(_spawnVfxDuration);
+                }
+            }
+
+            playerData.Instance.SetActive(true);
+        }
+
+        private IEnumerator PlaySpawnVfxRoutine(Transform spawnPoint)
+        {
+            if (_spawnVfxPrefab == null || spawnPoint == null)
+            {
+                yield break;
+            }
+
+            GameObject vfxInstance = Instantiate(
+                _spawnVfxPrefab,
+                spawnPoint.position,
+                spawnPoint.rotation
+            );
+
+            if (_spawnVfxLifetime > 0f)
+            {
+                Destroy(vfxInstance, _spawnVfxLifetime);
+            }
+
+            if (_spawnVfxDuration > 0f)
+            {
+                yield return new WaitForSeconds(_spawnVfxDuration);
+            }
         }
 
         public GameObject[] GetActivePlayerControllers()
@@ -183,6 +334,44 @@ namespace Pong.Systems.Input
                 playerObjects[i] = _activePlayers[i]?.Instance;
             }
             return playerObjects;
+        }
+
+        public bool IsInitialSpawnCompleted => _initialSpawnCompleted;
+
+        public int GetPlayerCount()
+        {
+            return _playerCount;
+        }
+
+        public List<Transform> GetActivePlayerTransforms()
+        {
+            var activePlayers = new List<Transform>();
+
+            for (int i = 0; i < _activePlayers.Length; i++)
+            {
+                if (_activePlayers[i]?.Instance != null)
+                {
+                    activePlayers.Add(_activePlayers[i].Instance.transform);
+                }
+            }
+
+            return activePlayers;
+        }
+
+        public void ActivatePlayerAtIndex(int index)
+        {
+            if (index < 0 || index >= _activePlayers.Length)
+            {
+                return;
+            }
+
+            GameObject playerObject = _activePlayers[index]?.Instance;
+            if (playerObject == null || playerObject.activeSelf)
+            {
+                return;
+            }
+
+            playerObject.SetActive(true);
         }
 
         #region Device Helpers

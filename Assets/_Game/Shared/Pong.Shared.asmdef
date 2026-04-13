@@ -1,7 +1,9 @@
 {
     "name": "Pong.Shared",
     "rootNamespace": "Pong.Shared",
-    "references": [],
+    "references": [
+        "GUID:1b8f9525283e91040aab8b6b72c7e4bd"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
