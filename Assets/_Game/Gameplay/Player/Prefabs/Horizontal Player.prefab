@@ -257,7 +257,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e69c4d6feb198184cb3f3d07a901d053, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Radius>k__BackingField: 9
+  <Radius>k__BackingField: 5
   weightMultiplier: 3
   _fallof:
     serializedVersion: 2
