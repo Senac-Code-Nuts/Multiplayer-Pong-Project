@@ -45,9 +45,9 @@ namespace Pong.Systems.Audio {
         }
 
         private void Start() {
-            int masterLevel = PlayerPrefs.GetInt("MasterVolume", 4);
-            int musicLevel = PlayerPrefs.GetInt("MusicVolume", 4);
-            int sfxLevel = PlayerPrefs.GetInt("SFXVolume", 4);
+            float masterLevel = PlayerPrefs.GetFloat("MasterVolume",4f);
+            float musicLevel = PlayerPrefs.GetFloat("MusicVolume",4f);
+            float sfxLevel = PlayerPrefs.GetFloat("SFXVolume",4f);
 
             SetMasterVolume(masterLevel * 0.25f);
             SetMusicVolume(musicLevel * 0.25f);
