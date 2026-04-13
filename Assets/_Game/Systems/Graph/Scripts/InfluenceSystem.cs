@@ -7,6 +7,7 @@ namespace Pong.Systems.Graph
     {
         [SerializeField] private List<InfluenceSource> _sources = new List<InfluenceSource>();
 
+
         public float GetMultiplier(Vector3 position)
         {
             float total = 0f;
@@ -22,6 +23,14 @@ namespace Pong.Systems.Graph
             }
 
             return 1f + total;
+        }
+
+        public void RegisterSource(InfluenceSource source)
+        {
+            if (!_sources.Contains(source))
+            {
+                _sources.Add(source);
+            }
         }
     }
 }

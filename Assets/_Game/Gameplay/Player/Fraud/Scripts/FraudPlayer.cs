@@ -77,7 +77,7 @@ namespace Pong.Gameplay.Player
                     Quaternion.identity
                 );
 
-                copyRelic.SetAsFraudCopy(true);
+                //copyRelic.SetAsFraudCopy(true);
             }
         }
 

@@ -7,6 +7,9 @@ namespace Pong.Gameplay.Player
 {
     public abstract class PlayerActor : Actor
     {
+        [Header("Player Info")]
+        [SerializeField] protected int _playerOrder = -1;
+
         [Header("Input")]
         [SerializeField] protected InputReader _inputReader;
 
@@ -17,13 +20,15 @@ namespace Pong.Gameplay.Player
         [SerializeField] protected int _level = 1;
 
         [Header("Shield")]
+        [SerializeField] protected GameObject _shieldVisualPrefab;
         [SerializeField] protected bool _hasShield = false;
-        [SerializeField] protected GameObject _activeShieldVisual;
         [SerializeField] protected Vector3 _shieldOffset = new Vector3(0f, 1.8f, 0f);
-        [SerializeField] protected Vector3 _shieldVisualScale = new Vector3(0f, 0f, 0f);
+        [SerializeField] protected Vector3 _shieldVisualScale = new Vector3(0.5f, 0.5f, 0.5f);
+        protected GameObject _activeShieldVisual;
 
         protected bool _canUseAbility = true;
 
+        public int PlayerOrder => _playerOrder;
         public bool HasShield => _hasShield;
 
         protected override void Awake()
@@ -31,10 +36,15 @@ namespace Pong.Gameplay.Player
             base.Awake();
         }
 
+        public void SetPlayerOrder(int playerOrder)
+        {
+            _playerOrder = playerOrder;
+        }
+
         protected virtual void LevelUp()
         {
             _level++;
-            _level = Mathf.Clamp( _level, 1, 4);
+            _level = Mathf.Clamp(_level, 1, 4);
         }
 
         protected virtual void OnEnable()
@@ -81,19 +91,20 @@ namespace Pong.Gameplay.Player
             base.ApplyDamage(damage);
         }
 
-        public void ReceiveShield(GameObject shieldVisualPrefab = null)
+        public void ReceiveShield()
         {
             _hasShield = true;
 
             if (_activeShieldVisual != null)
             {
                 Destroy(_activeShieldVisual);
+                _activeShieldVisual = null;
             }
 
-            if (shieldVisualPrefab != null)
+            if (_shieldVisualPrefab != null)
             {
                 _activeShieldVisual = Instantiate(
-                    shieldVisualPrefab,
+                    _shieldVisualPrefab,
                     transform.position + _shieldOffset,
                     Quaternion.identity
                 );
