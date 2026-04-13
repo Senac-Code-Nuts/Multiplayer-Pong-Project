@@ -1,9 +1,10 @@
 using UnityEngine;
 using Pong.Gameplay.Actors;
+using Pong.Gameplay.Enemy;
 
 namespace Pong.Gameplay.Boss
 {
-    public abstract class BossActor : Actor
+    public abstract class BossActor : EnemyActor
     {
         [Header("Boss")]
         [SerializeField, Range(0, 3)] protected int _phase;
@@ -41,7 +42,6 @@ namespace Pong.Gameplay.Boss
             _phase++;
         }
 
-        public abstract void ExecuteAttack();
 
         protected override void OnDamageTaken()
         {
