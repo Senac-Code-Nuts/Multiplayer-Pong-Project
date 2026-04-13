@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using UnityEditor;
+//using UnityEditor;
 using UnityEngine;
 
 namespace Pong.Systems.Graph
@@ -62,23 +62,23 @@ namespace Pong.Systems.Graph
             }
         }
 
-        [CustomEditor(typeof(GraphNode))]
-        private class GraphNodeEditor : Editor
-        {
-            public override void OnInspectorGUI()
-            {
-                base.OnInspectorGUI();
+        //[CustomEditor(typeof(GraphNode))]
+        //private class GraphNodeEditor : Editor
+        //{
+        //    public override void OnInspectorGUI()
+        //    {
+        //        base.OnInspectorGUI();
 
-                GUILayout.Space(10);
+        //        GUILayout.Space(10);
 
-                GraphNode node = (GraphNode)target;
+        //        GraphNode node = (GraphNode)target;
 
-                if (GUILayout.Button("Connect To Target"))
-                {
-                    node.ConnectToTarget();
-                }
-            }
-        }
+        //        if (GUILayout.Button("Connect To Target"))
+        //        {
+        //            node.ConnectToTarget();
+        //        }
+        //    }
+        //}
     }
 
 }
