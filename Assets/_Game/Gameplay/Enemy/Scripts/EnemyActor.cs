@@ -9,12 +9,13 @@ namespace Pong.Gameplay.Enemy
 
         protected override void OnDamageTaken()
         {
-            Debug.Log($"{gameObject.name} enemy took damage.");
+            Debug.Log($"{gameObject.name} enemy took damage. Health: {_currentHealth}/{_maxHealth}");
         }
-
         protected override void OnDeath()
         {
-            Debug.Log($"{gameObject.name} enemy died.");
+            StopAllCoroutines();
+            SetVulnerable(false);
+            gameObject.SetActive(false);
         }
     }
 }
