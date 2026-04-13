@@ -23,6 +23,7 @@ namespace Pong.Shared.Management
         [SerializeField] private GamepadsManager _gamepadsManager;
         [SerializeField] private MonoBehaviour _matchUIManagerBehaviour;
         [SerializeField] private List<MonoBehaviour> _enemyControllers = new List<MonoBehaviour>();
+        [SerializeField] private GameObject _relicObject;
 
         [Header("Flow")]
         [SerializeField, Min(0.05f)] private float _playerSpawnPollInterval = 0.1f;
@@ -40,12 +41,14 @@ namespace Pong.Shared.Management
             Instance = this;
 
             SetEnemiesActive(false);
+            SetRelicActive(false);
         }
 
         private void Start()
         {
             _currentState = MatchState.Setup;
             SetEnemiesActive(false);
+            SetRelicActive(false);
 
             if (_gamepadsManager == null)
             {
@@ -73,6 +76,7 @@ namespace Pong.Shared.Management
             TriggerGoEvent();
             yield return WaitForGoToFinish();
             SetEnemiesActive(true);
+            SetRelicActive(true);
         }
 
         private IEnumerator WaitForPlayersToSpawn()
@@ -221,6 +225,16 @@ namespace Pong.Shared.Management
 
                 enemyController.gameObject.SetActive(isActive);
             }
+        }
+
+        private void SetRelicActive(bool isActive)
+        {
+            if (_relicObject == null)
+            {
+                return;
+            }
+
+            _relicObject.SetActive(isActive);
         }
 
         private void TriggerGoEvent()

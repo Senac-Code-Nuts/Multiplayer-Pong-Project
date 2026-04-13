@@ -2246,6 +2246,7 @@ MonoBehaviour:
   _matchUIManagerBehaviour: {fileID: 406832674}
   _enemyControllers:
   - {fileID: 1119407289}
+  _relicObject: {fileID: 921686341}
   _playerSpawnPollInterval: 0.1
   _currentState: 0
 --- !u!1 &1896219837
@@ -2306,8 +2307,7 @@ MonoBehaviour:
     SpawnPoint: {fileID: 1143474401}
     PlayerSide: 3
   _playerCount: 2
-  _enableKeyboardForTesting: 1
-  _forceFourPlayersForTesting: 1
+  _enableKeyboardForTesting: 0
   _playerContainer: {fileID: 1355683865}
   _spawnVfxPrefab: {fileID: 5024307755480610926, guid: 29d2687f8ea854841bfbcbcbebe3a814, type: 3}
   _spawnVfxDuration: 0.35

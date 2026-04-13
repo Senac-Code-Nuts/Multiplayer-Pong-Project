@@ -8,8 +8,7 @@ namespace Pong.Gameplay.Relics
     public class Relic : MonoBehaviour
     {
         [Header("Speed")]
-        [SerializeField, Range(0f, 10f)] private float _speed;
-        [SerializeField, Range(1f, 4f)] private float _attackBoostMultiplier = 1.5f;
+        [SerializeField, Range(0f, 25f)] private float _speed;
 
         [Header("Visual")]
         [SerializeField] private Renderer _renderer;
@@ -20,9 +19,7 @@ namespace Pong.Gameplay.Relics
 
         private Vector3 _direction;
         private Rigidbody _rigidBody;
-        private float _baseSpeed;
         private float _currentSpeed;
-        private bool _returnToBaseSpeedOnNextCollision;
         private Material _material;
         private Color _defaultColor;
 
@@ -40,11 +37,16 @@ namespace Pong.Gameplay.Relics
                 _defaultColor = _material.color;
             }
 
-            _baseSpeed = _speed;
             _currentSpeed = _speed;
         }
 
         private void Start()
+        {
+            _rigidBody.linearVelocity = Vector3.zero;
+            UpdateVisual(false);
+        }
+
+        private void OnEnable()
         {
             Launch();
         }
@@ -55,7 +57,7 @@ namespace Pong.Gameplay.Relics
             float dirZ = Random.Range(-1f, 1f);
 
             _direction = new Vector3(dirX, 0, dirZ).normalized;
-            _currentSpeed = _baseSpeed;
+            _currentSpeed = _speed;
             _rigidBody.linearVelocity = _direction * _currentSpeed;
             UpdateVisual(false);
         }
@@ -69,6 +71,12 @@ namespace Pong.Gameplay.Relics
         {
             TryApplyDamage(collision);
 
+            if (collision.collider.TryGetComponent(out EnemyActor actor) || collision.collider.GetComponentInParent<EnemyActor>() != null)
+            {
+                Reflect(collision);
+                return;
+            }
+
             if (collision.gameObject.TryGetComponent(out MinotaurEnemy minotaur) && minotaur.ConsumeCounterAttackTriggered())
             {
                 Debug.Log("<color=cyan>[Relic] Minotaur parry collision detected. Speed boost applied on hit.</color>");
@@ -76,11 +84,6 @@ namespace Pong.Gameplay.Relics
             }
 
             Reflect(collision);
-
-            if (_returnToBaseSpeedOnNextCollision)
-            {
-                RestoreBaseSpeed();
-            }
         }
 
         private void Reflect(Collision collision)
@@ -100,10 +103,10 @@ namespace Pong.Gameplay.Relics
 
         public void InvertDirection()
         {
-            InvertDirection(_direction, false, _attackBoostMultiplier);
+            InvertDirection(_direction);
         }
 
-        public void InvertDirection(Vector3 attackAxis, bool shouldBoost = false, float speedMultiplier = 1.5f)
+        public void InvertDirection(Vector3 attackAxis)
         {
             if (attackAxis.sqrMagnitude < 0.0001f)
             {
@@ -122,18 +125,8 @@ namespace Pong.Gameplay.Relics
             }
 
             _direction = _direction.normalized;
-            _currentSpeed = shouldBoost ? _baseSpeed * speedMultiplier : _baseSpeed;
+            _currentSpeed = _speed;
             _rigidBody.linearVelocity = _direction * _currentSpeed;
-            _returnToBaseSpeedOnNextCollision = shouldBoost;
-            UpdateVisual(shouldBoost);
-        }
-
-        private void RestoreBaseSpeed()
-        {
-            _currentSpeed = _baseSpeed;
-            _rigidBody.linearVelocity = _direction * _currentSpeed;
-            _returnToBaseSpeedOnNextCollision = false;
-            Debug.Log("<color=gray>[Relic] Returned to base speed.</color>");
             UpdateVisual(false);
         }
 

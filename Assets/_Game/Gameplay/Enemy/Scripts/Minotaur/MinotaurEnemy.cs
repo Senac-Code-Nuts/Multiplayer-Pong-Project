@@ -195,8 +195,8 @@ namespace Pong.Gameplay.Enemy
                     attackAxis.y = 0f;
                 }
 
-                Debug.Log("<color=cyan>[Minotaur] Parry hit. Reflecting relic and boosting speed.</color>");
-                _relic.InvertDirection(attackAxis, true, _attackBoostMultiplier);
+                Debug.Log("<color=cyan>[Minotaur] Parry hit. Reflecting relic.</color>");
+                _relic.InvertDirection(attackAxis);
             }
 
             _hasCounterAttackTriggered = true;

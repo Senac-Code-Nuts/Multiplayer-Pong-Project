@@ -3,8 +3,18 @@ using Pong.Gameplay.Actors;
 
 namespace Pong.Gameplay.Enemy
 {
+    [RequireComponent(typeof(Rigidbody))]
     public abstract class EnemyActor : Actor
     {
+        private Rigidbody _rigidBody;
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            _rigidBody = GetComponent<Rigidbody>();
+        }
+
         public abstract void ExecuteAttack();
 
         protected override void OnDamageTaken()
