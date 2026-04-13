@@ -1,0 +1,143 @@
+using UnityEngine;
+using Pong.Gameplay.Actors;
+using Pong.Gameplay.Enemy;
+
+namespace Pong.Gameplay.Relics
+{
+    [RequireComponent(typeof(Rigidbody))]
+    public class Relic : MonoBehaviour
+    {
+        [Header("Speed")]
+        [SerializeField, Range(0f, 25f)] private float _speed;
+
+        [Header("Visual")]
+        [SerializeField] private Renderer _renderer;
+        [SerializeField] private Color _boostColor = Color.yellow;
+
+        [Header("Damage")]
+        [SerializeField] private int _damage;
+
+        private Vector3 _direction;
+        private Rigidbody _rigidBody;
+        private float _currentSpeed;
+        private Material _material;
+        private Color _defaultColor;
+
+        private void Awake()
+        {
+            _rigidBody = GetComponent<Rigidbody>();
+            if (_renderer == null)
+            {
+                _renderer = GetComponent<Renderer>();
+            }
+
+            if (_renderer != null)
+            {
+                _material = _renderer.material;
+                _defaultColor = _material.color;
+            }
+
+            _currentSpeed = _speed;
+        }
+
+        private void Start()
+        {
+            _rigidBody.linearVelocity = Vector3.zero;
+            UpdateVisual(false);
+        }
+
+        private void OnEnable()
+        {
+            Launch();
+        }
+
+        private void Launch()
+        {
+            float dirX = Random.Range(-1f, 1f);
+            float dirZ = Random.Range(-1f, 1f);
+
+            _direction = new Vector3(dirX, 0, dirZ).normalized;
+            _currentSpeed = _speed;
+            _rigidBody.linearVelocity = _direction * _currentSpeed;
+            UpdateVisual(false);
+        }
+
+        private void FixedUpdate()
+        {
+            _rigidBody.linearVelocity = _direction.normalized * _currentSpeed;
+        }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            TryApplyDamage(collision);
+
+            if (collision.collider.TryGetComponent(out EnemyActor actor) || collision.collider.GetComponentInParent<EnemyActor>() != null)
+            {
+                Reflect(collision);
+                return;
+            }
+
+            if (collision.gameObject.TryGetComponent(out MinotaurEnemy minotaur) && minotaur.ConsumeCounterAttackTriggered())
+            {
+                Debug.Log("<color=cyan>[Relic] Minotaur parry collision detected. Speed boost applied on hit.</color>");
+                return;
+            }
+
+            Reflect(collision);
+        }
+
+        private void Reflect(Collision collision)
+        {
+            Vector3 normal = collision.contacts[0].normal;
+            _direction = Vector3.Reflect(_direction, normal);
+            _rigidBody.linearVelocity = _direction.normalized * _currentSpeed;
+        }
+
+        private void TryApplyDamage(Collision collision)
+        {
+            if (collision.gameObject.TryGetComponent(out IDamageable damageable))
+            {
+                damageable.ApplyDamage(_damage);
+            }
+        }
+
+        public void InvertDirection()
+        {
+            InvertDirection(_direction);
+        }
+
+        public void InvertDirection(Vector3 attackAxis)
+        {
+            if (attackAxis.sqrMagnitude < 0.0001f)
+            {
+                attackAxis = _direction;
+            }
+
+            attackAxis.y = 0f;
+
+            if (Mathf.Abs(attackAxis.x) >= Mathf.Abs(attackAxis.z))
+            {
+                _direction.x *= -1f;
+            }
+            else
+            {
+                _direction.z *= -1f;
+            }
+
+            _direction = _direction.normalized;
+            _currentSpeed = _speed;
+            _rigidBody.linearVelocity = _direction * _currentSpeed;
+            UpdateVisual(false);
+        }
+
+        private void UpdateVisual(bool isBoosted)
+        {
+            if (_material == null)
+            {
+                return;
+            }
+
+            _material.color = isBoosted ? _boostColor : _defaultColor;
+        }
+    }
+}

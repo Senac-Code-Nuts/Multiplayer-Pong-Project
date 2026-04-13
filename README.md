@@ -39,13 +39,11 @@
 
 O projeto segue uma organização feature-based. Veja o objetivo de cada pasta principal:
 
-- **_Core/**: Scripts e assets centrais, utilitários e sistemas fundamentais usados por todo o projeto (ex: Input, Managers).
-- **_Dev/**: Onde você coloca arquivos, scripts, ferramentas, cenas ou assets que são usados apenas durante o desenvolvimento e não vão para produção.
-- **_Shared/**: Assets e scripts compartilhados entre diferentes features.
-- **_ThirdParty/**: Plugins, assets e bibliotecas de terceiros.
-- **Features/**: Cada subpasta representa uma feature (funcionalidade) do jogo. Dentro de cada feature, organize por Animations, Audio, Materials, Prefabs, Scripts e UI.
-- **Scenes/**: Cenas do Unity usadas no projeto.
-- **Settings/**: Configurações globais do projeto, como perfis de renderização, áudio, qualidade, etc.
+- **Assets/_Game/Core/:** sistemas base do jogo, como bootstrap e troca de estados.
+- **Assets/_Game/Gameplay/:** regras e conteúdo de jogo por categoria de feature (Actors, Player, Enemy, Boss, Relic etc.).
+- **Assets/_Game/Shared/:** código e assets reutilizáveis entre múltiplas áreas do projeto.
+- **Assets/_Game/Systems/:** sistemas transversais (Audio, Input, Game Manager, Pause Menu, Graph, Enums).
+- **Assets/_Game/UI/:** camada de interface do jogo.
 
 Mantenha cada asset na pasta correspondente para garantir organização e facilitar o trabalho em equipe.
 

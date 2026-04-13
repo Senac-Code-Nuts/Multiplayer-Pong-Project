@@ -1,10 +1,13 @@
 using UnityEngine;
 using Pong.Systems.Input;
 using Pong.Systems;
+using Pong.Systems.Graph;
 
 namespace Pong.Gameplay.Player
 {
     [RequireComponent(typeof(InputReader))]
+    [RequireComponent(typeof(InfluenceSource))]
+    [RequireComponent(typeof(Rigidbody))]
     public class PlayerController : MonoBehaviour
     {
         [SerializeField, Range(0f, 10f)] float _speed = 10f;
@@ -14,19 +17,35 @@ namespace Pong.Gameplay.Player
         private Vector2 _moveInput;
         [SerializeField] private PlayerSide _playerSide;
 
+        private InfluenceSource _influenceSource;
+        [SerializeField] private InfluenceSystem _influenceSystem;
+        private Rigidbody _rigidBody;
+
         private void Awake()
         {
             _inputReader = GetComponent<InputReader>();
+            _influenceSource = GetComponent<InfluenceSource>();
+            _influenceSystem = FindFirstObjectByType<InfluenceSystem>();
+            _rigidBody = GetComponent<Rigidbody>();
+        }
+        private void Start()
+        {
+            if (_influenceSystem != null)
+            {
+                _influenceSystem.RegisterSource(_influenceSource);
+            }
         }
 
         private void OnEnable()
         {
             _inputReader.MoveEvent += HandleMovement;
+            _inputReader.PauseEvent += OpenPauseMenu;
         }
 
         private void OnDisable()
         {
             _inputReader.MoveEvent -= HandleMovement;
+            _inputReader.PauseEvent -= OpenPauseMenu;
         }
         private void HandleMovement(Vector2 movement)
         {
@@ -43,8 +62,11 @@ namespace Pong.Gameplay.Player
         {
             Vector3 movement = new Vector3(_moveInput.x, 0, _moveInput.y);
 
-            transform.Translate(movement * _speed * Time.fixedDeltaTime);
+            _rigidBody.MovePosition(_rigidBody.position + movement * _speed * Time.fixedDeltaTime);
+        }
+        private void OpenPauseMenu()
+        {
+            PauseMenuManager.Instance.TogglePauseMenu();
         }
     }
-
 }
