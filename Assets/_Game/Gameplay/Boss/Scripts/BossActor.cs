@@ -4,7 +4,7 @@ using Pong.Gameplay.Enemy;
 
 namespace Pong.Gameplay.Boss
 {
-    public abstract class BossActor : EnemyActor
+    public abstract class BossActor : Actor
     {
         [Header("Boss")]
         [SerializeField, Range(0, 3)] protected int _phase;

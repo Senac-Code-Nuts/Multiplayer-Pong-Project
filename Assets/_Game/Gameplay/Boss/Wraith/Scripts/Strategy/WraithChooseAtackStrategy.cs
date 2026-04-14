@@ -32,13 +32,11 @@ namespace Pong.Gameplay.Boss
             }
 
             _lastAttack = choice;
+            Debug.Log("ESCOLHEU ATAQUE: " + choice);
 
             _boss.SetAttack((WrathBoss.AttackType)choice);
+            _boss.StartAttack();
             return Node.Status.Success;
-        }
-        public void Execute()
-        {
-        
         }
     }
 }
