@@ -5,7 +5,7 @@ using Pong.Gameplay.Boss;
 using Pong.Gameplay.Enemy;
 using UnityEngine;
 
-namespace Pong.Gameplay
+namespace Pong.Gameplay.Boss
 {
     public class WrathMoveGraphStrategy : EnemyPathStrategyBase
     {

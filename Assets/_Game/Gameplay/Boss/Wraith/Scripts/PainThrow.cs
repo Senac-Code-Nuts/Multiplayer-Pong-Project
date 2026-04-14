@@ -4,6 +4,7 @@ namespace Pong.Gameplay.Boss
 {
     public class PainThrow : MonoBehaviour
     {
+        [SerializeField] private float _painDamage;
         private Rigidbody _rigidBody;
         private bool _isStuck = false;
 

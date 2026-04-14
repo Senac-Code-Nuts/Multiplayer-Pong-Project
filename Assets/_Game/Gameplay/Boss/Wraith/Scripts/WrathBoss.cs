@@ -21,6 +21,7 @@ namespace Pong.Gameplay.Boss
         [SerializeField] private float _painRotateSpeed;
 
         [Header("Meelee Settings")]
+        [SerializeField] private float _melleeDamage;
         [field : SerializeField] public float TelegraphTime {get; private set;} = 1.0f;
         [field : SerializeField] public float ChaseDistance {get; private set;} = 2.5f;
         [field : SerializeField]  public float RecoveryTime {get; private set;} = 1.5f;

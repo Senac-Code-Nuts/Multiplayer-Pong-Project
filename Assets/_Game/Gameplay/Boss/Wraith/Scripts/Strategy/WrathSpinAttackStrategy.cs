@@ -99,11 +99,6 @@ namespace Pong.Gameplay.Boss
             return Node.Status.Running;
         }
 
-        private void ExecuteHit()
-        {
-
-        }
-
         private Transform GetClosestPlayer()
         {
             GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
