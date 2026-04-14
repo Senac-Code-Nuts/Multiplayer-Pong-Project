@@ -64,7 +64,7 @@ namespace Pong.Gameplay.Relics
 
         private void FixedUpdate()
         {
-            _rigidBody.linearVelocity = _direction.normalized * _currentSpeed;
+            _rigidBody.linearVelocity = _rigidBody.linearVelocity.normalized * _currentSpeed;
         }
 
         private void OnCollisionEnter(Collision collision)
@@ -91,6 +91,7 @@ namespace Pong.Gameplay.Relics
             Vector3 normal = collision.contacts[0].normal;
             _direction = Vector3.Reflect(_direction, normal);
             _rigidBody.linearVelocity = _direction.normalized * _currentSpeed;
+            _rigidBody.linearVelocity = _rigidBody.linearVelocity.normalized * _currentSpeed;
         }
 
         private void TryApplyDamage(Collision collision)
