@@ -1,5 +1,6 @@
 using UnityEngine;
 using Pong.Gameplay.Actors;
+using Pong.Gameplay.Enemy;
 
 namespace Pong.Gameplay.Boss
 {
