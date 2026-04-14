@@ -19,7 +19,7 @@ namespace Pong.Gameplay.Enemy.Succubus
             _cachedPlayers = null;
         }
 
-        public void SetTarget()
+        public void SetTarget() 
         {
             CachePlayersIfNeeded();
             _target = FindFarthestPlayer()?.transform;
@@ -29,22 +29,7 @@ namespace Pong.Gameplay.Enemy.Succubus
         {
             if (_cachedPlayers != null) return;
 
-            var manager = GamepadsManager.Instance;
-            if (manager != null)
-            {
-                GameObject[] gameObjects = manager.GetActivePlayerControllers();
-                
-                _cachedPlayers = new PlayerController[gameObjects.Length];
-                for (int i = 0; i < gameObjects.Length; i++)
-                {
-                    _cachedPlayers[i] = gameObjects[i]?.GetComponent<PlayerController>();
-                }
-            }
-            else
-            {
-                Debug.LogWarning("[Chase] GamepadsManager não encontrado na cena!");
-                _cachedPlayers = new PlayerController[0];
-            }
+           
         }
 
         private PlayerController FindFarthestPlayer()

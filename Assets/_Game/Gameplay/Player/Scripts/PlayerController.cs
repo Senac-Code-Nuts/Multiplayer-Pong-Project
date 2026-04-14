@@ -7,7 +7,6 @@ namespace Pong.Gameplay.Player
 {
     [RequireComponent(typeof(InputReader))]
     [RequireComponent(typeof(InfluenceSource))]
-    [RequireComponent(typeof(Rigidbody))]
     public class PlayerController : MonoBehaviour
     {
         [SerializeField, Range(0f, 10f)] float _speed = 10f;
@@ -19,14 +18,15 @@ namespace Pong.Gameplay.Player
 
         private InfluenceSource _influenceSource;
         [SerializeField] private InfluenceSystem _influenceSystem;
-        private Rigidbody _rigidBody;
+
+        private Rigidbody _rigidbody;
 
         private void Awake()
         {
             _inputReader = GetComponent<InputReader>();
             _influenceSource = GetComponent<InfluenceSource>();
             _influenceSystem = FindFirstObjectByType<InfluenceSystem>();
-            _rigidBody = GetComponent<Rigidbody>();
+            _rigidbody = GetComponent<Rigidbody>();
         }
         private void Start()
         {
@@ -55,19 +55,27 @@ namespace Pong.Gameplay.Player
         {
             if (_playerSide == PlayerSide.West || _playerSide == PlayerSide.East)
             {
-                _moveInput = new Vector2(0, movement.y);
+                _moveInput.y = movement.y;
             }
             else
             {
-                _moveInput = new Vector2(movement.x, 0);
+                _moveInput.x = movement.x;
             }
         }
         private void FixedUpdate()
         {
             Vector3 movement = new Vector3(_moveInput.x, 0, _moveInput.y);
 
-            _rigidBody.MovePosition(_rigidBody.position + movement * _speed * Time.fixedDeltaTime);
+            //transform.Translate(movement * _speed * Time.fixedDeltaTime);
+
+           _rigidbody.MovePosition(_rigidbody.position + movement * _speed * Time.fixedDeltaTime);
         }
+
+        public void ResetVelocity()
+        {
+            _rigidbody.linearVelocity = Vector3.zero;
+        }
+
         private void OpenPauseMenu()
         {
             PauseMenuManager.Instance.TogglePauseMenu();

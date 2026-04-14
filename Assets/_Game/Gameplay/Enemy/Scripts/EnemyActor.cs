@@ -27,5 +27,9 @@ namespace Pong.Gameplay.Enemy
             SetVulnerable(false);
             gameObject.SetActive(false);
         }
+        public void ResetVelocity()
+        {
+            _rigidBody.linearVelocity = Vector3.zero;
+        }
     }
 }

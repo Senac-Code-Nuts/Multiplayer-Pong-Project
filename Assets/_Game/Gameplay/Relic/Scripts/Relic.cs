@@ -1,6 +1,7 @@
 using UnityEngine;
 using Pong.Gameplay.Actors;
 using Pong.Gameplay.Enemy;
+using Pong.Gameplay.Player;
 
 namespace Pong.Gameplay.Relics
 {
@@ -65,11 +66,16 @@ namespace Pong.Gameplay.Relics
         private void FixedUpdate()
         {
             _rigidBody.linearVelocity = _rigidBody.linearVelocity.normalized * _currentSpeed;
+            Debug.Log(_rigidBody.linearVelocity);
         }
 
         private void OnCollisionEnter(Collision collision)
         {
             TryApplyDamage(collision);
+
+            if (collision.collider.TryGetComponent(out PlayerController player)) {
+                player.ResetVelocity();
+            }
 
             if (collision.collider.TryGetComponent(out EnemyActor actor) || collision.collider.GetComponentInParent<EnemyActor>() != null)
             {
