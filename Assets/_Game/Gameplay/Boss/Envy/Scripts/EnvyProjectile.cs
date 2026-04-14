@@ -22,17 +22,21 @@ namespace Pong.Gameplay.Boss
 
         private void OnTriggerEnter(Collider other)
         {
-            if(_hasHit) return;
-            _hasHit = true;
-
             if(other.gameObject.CompareTag("Player"))
             {
-                var playerActor = other.gameObject.GetComponent<PlayerActor>();
-                if(playerActor != null)
+                if(!_hasHit)
                 {
-                    playerActor.ApplyDamage(_projectileDamage);
-                } 
-            }else if(!other.gameObject.CompareTag("Boss"))
+                    var playerActor = other.gameObject.GetComponent<PlayerActor>();
+                    if(playerActor != null)
+                    {
+                        playerActor.ApplyDamage(_projectileDamage);
+                    } 
+
+                    _hasHit = true;
+                }
+                Destroy(gameObject);
+
+            }else if(!other.gameObject.CompareTag("Boss") && !other.gameObject.CompareTag("EnemyProjectile"))
             {
               Destroy(gameObject);  
             }
