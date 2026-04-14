@@ -58,7 +58,7 @@ namespace Pong.Gameplay.Boss
 
             if(_timer >= _boss.TelegraphTime)
             {
-                ExecuteHit();
+                _boss.ExecuteSpinAttack();
                 _currentState = AttackState.Recovery;
                 _timer = 0f;
             }
@@ -101,16 +101,7 @@ namespace Pong.Gameplay.Boss
 
         private void ExecuteHit()
         {
-            Debug.Log("Spin attack");
-            Collider[] hits = Physics.OverlapSphere(_boss.transform.position, _boss.AttackRadius);
 
-            foreach(var hit in hits)
-            {
-                if(hit.CompareTag("Player"))
-                {
-                    Debug.Log($"<color=orange>Hit player: {hit.name}</color>");
-                }
-            }
         }
 
         private Transform GetClosestPlayer()

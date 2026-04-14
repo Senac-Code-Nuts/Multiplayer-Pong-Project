@@ -1947,6 +1947,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1466619788}
     - target: {fileID: 5937964320741311629, guid: 107397c238daa5443b2c3344cc301442, type: 3}
+      propertyPath: _painRotateSpeed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5937964320741311629, guid: 107397c238daa5443b2c3344cc301442, type: 3}
       propertyPath: <TelegraphTime>k__BackingField
       value: 1.5
       objectReference: {fileID: 0}

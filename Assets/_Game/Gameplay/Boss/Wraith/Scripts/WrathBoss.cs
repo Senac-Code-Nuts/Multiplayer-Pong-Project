@@ -153,11 +153,20 @@ namespace Pong.Gameplay.Boss
         }
         public void ShowAttackArea()
         {
-            
+            //Método para VFX da área de ataque
         }
         public void ExecuteSpinAttack()
         {
-           //Método para animação/efeito 
+            Debug.Log("Spin attack");
+            Collider[] hits = Physics.OverlapSphere(transform.position, AttackRadius);
+
+            foreach(var hit in hits)
+            {
+                if(hit.CompareTag("Player"))
+                {
+                    Debug.Log($"<color=orange>Hit player: {hit.name}</color>");
+                }
+            }
         }
         public GameObject SpawnPain()
         {
@@ -194,7 +203,7 @@ namespace Pong.Gameplay.Boss
         }
         public void PlayPickupAnimation()
         {
-            
+            //método para animação de pegar o machado Dor
         }
 
 
