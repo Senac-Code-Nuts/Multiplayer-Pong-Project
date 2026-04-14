@@ -42,6 +42,7 @@ namespace Pong.Gameplay.Boss
             _phase++;
         }
 
+        public abstract void ExecuteAttack();
 
         protected override void OnDamageTaken()
         {
