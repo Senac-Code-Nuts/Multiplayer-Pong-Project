@@ -1,10 +1,11 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace Pong.Systems.MapSelection
 {
-    public class MapButton : MonoBehaviour
+    public class MapButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler
     {
         [Header("Next Scenes")]
         [Tooltip("Coloque o nome CORRETO da cena que será chamada")]
@@ -20,24 +21,51 @@ namespace Pong.Systems.MapSelection
         [SerializeField] private Color _colorActualphase = Color.white;
         [SerializeField] private Color _colorUnlockedPhase = Color.green;
         [SerializeField] private Color _colorLockedPhase = Color.black;
+
+        [SerializeField] private float _selectScale = 1.2f;
+
         /// <summary> 
         /// (PlayerPrefs)
         /// GetInt vai retornar um valor pra mim da etiqueta
         /// Setint vai salvar um novo valor na etiqueta
         /// PlayerPrefs.Save(); salvar a info
         /// </summary>
+        /// 
+
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+
+            transform.localScale = new Vector3(_selectScale, _selectScale, 1);
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            transform.localScale = Vector3.one;
+        }
+
+        public void OnSelect(BaseEventData data)
+        {
+            transform.localScale = new Vector3(_selectScale, _selectScale, 1);
+        }
+
+        public void OnDeselect(BaseEventData data)
+        {
+            transform.localScale = Vector3.one;
+        }
+
         private void Start()
         {
-            ButtonSetting();    
+            ButtonSetting();
         }
         private void ButtonSetting()
         {
             int _phase = PlayerPrefs.GetInt("NewPhase", 0);
-            if(_numberScene == _phase)
+            if (_numberScene == _phase)
             {
                 ActiveButton(false, _colorActualphase);
             }
-            else if(_numberScene == _phase + 1)
+            else if (_numberScene == _phase + 1)
             {
                 ActiveButton(true, _colorUnlockedPhase);
             }
@@ -48,22 +76,22 @@ namespace Pong.Systems.MapSelection
         }
         private void ActiveButton(bool interactable, Color color)
         {
-            if (_button != null) 
+            if (_button != null)
             {
                 _button.interactable = interactable;
             }
-            if (_buttonImage != null) 
+            if (_buttonImage != null)
             {
                 _buttonImage.color = color;
             }
         }
-        
+
         public void ToNextScene()
         {
-            if (!string.IsNullOrEmpty(_scene)) 
+            if (!string.IsNullOrEmpty(_scene))
             {
-                PlayerPrefs.SetInt("NewPhase",_numberScene);
-                PlayerPrefs.Save(); 
+                PlayerPrefs.SetInt("NewPhase", _numberScene);
+                PlayerPrefs.Save();
                 SceneManager.LoadScene(_scene);
             }
             else
