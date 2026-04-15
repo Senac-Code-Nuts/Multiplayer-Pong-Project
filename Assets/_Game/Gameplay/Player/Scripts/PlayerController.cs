@@ -53,7 +53,7 @@ namespace Pong.Gameplay.Player
         }
         private void HandleMovement(Vector2 movement)
         {
-            if (_playerSide == PlayerSide.West || _playerSide == PlayerSide.East)
+            if (_playerSide == PlayerSide.Vertical)
             {
                 _moveInput.y = movement.y;
             }
