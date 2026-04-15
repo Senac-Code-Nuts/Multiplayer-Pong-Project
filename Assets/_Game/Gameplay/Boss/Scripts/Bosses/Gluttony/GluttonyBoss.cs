@@ -9,6 +9,8 @@ namespace Pong.Gameplay.Boss
 {
     public class GluttonyBoss : BossActor
     {
+        private const string TAG = "<color=yellow>[Gluttony]</color>";
+
         [Header("Movement")]
         [SerializeField] private float _patrolSpeed = 3f;
         [SerializeField] private GraphComponent _graphComponent;
@@ -244,19 +246,19 @@ namespace Pong.Gameplay.Boss
         public void ShowEatTelegraph()
         {
             SetTelegraphVisual();
-            Debug.Log("<color=yellow>[Gluttony] Telegraph: Empanturrar</color>");
+            Debug.Log($"{TAG} Telegraph: Empanturrar");
         }
 
         public void ShowSpitBonesTelegraph()
         {
             SetTelegraphVisual();
-            Debug.Log("<color=yellow>[Gluttony] Telegraph: Cuspir Ossos</color>");
+            Debug.Log($"{TAG} Telegraph: Cuspir Ossos");
         }
 
         public void ShowDrinkTelegraph()
         {
             SetTelegraphVisual();
-            Debug.Log("<color=yellow>[Gluttony] Telegraph: Arremessar Bebida</color>");
+            Debug.Log($"{TAG} Telegraph: Arremessar Bebida");
         }
         public void BeginDrinkTelegraph(Vector3 direction)
         {
@@ -405,17 +407,17 @@ namespace Pong.Gameplay.Boss
         public void ExecuteEat()
         {
             SetExecuteVisual();
-            Debug.Log("<color=orange>[Gluttony] Empanturrou.</color>");
+            Debug.Log($"{TAG} Empanturrou.");
         }
 
         public void ExecuteSpitBones()
         {
             SetExecuteVisual();
-            Debug.Log("<color=orange>[Gluttony] Cuspiu ossos.</color>");
+            Debug.Log($"{TAG} Cuspiu ossos.");
 
             if (_boneProjectilePool == null)
             {
-                Debug.LogWarning("[Gluttony] Pool de projétil não foi inicializado.");
+                Debug.LogWarning("[Gluttony] Pool de projï¿½til nï¿½o foi inicializado.");
                 return;
             }
 
@@ -515,11 +517,6 @@ namespace Pong.Gameplay.Boss
             if (_renderer == null) return;
 
             _renderer.material.color = _defaultColor;
-        }
-
-        public override void ExecuteAttack()
-        {
-            Debug.Log("[Gluttony] ExecuteAttack() base chamado.");
         }
 
         protected override void OnDeath()
