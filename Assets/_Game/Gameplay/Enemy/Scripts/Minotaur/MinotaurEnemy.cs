@@ -28,6 +28,7 @@ namespace Pong.Gameplay.Enemy
         private MinotaurMoveStrategy _moveStrategy;
         private MinotaurCounterWindowStrategy _counterWindowStrategy;
         private List<PlayerController> _activePlayers;
+        private InfluenceSystem _influenceSystem;
         private bool _isAIActive;
         private Material _material;
 
@@ -65,9 +66,12 @@ namespace Pong.Gameplay.Enemy
             }
         }
 
-        public override void InitializeAI(List<PlayerController> activePlayers)
+        public override void InitializeAI(List<PlayerController> activePlayers, InfluenceSystem influenceSystem)
         {
             _activePlayers = activePlayers ?? new List<PlayerController>();
+            _influenceSystem = influenceSystem;
+
+            _graphComponent = _influenceSystem.GraphComponent;
 
             _tree = new BehaviourTree("Minotaur");
 

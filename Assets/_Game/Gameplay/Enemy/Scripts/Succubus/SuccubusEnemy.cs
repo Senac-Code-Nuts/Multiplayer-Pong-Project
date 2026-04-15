@@ -24,6 +24,7 @@ namespace Pong.Gameplay.Enemy.Succubus
         private PatrolStrategy _patrolStrategy;
         private AttackStrategy _attackStrategy;
         private List<PlayerController> _activePlayers;
+        private InfluenceSystem _influenceSystem;
         private bool _isAIActive;
         private Material _meshMaterial;
         private float _colorRedIntensity = 0f;
@@ -36,9 +37,12 @@ namespace Pong.Gameplay.Enemy.Succubus
             _meshMaterial = renderer.material;
         }
 
-        public override void InitializeAI(List<PlayerController> activePlayers)
+        public override void InitializeAI(List<PlayerController> activePlayers, InfluenceSystem influenceSystem)
         {
             _activePlayers = activePlayers ?? new List<PlayerController>();
+            _influenceSystem = influenceSystem;
+
+            _graphComponent = _influenceSystem.GraphComponent;
 
             _tree = new BehaviourTree("Succubus");
             var pathFinder = new EnemyPathFinder(_graphComponent);

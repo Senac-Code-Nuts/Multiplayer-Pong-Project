@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Pong.Gameplay.Enemy;
 using Pong.Gameplay.Player;
+using Pong.Systems.Graph;
 
 namespace Pong.Gameplay.Enemy
 {
@@ -12,7 +13,8 @@ namespace Pong.Gameplay.Enemy
         [SerializeField] private List<Transform> _spawnPoints;
         private List<EnemyActor> _activeEnemies = new List<EnemyActor>();
 
-        // O Bootstrapper chama isso na Fase 1 (Setup)
+        private const string TAG = "<color=red><b>[EnemyManager]</b></color>";
+
         public void SpawnEnemies()
         {
             _activeEnemies.Clear();
@@ -20,20 +22,20 @@ namespace Pong.Gameplay.Enemy
             int spawnCount = Mathf.Min(_enemyPrefabs.Count, _spawnPoints.Count);
             for (int i = 0; i < spawnCount; i++)
             {
-                EnemyActor spawnedEnemy = Instantiate(_enemyPrefabs[i], _spawnPoints[i].position, _spawnPoints[i].rotation);
+                EnemyActor spawnedEnemy = Instantiate(_enemyPrefabs[i], _spawnPoints[i].position, _spawnPoints[i].rotation, _spawnPoints[i]);
                 _activeEnemies.Add(spawnedEnemy);
             }
             
-            Debug.Log($"<color=red><b>[EnemyManager]</b> {_activeEnemies.Count} inimigos preparados para a batalha.</color>");
+            Debug.Log($"{TAG} {_activeEnemies.Count} inimigos preparados para a batalha.");
         }
 
-        public void InjectTargetsAndStartAI(List<PlayerController> activePlayers)
+        public void InjectTargetsAndStartAI(List<PlayerController> activePlayers, InfluenceSystem influenceSystem)
         {
             foreach (var enemy in _activeEnemies)
             {
                 if (enemy != null)
                 {
-                    enemy.InitializeAI(activePlayers);
+                    enemy.InitializeAI(activePlayers, influenceSystem);
                 }
             }
         }

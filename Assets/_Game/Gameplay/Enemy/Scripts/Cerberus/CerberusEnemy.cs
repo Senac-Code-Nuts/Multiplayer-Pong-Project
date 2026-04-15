@@ -35,6 +35,7 @@ namespace Pong.Gameplay.Enemy.Cerberus
         private CerberusAttackStrategy _attackStrategy;
         private CerberusPatrolStrategy _patrolStrategy;
         private List<PlayerController> _activePlayers;
+        private InfluenceSystem _influenceSystem;
         private bool _isAIActive;
 
         public float TimeBetweenAttacks => _timeBetweenAttacks;
@@ -51,9 +52,12 @@ namespace Pong.Gameplay.Enemy.Cerberus
             }
         }
 
-        public override void InitializeAI(List<PlayerController> activePlayers)
+        public override void InitializeAI(List<PlayerController> activePlayers, InfluenceSystem influenceSystem)
         {
             _activePlayers = activePlayers ?? new List<PlayerController>();
+            _influenceSystem = influenceSystem;
+
+            _graphComponent = _influenceSystem.GraphComponent;
 
             _tree = new BehaviourTree("CerberusTree");
 

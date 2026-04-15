@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Pong.Gameplay.Actors;
 using Pong.Gameplay.Player; // Adicionado para acessar o PlayerController
+using Pong.Systems.Graph;
 
 namespace Pong.Gameplay.Enemy
 {
@@ -17,7 +18,7 @@ namespace Pong.Gameplay.Enemy
             _rigidBody = GetComponent<Rigidbody>();
         }
 
-        public abstract void InitializeAI(List<PlayerController> activePlayers);
+        public abstract void InitializeAI(List<PlayerController> activePlayers, InfluenceSystem influenceSystem);
         public abstract void ExecuteAttack();
 
         protected override void OnDamageTaken()
