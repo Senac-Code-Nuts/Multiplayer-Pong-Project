@@ -2,16 +2,16 @@ using Pong.Gameplay.Boss.Greed;
 using Pong.Framework.BehaviourTree;
 using Pong.Gameplay.Enemy;
 
-namespace Pong.Gameplay
+namespace Pong.Gameplay.Boss.Greed
 {
     public class GreedPatrolStrategy : EnemyPathStrategyBase
     {
         private readonly GreedBoss _greedBoss;
         public int NodesBeforeReset { get; set; } = 2;
 
-        public GreedPatrolStrategy(GreedBoss enemy, EnemyPathFinder pathFinder): base(enemy,pathFinder, () => enemy != null ? enemy.PatrolSpeed : 0f)
+        public GreedPatrolStrategy(GreedBoss boss, EnemyPathFinder pathFinder): base(boss,pathFinder, () => boss != null ? boss.PatrolSpeed : 0f)
         {
-            _greedBoss = enemy;
+            _greedBoss = boss;
         }
 
         public override Node.Status Process()

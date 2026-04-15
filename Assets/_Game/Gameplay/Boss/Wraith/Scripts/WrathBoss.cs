@@ -55,7 +55,10 @@ namespace Pong.Gameplay.Boss
 
         }
 
-
+        public override void ExecuteAttack()
+        {
+            Debug.Log($"{gameObject.name} executed treasure protection behavior.");
+        }
         public void SetAttack(AttackType type)
         {
             CurrentAttack = type;
