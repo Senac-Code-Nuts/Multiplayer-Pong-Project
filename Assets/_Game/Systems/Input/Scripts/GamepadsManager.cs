@@ -1,10 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
 using Pong.Core;
-using UnityEngine.InputSystem.Users;
+using System.Collections.Generic;
 
 namespace Pong.Systems.Input
 {
@@ -18,8 +16,6 @@ namespace Pong.Systems.Input
 
     public class GamepadsManager : MonoBehaviour
     {
-        public static GamepadsManager Instance { get; private set; }
-
         private const int MAX_PLAYERS = 4;
         private const int MIN_PLAYERS = 2;
         private const int DEFAULT_PLAYERS = 2;
@@ -29,56 +25,43 @@ namespace Pong.Systems.Input
         private PlayerData[] _activePlayers = new PlayerData[MAX_PLAYERS];
 
         [SerializeField, Range(2, 4)] private int _playerCount = DEFAULT_PLAYERS;
+        [SerializeField] private bool _enableKeyboardForTesting = false;
 
-        [SerializeField] private Transform _playerContainer;
-        [SerializeField] private GameObject _spawnVfxPrefab;
-        [SerializeField, Min(0f)] private float _spawnVfxDuration = 0.35f;
-        [SerializeField, Min(0f)] private float _spawnVfxLifetime = 2f;
-        [SerializeField, Min(0f)] private float _spawnSequenceGap = 0.15f;
+        [SerializeField] private Transform _playerParent;
 
-        private bool _initialSpawnCompleted;
-        private int _pendingInitialSpawns;
+        private bool _isSpawningAllowed = false;
 
         private int PlayerCount
         {
+            get { return _playerCount; }
+        }
+
+        public bool AllPlayersReady
+        {
             get
             {
-                return _playerCount;
+                int count = 0;
+                for (int i = 0; i < PlayerCount; i++)
+                {
+                    if (_activePlayers[i] != null) count++;
+                }
+                return count == PlayerCount;
             }
         }
 
-        private void Awake()
+        public void StartPlayerSpawning()
         {
-            if (Instance != null && Instance != this)
-            {
-                Destroy(gameObject);
-                return;
-            }
-            Instance = this;
-        }
-
-        private void Start()
-        {
-            _initialSpawnCompleted = false;
-            _pendingInitialSpawns = 0;
-
-            var initialDevices = new List<InputDevice>();
-            var hasSpawnRequests = false;
+            _isSpawningAllowed = true;
+            Debug.Log($"{GAMEPAD_TAG} Spawning permitido pelo Bootstrapper. Procurando dispositivos ativos...");
 
             foreach (var gamepad in Gamepad.all)
             {
-                initialDevices.Add(gamepad);
+                SpawnPlayerForDevice(gamepad);
             }
 
-            if (initialDevices.Count > 0)
+            if (_enableKeyboardForTesting && Keyboard.current != null)
             {
-                hasSpawnRequests = true;
-                StartCoroutine(SpawnInitialPlayersSequence(initialDevices));
-            }
-
-            if (!hasSpawnRequests)
-            {
-                _initialSpawnCompleted = true;
+                SpawnPlayerForDevice(Keyboard.current);
             }
         }
 
@@ -102,15 +85,19 @@ namespace Pong.Systems.Input
 
         private void OnDeviceChange(InputDevice device, InputDeviceChange change)
         {
-            if (change == InputDeviceChange.Added && device is Gamepad)
+            if (change == InputDeviceChange.Added && _isSpawningAllowed && !AllPlayersReady)
             {
-                Debug.Log($"{GAMEPAD_TAG} Device added: {device.displayName}");
-                StartCoroutine(SpawnPlayerRoutine(device, false));
+                if (device is Gamepad || (_enableKeyboardForTesting && device is Keyboard))
+                {
+                    Debug.Log($"{GAMEPAD_TAG} Device added: {device.displayName}");
+                    SpawnPlayerForDevice(device);
+                }
             }
 
             if (change == InputDeviceChange.Removed)
             {
                 int index = FindPlayerIndexForDevice(device);
+
                 if (index == -1) return;
 
                 if (_activePlayers[index]?.Instance != null)
@@ -124,43 +111,17 @@ namespace Pong.Systems.Input
             }
         }
 
-        private IEnumerator SpawnInitialPlayersSequence(List<InputDevice> initialDevices)
+        private void SpawnPlayerForDevice(InputDevice device)
         {
-            for (int i = 0; i < initialDevices.Count; i++)
-            {
-                if (i >= PlayerCount) break;
-
-                InputDevice device = initialDevices[i];
-
-                yield return SpawnPlayerRoutine(device, true);
-
-                if (_spawnSequenceGap > 0f) yield return new WaitForSeconds(_spawnSequenceGap);
-            }
-        }
-
-        private IEnumerator SpawnPlayerRoutine(InputDevice device, bool countsAsInitialSpawn)
-        {
-            if (device == null || IsDeviceAlreadyPaired(device))
-            {
-                yield break;
-            }
+            if (!_isSpawningAllowed) return; 
+            if (IsDeviceAlreadyPaired(device)) return;
 
             int index = GetFirstEmptyIndex();
-            if (index == -1 || index >= PlayerCount)
-            {
-                yield break;
-            }
+            if (index == -1) return;
+            if (index >= PlayerCount) return;
 
             var slot = _playerSlots[index];
-            if (slot.Prefab == null || slot.SpawnPoint == null)
-            {
-                yield break;
-            }
-
-            if (countsAsInitialSpawn)
-            {
-                _pendingInitialSpawns++;
-            }
+            if (slot.Prefab == null || slot.SpawnPoint == null) return;
 
             var playerInput = PlayerInput.Instantiate(
                 slot.Prefab,
@@ -168,17 +129,9 @@ namespace Pong.Systems.Input
                 pairWithDevice: device
             );
 
-            playerInput.user.UnpairDevices();
-            InputUser.PerformPairingWithDevice(device, playerInput.user);
-
             playerInput.transform.position = slot.SpawnPoint.position;
             playerInput.name = $"Player {index + 1}";
-            playerInput.transform.SetParent(_playerContainer, true);
-
-            if (countsAsInitialSpawn)
-            {
-                playerInput.gameObject.SetActive(false);
-            }
+            playerInput.transform.SetParent(_playerParent, true);
 
             _activePlayers[index] = new PlayerData
             {
@@ -186,87 +139,9 @@ namespace Pong.Systems.Input
                 Device = device,
                 Side = slot.PlayerSide
             };
-
             PlayerSpawnEvents.RaisePlayerSpawned(playerInput.gameObject, index, (int)slot.PlayerSide);
 
             Debug.Log($"{GAMEPAD_TAG} Spawned player for device: {device.displayName} at index {index}");
-
-            if (countsAsInitialSpawn)
-            {
-                _pendingInitialSpawns = Mathf.Max(0, _pendingInitialSpawns - 1);
-
-                if (_pendingInitialSpawns == 0)
-                {
-                    _initialSpawnCompleted = true;
-                }
-            }
-        }
-        public IEnumerator RevealPlayerRoutine(int index)
-        {
-            if (index < 0 || index >= _activePlayers.Length)
-            {
-                yield break;
-            }
-
-            PlayerData playerData = _activePlayers[index];
-            if (playerData == null || playerData.Instance == null)
-            {
-                yield break;
-            }
-
-            Transform spawnPoint = _playerSlots[index].SpawnPoint;
-            if (spawnPoint != null && _spawnVfxPrefab != null)
-            {
-                GameObject vfxInstance = Instantiate(
-                    _spawnVfxPrefab,
-                    spawnPoint.position,
-                    spawnPoint.rotation
-                );
-
-                if (_spawnVfxLifetime > 0f)
-                {
-                    Destroy(vfxInstance, _spawnVfxLifetime);
-                }
-
-                if (_spawnVfxDuration > 0f)
-                {
-                    yield return new WaitForSeconds(_spawnVfxDuration);
-                }
-            }
-
-            playerData.Instance.SetActive(true);
-        }
-
-        public GameObject[] GetActivePlayerControllers()
-        {
-            var playerObjects = new GameObject[_activePlayers.Length];
-            for (int i = 0; i < _activePlayers.Length; i++)
-            {
-                playerObjects[i] = _activePlayers[i]?.Instance;
-            }
-            return playerObjects;
-        }
-
-        public bool IsInitialSpawnCompleted => _initialSpawnCompleted;
-
-        public int GetPlayerCount()
-        {
-            return _playerCount;
-        }
-
-        public List<Transform> GetActivePlayerTransforms()
-        {
-            var activePlayers = new List<Transform>();
-
-            for (int i = 0; i < _activePlayers.Length; i++)
-            {
-                if (_activePlayers[i]?.Instance != null)
-                {
-                    activePlayers.Add(_activePlayers[i].Instance.transform);
-                }
-            }
-
-            return activePlayers;
         }
 
         #region Device Helpers
@@ -277,7 +152,6 @@ namespace Pong.Systems.Input
                 if (_activePlayers[i] != null && _activePlayers[i].Device == device)
                     return i;
             }
-
             return -1;
         }
 
@@ -287,13 +161,25 @@ namespace Pong.Systems.Input
             {
                 if (_activePlayers[i] == null) return i;
             }
-
             return -1;
         }
 
         private bool IsDeviceAlreadyPaired(InputDevice device)
         {
             return FindPlayerIndexForDevice(device) != -1;
+        }
+
+        public List<GameObject> GetActivePlayerInstances()
+        {
+            List<GameObject> instances = new List<GameObject>();
+            for (int i = 0; i < PlayerCount; i++)
+            {
+                if (_activePlayers[i] != null && _activePlayers[i].Instance != null)
+                {
+                    instances.Add(_activePlayers[i].Instance);
+                }
+            }
+            return instances;
         }
         #endregion
     }

@@ -6,7 +6,6 @@ namespace Pong.Systems
     public class GameManager : MonoBehaviour
     {
         public static GameManager Instance { get; private set; }
-        [SerializeField] private GameState _initialState = GameState.Playing;
 
         private void Awake()
         {
@@ -18,9 +17,19 @@ namespace Pong.Systems
 
             Instance = this;
         }
-        private void Start()
+
+        public void SetMatchActive(bool isActive)
         {
-            GameStateSystem.Instance.ChangeState(_initialState);
+            if (isActive)
+            {
+                Debug.Log("<color=green><b>[GameManager]</b> A partida começou!</color>");
+                
+                GameStateSystem.Instance.ChangeState(GameState.Playing);
+            }
+            else
+            {
+                Debug.Log("<color=orange><b>[GameManager]</b> Partida interrompida.</color>");
+            }
         }
     }
 }

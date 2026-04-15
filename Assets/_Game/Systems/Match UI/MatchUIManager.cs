@@ -29,213 +29,56 @@ namespace Pong.Shared.Management
         public bool IsCountdownFinished { get; private set; }
         public bool IsGoFinished { get; private set; }
 
-        private void Awake()
+        public void StartMatchCountdown()
         {
-            HideGroup(_uiGroup);
-            ClearText(_uiText);
             IsCountdownFinished = false;
-            SetGameCameraActive();
-        }
-
-        public void StartCountdown()
-        {
-            if (_countdownRoutine != null)
-            {
-                StopCoroutine(_countdownRoutine);
-            }
-
-            if (_goRoutine != null)
-            {
-                StopCoroutine(_goRoutine);
-                _goRoutine = null;
-            }
-
             IsGoFinished = false;
+            
+            _uiGroup.alpha = 1f;
+            _gameCamera.Priority = _inactivePriority;
 
-            _countdownRoutine = StartCoroutine(CountdownRoutine());
+            if (_countdownRoutine != null) StopCoroutine(_countdownRoutine);
+            _countdownRoutine = StartCoroutine(CountdownSequence());
         }
 
-        public void ShowGo()
+        private IEnumerator CountdownSequence()
         {
-            if (_goRoutine != null)
+            for (int i = 3; i > 0; i--)
             {
-                StopCoroutine(_goRoutine);
-            }
-
-            _goRoutine = StartCoroutine(GoRoutine());
-        }
-
-        public void PlayGoAnimation()
-        {
-            ShowGo();
-        }
-
-        private IEnumerator CountdownRoutine()
-        {
-            IsCountdownFinished = false;
-            ShowGroup(_uiGroup);
-
-            int playersToReveal = Mathf.Min(GetPlayerCountFromGamepads(), _countdownCameras.Count);
-
-            for (int i = 0; i < playersToReveal; i++)
-            {
-                SetCountdownCameraActive(i);
-                if (_cameraFocusLeadTime > 0f)
+                _uiText.text = i.ToString();
+                
+                if (_countdownCameras.Count > 0)
                 {
-                    yield return new WaitForSeconds(_cameraFocusLeadTime);
+                    int camIndex = (3 - i) % _countdownCameras.Count;
+                    SetFocusCamera(_countdownCameras[camIndex]);
                 }
 
-                if (GamepadsManager.Instance != null)
-                {
-                    yield return GamepadsManager.Instance.RevealPlayerRoutine(i);
-                }
-
-                SetText(_uiText, (playersToReveal - i).ToString());
                 yield return new WaitForSeconds(_duration);
-
-                if (i < playersToReveal - 1)
-                {
-                    ClearText(_uiText);
-                }
             }
 
-            ClearText(_uiText);
-            HideGroup(_uiGroup);
-            SetGameCameraActive();
-            IsCountdownFinished = true;
-            _countdownRoutine = null;
+            IsCountdownFinished = true; 
+
+            _uiText.text = "GO!";
+            SetFocusCamera(_gameCamera);
+
+            if (_goRoutine != null) StopCoroutine(_goRoutine);
+            _goRoutine = StartCoroutine(FinishGoSequence());
         }
 
-        private IEnumerator GoRoutine()
+        private IEnumerator FinishGoSequence()
         {
-            IsGoFinished = false;
-            SetGameCameraActive();
-            ShowGroup(_uiGroup);
-            SetText(_uiText, "GO!");
-
-            yield return new WaitForSeconds(_duration);
-
-            ClearText(_uiText);
-            HideGroup(_uiGroup);
-            IsGoFinished = true;
-            _goRoutine = null;
+            yield return new WaitForSeconds(1f);
+            _uiGroup.alpha = 0f;
+            IsGoFinished = true; 
         }
 
-        private void SetCountdownCameraActive(int countdownIndex)
+        private void SetFocusCamera(CinemachineCamera targetCam)
         {
-            if (_countdownCameras == null || _countdownCameras.Count == 0)
+            foreach (var cam in _countdownCameras)
             {
-                SetGameCameraActive();
-                return;
+                cam.Priority = _inactivePriority;
             }
-
-            for (int i = 0; i < _countdownCameras.Count; i++)
-            {
-                CinemachineCamera camera = _countdownCameras[i];
-                if (camera == null)
-                {
-                    continue;
-                }
-
-                if (i < countdownIndex - 1)
-                {
-                    camera.Priority.Value = _inactivePriority;
-                }
-            }
-
-            int cameraIndex = countdownIndex % _countdownCameras.Count;
-            CinemachineCamera activeCamera = _countdownCameras[cameraIndex];
-
-            if (activeCamera != null)
-            {
-                activeCamera.Priority.Value = _activePriority;
-            }
-
-            int previousCameraIndex = countdownIndex - 1;
-            if (previousCameraIndex >= 0 && previousCameraIndex < _countdownCameras.Count)
-            {
-                CinemachineCamera previousCamera = _countdownCameras[previousCameraIndex];
-                if (previousCamera != null)
-                {
-                    previousCamera.Priority.Value = _inactivePriority;
-                }
-            }
-
-            if (_gameCamera != null)
-            {
-                _gameCamera.Priority.Value = _inactivePriority;
-            }
-        }
-
-        private void SetGameCameraActive()
-        {
-            if (_countdownCameras != null)
-            {
-                for (int i = 0; i < _countdownCameras.Count; i++)
-                {
-                    CinemachineCamera camera = _countdownCameras[i];
-                    if (camera == null)
-                    {
-                        continue;
-                    }
-
-                    camera.Priority.Value = _inactivePriority;
-                }
-            }
-
-            if (_gameCamera != null)
-            {
-                _gameCamera.Priority.Value = _activePriority;
-            }
-        }
-
-        private void ShowGroup(CanvasGroup canvasGroup)
-        {
-            if (canvasGroup == null)
-            {
-                return;
-            }
-
-            canvasGroup.alpha = 1f;
-            canvasGroup.interactable = true;
-            canvasGroup.blocksRaycasts = true;
-        }
-
-        private void HideGroup(CanvasGroup canvasGroup)
-        {
-            if (canvasGroup == null)
-            {
-                return;
-            }
-
-            canvasGroup.alpha = 0f;
-            canvasGroup.interactable = false;
-            canvasGroup.blocksRaycasts = false;
-        }
-
-        private void SetText(TMP_Text text, string value)
-        {
-            if (text == null)
-            {
-                return;
-            }
-
-            text.text = value;
-        }
-
-        private void ClearText(TMP_Text text)
-        {
-            SetText(text, string.Empty);
-        }
-
-        private int GetPlayerCountFromGamepads()
-        {
-            if (GamepadsManager.Instance == null)
-            {
-                return 2;
-            }
-
-            return Mathf.Clamp(GamepadsManager.Instance.GetPlayerCount(), 2, 4);
+            targetCam.Priority = _activePriority;
         }
     }
 }
