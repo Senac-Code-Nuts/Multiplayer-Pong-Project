@@ -1,4 +1,5 @@
 using Pong.Framework.BehaviourTree;
+using Pong.Framework.Strategy;
 using Pong.Gameplay.Enemy;
 using Pong.Systems.Graph;
 using UnityEngine;
@@ -11,11 +12,27 @@ namespace Pong.Gameplay.Boss
         [Header("Movement")]
         [SerializeField] private float _patrolSpeed = 3f;
         [SerializeField] private GraphComponent _graphComponent;
+        [SerializeField] private float _rotationSpeed = 180f;
+        public float PatrolSpeed => _patrolSpeed;
+        public bool CanMove { get; private set; } = true;
+
+        [Header("Attack Settings")]
+        [SerializeField] private float _attackCooldown = 2f;
+        [SerializeField] private float _distanceWeight = 1f;
+        [SerializeField] private float _lastTargetPenalty = 2f;
+        [SerializeField] private int _maxSameTargetInRow = 2;
+
+        private Transform _lastTarget;
+        private int _sameTargetCount = 0;
+
+        private float _cooldownTimer;
+        public bool CanAttack => _cooldownTimer <= 0f;
+        public bool IsAttacking { get; private set; }
 
         [Header("Attack Timings")]
-        [SerializeField, Range(0.1f, 10f)] private float _timeBetweenAttacks;
-        [SerializeField, Range(0.1f, 5f)] private float _preAttackTime;
-        [SerializeField, Range(0.1f, 10f)] private float _attackCooldown;
+        [field: SerializeField, Range(0.1f, 10f)] public float TimeBetweenAttacks { get; private set; }
+        [field: SerializeField, Range(0.1f, 5f)] public float PreAttackTime { get; private set; }
+        [field: SerializeField, Range(0.1f, 10f)] public float AttackRecoveryTime { get; private set; } = 1f;
 
         [Header("Projectile Attack - Spit Bones")]
         [SerializeField] private Transform _projectileSpawnPoint;
@@ -28,44 +45,44 @@ namespace Pong.Gameplay.Boss
         [SerializeField] private Transform _projectilePoolParent;
 
         [Header("Cone Attack - Throw Drink")]
-        [SerializeField, Range(1, 10)] private int _drinkDamage = 1;
+        [SerializeField, Range(1, 10)] private int _drinkDamage;
         [SerializeField] private GameObject _drinkConeTelegraph;
         [SerializeField, Range(0.5f, 10f)] private float _coneRadius;
         [SerializeField, Range(1f, 180f)] private float _coneAngle;
-        [SerializeField] private LayerMask _playerLayerMask = ~0;
+        [SerializeField] private LayerMask _playerLayerMask;
 
         [Header("VFX")]
         [SerializeField] private VisualEffect _drinkVfx;
         [SerializeField] private Transform _drinkVfxSpawnPoint;
-        [SerializeField, Range(0.1f, 2f)] private float _drinkVfxStopDelay = 0.4f;
+        [SerializeField, Range(0.1f, 2f)] private float _drinkVfxStopDelay;
 
         [Header("Attack Helpers")]
         [SerializeField] private GluttonyConeAttack _coneAttack;
 
         [Header("Visual Debug")]
+        [SerializeField] private bool _useVisualDebug = true;
         [SerializeField] private Renderer _renderer;
         [SerializeField] private Color _defaultColor = Color.white;
         [SerializeField] private Color _telegraphColor = Color.yellow;
         [SerializeField] private Color _executeColor = Color.red;
 
         private BehaviourTree _tree;
-        private GluttonyAttackStrategy _attackStrategy;
-        //private GluttonyPatrolStrategy _patrolStrategy;
+        private GluttonyPatrolStrategy _patrolStrategy;
         private GluttonyProjectilePool _boneProjectilePool;
         private Vector3 _lockedConeDirection;
-
-        public float PatrolSpeed => _patrolSpeed;
+        private Vector3 _lockedSpitDirection;
 
         private int _lastAttackIndex = -1;
-        private int _repeatCount = 0;
+        //private int _repeatCount = 0;
 
-        public float TimeBetweenAttacks => _timeBetweenAttacks;
-        public float PreAttackTime => _preAttackTime;
-        public float AttackCooldown => _attackCooldown;
+        public enum AttackType
+        {
+            Eat = 0,
+            SpitBones = 1,
+            ThrowDrink = 2
+        }
 
-        public bool IsInTelegraph => _attackStrategy != null && _attackStrategy.IsInTelegraph;
-        public float TelegraphProgress => _attackStrategy != null ? _attackStrategy.TelegraphProgress : 0f;
-        public int CurrentAttackIndex => _attackStrategy != null ? _attackStrategy.CurrentAttackIndex : -1;
+        public AttackType CurrentAttack { get; private set; }
 
         protected override void Awake()
         {
@@ -95,20 +112,7 @@ namespace Pong.Gameplay.Boss
                 _drinkConeTelegraph.SetActive(false);
             }
 
-            _tree = new BehaviourTree("GluttonyTree");
-
-            var pathFinder = new EnemyPathFinder(_graphComponent);
-            //_patrolStrategy = new GluttonyPatrolStrategy(this, pathFinder);
-            _attackStrategy = new GluttonyAttackStrategy(this);
-
-            var attackNode = new Leaf("Attack", _attackStrategy, priority: 10);
-            //var patrolNode = new Leaf("Patrol", _patrolStrategy, priority: 1);
-
-            var selector = new PrioritySelector("AttackOrPatrol");
-            selector.AddChild(attackNode);
-            //selector.AddChild(patrolNode);
-
-            _tree.AddChild(selector);
+            BuildTree();
         }
 
         protected override void Update()
@@ -120,84 +124,82 @@ namespace Pong.Gameplay.Boss
 
             _tree?.Process();
 
-            UpdateDrinkAttack();
-        }
-
-        public int GetNextAttackIndex()
-        {
-            int next = Random.Range(0, 3);
-
-            if (next == _lastAttackIndex)
+            if (_cooldownTimer > 0f)
             {
-                _repeatCount++;
-            }
-            else
-            {
-                _repeatCount = 1;
-            }
-
-            if (_repeatCount >= 3)
-            {
-                next = (next + 1) % 3;
-                _repeatCount = 1;
-            }
-
-            _lastAttackIndex = next;
-            return next;
-        }
-
-        public void OnAttackTelegraphStarted(int attackIndex)
-        {
-            SetTelegraphVisual();
-
-            if (attackIndex == 2)
-            {
-                BeginDrinkTelegraph();
-            }
-
-            switch (attackIndex)
-            {
-                case 0:
-                    Debug.Log("<color=yellow>[Gluttony] Telegraph: Empanturrar</color>");
-                    break;
-                case 1:
-                    Debug.Log("<color=yellow>[Gluttony] Telegraph: Cuspir Ossos</color>");
-                    break;
-                case 2:
-                    Debug.Log("<color=yellow>[Gluttony] Telegraph: Arremessar Bebida</color>");
-                    break;
-                default:
-                    Debug.LogWarning("[Gluttony] Telegraph com attackIndex inválido.");
-                    break;
+                _cooldownTimer -= Time.deltaTime;
             }
         }
 
-        public void ExecuteAttackByIndex(int attackIndex)
+        private void BuildTree()
         {
-            SetExecuteVisual();
+            var pathFinder = new EnemyPathFinder(_graphComponent);
 
-            switch (attackIndex)
-            {
-                case 0:
-                    ExecuteEat();
-                    break;
+            _tree = new BehaviourTree("Gluttony");
 
-                case 1:
-                    ExecuteSpitBones();
-                    break;
+            var root = new PrioritySelector("Root");
 
-                case 2:
-                    ExecuteDrinkAttack();
-                    break;
+            root.AddChild(BuildAttackSelector());
 
-                default:
-                    Debug.LogWarning("[Gluttony] ExecuteAttackByIndex recebeu attackIndex inválido.");
-                    break;
-            }
+            var chooseAttack = new Sequence("ChooseAttack");
+            chooseAttack.AddChild(new Leaf("NotAttacking", new ConditionStrategy(() => !IsAttacking)));
+            chooseAttack.AddChild(new Leaf("CooldownReady", new ConditionStrategy(() => CanAttack)));
+            chooseAttack.AddChild(new Leaf("Choose", new GluttonyChooseAttackStrategy(this)));
+
+            root.AddChild(chooseAttack);
+
+            _patrolStrategy = new GluttonyPatrolStrategy(this, pathFinder);
+            root.AddChild(new Leaf("Patrol", _patrolStrategy));
+
+            _tree.AddChild(root);
         }
 
-        public void OnAttackFinished()
+        private Node BuildAttackSelector()
         {
+            var selector = new PrioritySelector("AttackSelector");
+
+            var attackSequence = new Sequence("DoAttack");
+            attackSequence.AddChild(new Leaf("IsAttacking", new ConditionStrategy(() => IsAttacking)));
+
+            var attackChoice = new PrioritySelector("AttackChoice");
+
+            var eatSequence = new Sequence("EatAttack", 10);
+            eatSequence.AddChild(new Leaf("CheckEat", new ConditionStrategy(() => CurrentAttack == AttackType.Eat)));
+            eatSequence.AddChild(new Leaf("Eat", new GluttonyEatStrategy(this)));
+
+            var spitSequence = new Sequence("SpitBonesAttack", 10);
+            spitSequence.AddChild(new Leaf("CheckSpit", new ConditionStrategy(() => CurrentAttack == AttackType.SpitBones)));
+            spitSequence.AddChild(new Leaf("SpitBones", new GluttonySpitBonesStrategy(this)));
+
+            var drinkSequence = new Sequence("DrinkAttack", 10);
+            drinkSequence.AddChild(new Leaf("CheckDrink", new ConditionStrategy(() => CurrentAttack == AttackType.ThrowDrink)));
+            drinkSequence.AddChild(new Leaf("Drink", new GluttonyDrinkAttackStrategy(this)));
+
+            attackChoice.AddChild(eatSequence);
+            attackChoice.AddChild(spitSequence);
+            attackChoice.AddChild(drinkSequence);
+
+            attackSequence.AddChild(attackChoice);
+            selector.AddChild(attackSequence);
+
+            return selector;
+        }
+
+        public void SetAttack(AttackType type)
+        {
+            CurrentAttack = type;
+        }
+
+        public void StartAttack()
+        {
+            IsAttacking = true;
+            StopMovement();
+        }
+
+        public void EndAttack()
+        {
+            IsAttacking = false;
+            _cooldownTimer = _attackCooldown;
+            AllowMovement();
             ResetVisual();
 
             if (_coneAttack != null)
@@ -206,13 +208,195 @@ namespace Pong.Gameplay.Boss
             }
         }
 
+        public void AllowMovement()
+        {
+            CanMove = true;
+        }
+
+        public void StopMovement()
+        {
+            CanMove = false;
+        }
+
+        public int ChooseNextAttackIndex()
+        {
+            int next = Random.Range(0, 3);
+
+            if (next == _lastAttackIndex)
+            {
+                int reroll = Random.Range(0, 3);
+
+                if (reroll == _lastAttackIndex)
+                {
+                    do
+                    {
+                        reroll = Random.Range(0, 3);
+                    }
+                    while (reroll == _lastAttackIndex);
+                }
+
+                next = reroll;
+            }
+
+            _lastAttackIndex = next;
+            return next;
+        }
+
+        public void ShowEatTelegraph()
+        {
+            SetTelegraphVisual();
+            Debug.Log("<color=yellow>[Gluttony] Telegraph: Empanturrar</color>");
+        }
+
+        public void ShowSpitBonesTelegraph()
+        {
+            SetTelegraphVisual();
+            Debug.Log("<color=yellow>[Gluttony] Telegraph: Cuspir Ossos</color>");
+        }
+
+        public void ShowDrinkTelegraph()
+        {
+            SetTelegraphVisual();
+            Debug.Log("<color=yellow>[Gluttony] Telegraph: Arremessar Bebida</color>");
+            BeginDrinkTelegraph();
+        }
+
+        public Transform ChooseAttackTarget()
+        {
+            GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+
+            if (players == null || players.Length == 0)
+                return null;
+
+            Transform chosenTarget = null;
+            float bestScore = float.MinValue;
+
+            foreach (GameObject player in players)
+            {
+                if (player == null)
+                    continue;
+
+                float distance = Vector3.Distance(transform.position, player.transform.position);
+                float score = -distance * _distanceWeight;
+
+                if (_lastTarget != null && player.transform == _lastTarget)
+                {
+                    score -= _lastTargetPenalty;
+
+                    if (_sameTargetCount >= _maxSameTargetInRow)
+                    {
+                        score -= 999f;
+                    }
+                }
+
+                if (score > bestScore)
+                {
+                    bestScore = score;
+                    chosenTarget = player.transform;
+                }
+            }
+
+            if (chosenTarget == null)
+                return null;
+
+            if (chosenTarget == _lastTarget)
+            {
+                _sameTargetCount++;
+            }
+            else
+            {
+                _lastTarget = chosenTarget;
+                _sameTargetCount = 1;
+            }
+
+            return chosenTarget;
+        }
+
+        public void RotateTowardsTarget(Transform target)
+        {
+            if (target == null)
+                return;
+
+            Vector3 direction = target.position - transform.position;
+            direction.y = 0f;
+
+            if (direction.sqrMagnitude <= 0.0001f)
+                return;
+
+            Quaternion targetRotation = Quaternion.LookRotation(direction.normalized, Vector3.up);
+
+            transform.rotation = Quaternion.RotateTowards(
+                transform.rotation,
+                targetRotation,
+                _rotationSpeed * Time.deltaTime
+            );
+        }
+
+        public void RotateTowardsPosition(Vector3 targetPosition)
+        {
+            Vector3 direction = targetPosition - transform.position;
+            direction.y = 0f;
+
+            if (direction.sqrMagnitude <= 0.0001f)
+                return;
+
+            Quaternion targetRotation = Quaternion.LookRotation(direction.normalized, Vector3.up);
+
+            transform.rotation = Quaternion.RotateTowards(
+                transform.rotation,
+                targetRotation,
+                _rotationSpeed * Time.deltaTime
+            );
+        }
+
+        public bool IsFacingTarget(Transform target, float maxAngleDifference = 8f)
+        {
+            if (target == null)
+                return true;
+
+            Vector3 direction = target.position - transform.position;
+            direction.y = 0f;
+
+            if (direction.sqrMagnitude <= 0.0001f)
+                return true;
+
+            float angle = Vector3.Angle(transform.forward, direction.normalized);
+            return angle <= maxAngleDifference;
+        }
+
+        public Vector3 GetDirectionToTarget(Transform target, Vector3 fallbackDirection)
+        {
+            if (target == null)
+                return fallbackDirection.normalized;
+
+            Vector3 direction = target.position - transform.position;
+            direction.y = 0f;
+
+            if (direction.sqrMagnitude <= 0.0001f)
+                return fallbackDirection.normalized;
+
+            return direction.normalized;
+        }
+
+        public void LockDrinkDirection(Transform target)
+        {
+            _lockedConeDirection = GetDirectionToTarget(target, transform.forward);
+        }
+
+        public void LockSpitBonesDirection(Transform target)
+        {
+            _lockedSpitDirection = GetDirectionToTarget(target, transform.forward);
+        }
+
         public void ExecuteEat()
         {
+            SetExecuteVisual();
             Debug.Log("<color=orange>[Gluttony] Empanturrou.</color>");
         }
 
         public void ExecuteSpitBones()
         {
+            SetExecuteVisual();
             Debug.Log("<color=orange>[Gluttony] Cuspiu ossos.</color>");
 
             if (_boneProjectilePool == null)
@@ -222,10 +406,13 @@ namespace Pong.Gameplay.Boss
             }
 
             Transform spawnPoint = _projectileSpawnPoint != null ? _projectileSpawnPoint : transform;
+            Vector3 baseDirection = _lockedSpitDirection.sqrMagnitude > 0.0001f
+                ? _lockedSpitDirection
+                : transform.forward;
 
             if (_projectileCount <= 1)
             {
-                SpawnBoneProjectile(spawnPoint.position, transform.forward);
+                SpawnBoneProjectile(spawnPoint.position, baseDirection);
                 return;
             }
 
@@ -235,13 +422,15 @@ namespace Pong.Gameplay.Boss
             for (int i = 0; i < _projectileCount; i++)
             {
                 float currentAngle = startAngle + angleStep * i;
-                Vector3 direction = Quaternion.Euler(0f, currentAngle, 0f) * transform.forward;
+                Vector3 direction = Quaternion.Euler(0f, currentAngle, 0f) * baseDirection;
                 SpawnBoneProjectile(spawnPoint.position, direction.normalized);
             }
         }
 
-        private void ExecuteDrinkAttack()
+        public void ExecuteDrinkAttack()
         {
+            SetExecuteVisual();
+
             if (_coneAttack == null)
                 return;
 
@@ -258,16 +447,13 @@ namespace Pong.Gameplay.Boss
             );
         }
 
-        private void UpdateDrinkAttack()
+        public void UpdateDrinkTelegraph(float progress)
         {
-            if (_coneAttack == null || _attackStrategy == null)
-                return;
-
-            if (!_attackStrategy.IsInTelegraph || _attackStrategy.CurrentAttackIndex != 2)
+            if (_coneAttack == null)
                 return;
 
             _coneAttack.UpdateTelegraph(
-                _attackStrategy.TelegraphProgress,
+                progress,
                 _coneRadius,
                 _coneAngle,
                 _drinkConeTelegraph
@@ -276,10 +462,11 @@ namespace Pong.Gameplay.Boss
 
         private void BeginDrinkTelegraph()
         {
-            _lockedConeDirection = transform.forward;
+            if (_coneAttack == null)
+                return;
 
             _coneAttack.BeginTelegraph(
-                _lockedConeDirection,
+                transform.forward,
                 _drinkConeTelegraph
             );
         }
@@ -309,19 +496,25 @@ namespace Pong.Gameplay.Boss
 
         private void SetTelegraphVisual()
         {
+            if (!_useVisualDebug) return;
             if (_renderer == null) return;
+
             _renderer.material.color = _telegraphColor;
         }
 
         private void SetExecuteVisual()
         {
+            if (!_useVisualDebug) return;
             if (_renderer == null) return;
+
             _renderer.material.color = _executeColor;
         }
 
         private void ResetVisual()
         {
+            if (!_useVisualDebug) return;
             if (_renderer == null) return;
+
             _renderer.material.color = _defaultColor;
         }
 
@@ -339,53 +532,6 @@ namespace Pong.Gameplay.Boss
         private void OnDisable()
         {
             ResetVisual();
-        }
-
-        private void OnDrawGizmos()
-        {
-            if (!Application.isPlaying) return;
-            if (_attackStrategy == null) return;
-            if (!_attackStrategy.IsInTelegraph) return;
-
-            switch (_attackStrategy.CurrentAttackIndex)
-            {
-                case 0:
-                    DrawEatGizmo();
-                    break;
-
-                case 1:
-                    DrawSpitBonesGizmo();
-                    break;
-            }
-        }
-
-        private void DrawEatGizmo()
-        {
-            Gizmos.color = Color.Lerp(Color.yellow, Color.red, TelegraphProgress);
-            Gizmos.DrawWireSphere(transform.position, 1.25f);
-        }
-
-        private void DrawSpitBonesGizmo()
-        {
-            Gizmos.color = Color.Lerp(Color.yellow, Color.red, TelegraphProgress);
-
-            Vector3 origin = _projectileSpawnPoint != null ? _projectileSpawnPoint.position : transform.position;
-
-            if (_projectileCount <= 1)
-            {
-                Gizmos.DrawLine(origin, origin + transform.forward * 4f);
-                return;
-            }
-
-            float angleStep = _projectileSpreadAngle / (_projectileCount - 1);
-            float startAngle = -_projectileSpreadAngle * 0.5f;
-
-            for (int i = 0; i < _projectileCount; i++)
-            {
-                float currentAngle = startAngle + angleStep * i;
-                Vector3 direction = Quaternion.Euler(0f, currentAngle, 0f) * transform.forward;
-                Gizmos.DrawLine(origin, origin + direction.normalized * 4f);
-            }
         }
     }
 }

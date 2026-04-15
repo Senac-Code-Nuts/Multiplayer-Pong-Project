@@ -1,3 +1,4 @@
+using System.Collections;
 using Pong.Gameplay.Player;
 using UnityEngine;
 using UnityEngine.VFX;
@@ -9,18 +10,15 @@ namespace Pong.Gameplay.Boss
         private Vector3 _lockedDirection;
         private Coroutine _vfxRoutine;
 
-        public void BeginTelegraph(
-            Vector3 direction,
-            GameObject coneTelegraph
-        )
+        public void BeginTelegraph(Vector3 direction, GameObject coneTelegraph)
         {
             _lockedDirection = direction.normalized;
 
-            if (coneTelegraph != null)
-            {
-                coneTelegraph.SetActive(true);
-                coneTelegraph.transform.forward = _lockedDirection;
-            }
+            if (coneTelegraph == null)
+                return;
+
+            coneTelegraph.SetActive(true);
+            coneTelegraph.transform.forward = _lockedDirection;
         }
 
         public void UpdateTelegraph(
@@ -28,7 +26,7 @@ namespace Pong.Gameplay.Boss
             float coneRadius,
             float coneAngle,
             GameObject coneTelegraph
-        )
+)
         {
             if (coneTelegraph == null)
                 return;
@@ -36,6 +34,7 @@ namespace Pong.Gameplay.Boss
             float radius = Mathf.Lerp(0.1f, coneRadius, progress);
             float width = Mathf.Tan(coneAngle * 0.5f * Mathf.Deg2Rad) * radius;
 
+            coneTelegraph.transform.forward = _lockedDirection;
             coneTelegraph.transform.localScale = new Vector3(width, 1f, radius);
         }
 
@@ -64,7 +63,7 @@ namespace Pong.Gameplay.Boss
                 coneTelegraph.SetActive(false);
             }
 
-            PlayVfx(origin, drinkVfx, drinkVfxSpawnPoint, drinkVfxStopDelay);
+            PlayVfx(origin, drinkVfx, drinkVfxSpawnPoint, drinkVfxStopDelay, coneRadius);
             ApplyDamage(origin.position, damage, coneRadius, coneAngle, playerLayerMask);
         }
 
@@ -98,7 +97,8 @@ namespace Pong.Gameplay.Boss
             Transform origin,
             VisualEffect vfx,
             Transform vfxSpawnPoint,
-            float vfxStopDelay
+            float stopDelay,
+            float coneRadius
         )
         {
             if (vfx == null)
@@ -111,7 +111,12 @@ namespace Pong.Gameplay.Boss
                 Quaternion.LookRotation(_lockedDirection, Vector3.up)
             );
 
-            vfx.SetFloat("SpitLength", 1f);
+            // Se seu VFX Graph tiver esse parâmetro exposto
+            if (vfx.HasFloat("SpitLength"))
+            {
+                vfx.SetFloat("SpitLength", coneRadius);
+            }
+
             vfx.Stop();
             vfx.Reinit();
             vfx.SendEvent("DrinkSpit");
@@ -121,10 +126,10 @@ namespace Pong.Gameplay.Boss
                 StopCoroutine(_vfxRoutine);
             }
 
-            _vfxRoutine = StartCoroutine(StopVfxRoutine(vfx, vfxStopDelay));
+            _vfxRoutine = StartCoroutine(StopVfxRoutine(vfx, stopDelay));
         }
 
-        private System.Collections.IEnumerator StopVfxRoutine(VisualEffect vfx, float delay)
+        private IEnumerator StopVfxRoutine(VisualEffect vfx, float delay)
         {
             yield return new WaitForSeconds(delay);
 
