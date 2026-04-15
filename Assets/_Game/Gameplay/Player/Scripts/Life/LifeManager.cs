@@ -48,7 +48,6 @@ namespace Pong.Gameplay.Life
             OnLifeChangeEvent?.Invoke(newLife);
         }
 
-
         private void Die()
         {
             // checa se o evento tem algum listener
