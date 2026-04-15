@@ -46,8 +46,10 @@ namespace Pong.Gameplay.Boss
 
             BuildTree();
         }
-        private void Update()
+        protected override void Update()
         {
+            base.Update();
+
             _tree?.Process();
             if (_cooldownTimer > 0f)
             {

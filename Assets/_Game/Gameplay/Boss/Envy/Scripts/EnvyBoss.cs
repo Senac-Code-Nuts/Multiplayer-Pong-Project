@@ -46,8 +46,10 @@ namespace Pong.Gameplay.Boss
             _slotMachine.OnResultReady += OnSlotResult;
         }
 
-        private void Update()
+        protected override void Update()
         {
+            base.Update();
+
             _tree?.Process();
             if(_cooldownTimer >0f)
             {
