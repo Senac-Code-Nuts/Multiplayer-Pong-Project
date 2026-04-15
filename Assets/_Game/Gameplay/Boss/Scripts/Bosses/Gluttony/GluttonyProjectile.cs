@@ -9,7 +9,7 @@ namespace Pong.Gameplay.Boss
         [Header("Projectile")]
         [SerializeField] private float _lifetime = 4f;
         [SerializeField] private int _maxBounces = 2;
-        [SerializeField] private float _bounceAngleLimit = 85f;
+        //[SerializeField] private float _bounceAngleLimit = 85f;
 
         private Vector3 _direction;
         private float _speed;
