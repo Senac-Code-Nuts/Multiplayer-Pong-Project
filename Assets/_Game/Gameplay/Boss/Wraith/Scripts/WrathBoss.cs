@@ -1,5 +1,6 @@
 using Pong.Framework.BehaviourTree;
 using Pong.Gameplay.Enemy;
+using Pong.Gameplay.Player;
 using Pong.Systems.Graph;
 using UnityEngine;
 
@@ -21,7 +22,7 @@ namespace Pong.Gameplay.Boss
         [SerializeField] private float _painRotateSpeed;
 
         [Header("Meelee Settings")]
-        [SerializeField] private float _melleeDamage;
+        [SerializeField] private int _melleeDamage;
         [field : SerializeField] public float TelegraphTime {get; private set;} = 1.0f;
         [field : SerializeField] public float ChaseDistance {get; private set;} = 2.5f;
         [field : SerializeField]  public float RecoveryTime {get; private set;} = 1.5f;
@@ -157,7 +158,7 @@ namespace Pong.Gameplay.Boss
         {
             //Método para VFX da área de ataque
         }
-        public void ExecuteSpinAttack()
+        public override void ExecuteAttack()
         {
             Debug.Log("Spin attack");
             Collider[] hits = Physics.OverlapSphere(transform.position, AttackRadius);
@@ -167,6 +168,11 @@ namespace Pong.Gameplay.Boss
                 if(hit.CompareTag("Player"))
                 {
                     Debug.Log($"<color=orange>Hit player: {hit.name}</color>");
+                    var playerActor = hit.GetComponent<PlayerActor>();
+                    if(playerActor != null)
+                    {
+                        playerActor.ApplyDamage(_melleeDamage);
+                    }
                 }
             }
         }
