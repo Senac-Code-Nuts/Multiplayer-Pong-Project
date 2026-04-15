@@ -33,23 +33,25 @@ namespace Pong.Gameplay.Boss
                     if (!_telegraphStarted)
                     {
                         _target = _boss.ChooseAttackTarget();
+                        Vector3 direction = _boss.GetDirectionToTarget(_target, _boss.transform.forward);
                         _boss.ShowDrinkTelegraph();
+                        _boss.BeginDrinkTelegraph(direction);
                         _telegraphStarted = true;
                     }
 
                     _boss.RotateTowardsTarget(_target);
+                    _boss.UpdateDrinkTelegraphDirection(_target);
                     _boss.UpdateDrinkTelegraph(
                         Mathf.Clamp01(_timer / Mathf.Max(0.001f, _boss.PreAttackTime))
                     );
 
                     if (_timer >= _boss.PreAttackTime)
                     {
-                        if (!_boss.IsFacingTarget(_target, 6f))
+                        if (!_boss.IsFacingTarget(_target, 4f))
                         {
                             return Node.Status.Running;
                         }
 
-                        _boss.LockDrinkDirection(_target);
                         _boss.ExecuteDrinkAttack();
                         _timer = 0f;
                         _state = State.Recovery;

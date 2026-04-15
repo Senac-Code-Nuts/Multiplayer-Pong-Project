@@ -69,7 +69,6 @@ namespace Pong.Gameplay.Boss
         private BehaviourTree _tree;
         private GluttonyPatrolStrategy _patrolStrategy;
         private GluttonyProjectilePool _boneProjectilePool;
-        private Vector3 _lockedConeDirection;
         private Vector3 _lockedSpitDirection;
 
         private int _lastAttackIndex = -1;
@@ -258,9 +257,30 @@ namespace Pong.Gameplay.Boss
         {
             SetTelegraphVisual();
             Debug.Log("<color=yellow>[Gluttony] Telegraph: Arremessar Bebida</color>");
-            BeginDrinkTelegraph();
+        }
+        public void BeginDrinkTelegraph(Vector3 direction)
+        {
+            if (_coneAttack == null)
+                return;
+
+            _coneAttack.BeginTelegraph(
+                direction,
+                _drinkConeTelegraph
+            );
         }
 
+        public void UpdateDrinkTelegraph(float progress)
+        {
+            if (_coneAttack == null)
+                return;
+
+            _coneAttack.UpdateTelegraph(
+                progress,
+                _coneRadius,
+                _coneAngle,
+                _drinkConeTelegraph
+            );
+        }
         public Transform ChooseAttackTarget()
         {
             GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
@@ -378,16 +398,10 @@ namespace Pong.Gameplay.Boss
             return direction.normalized;
         }
 
-        public void LockDrinkDirection(Transform target)
-        {
-            _lockedConeDirection = GetDirectionToTarget(target, transform.forward);
-        }
-
         public void LockSpitBonesDirection(Transform target)
         {
             _lockedSpitDirection = GetDirectionToTarget(target, transform.forward);
         }
-
         public void ExecuteEat()
         {
             SetExecuteVisual();
@@ -447,28 +461,13 @@ namespace Pong.Gameplay.Boss
             );
         }
 
-        public void UpdateDrinkTelegraph(float progress)
+        public void UpdateDrinkTelegraphDirection(Transform target)
         {
             if (_coneAttack == null)
                 return;
 
-            _coneAttack.UpdateTelegraph(
-                progress,
-                _coneRadius,
-                _coneAngle,
-                _drinkConeTelegraph
-            );
-        }
-
-        private void BeginDrinkTelegraph()
-        {
-            if (_coneAttack == null)
-                return;
-
-            _coneAttack.BeginTelegraph(
-                transform.forward,
-                _drinkConeTelegraph
-            );
+            Vector3 direction = GetDirectionToTarget(target, transform.forward);
+            _coneAttack.SetDirection(direction);
         }
 
         private void SpawnBoneProjectile(Vector3 position, Vector3 direction)

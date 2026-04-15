@@ -12,6 +12,11 @@ namespace Pong.Gameplay.Boss
 
         public void BeginTelegraph(Vector3 direction, GameObject coneTelegraph)
         {
+            if (direction.sqrMagnitude <= 0.0001f)
+            {
+                direction = Vector3.forward;
+            }
+
             _lockedDirection = direction.normalized;
 
             if (coneTelegraph == null)
@@ -21,12 +26,20 @@ namespace Pong.Gameplay.Boss
             coneTelegraph.transform.forward = _lockedDirection;
         }
 
+        public void SetDirection(Vector3 direction)
+        {
+            if (direction.sqrMagnitude <= 0.0001f)
+                return;
+
+            _lockedDirection = direction.normalized;
+        }
+
         public void UpdateTelegraph(
             float progress,
             float coneRadius,
             float coneAngle,
             GameObject coneTelegraph
-)
+        )
         {
             if (coneTelegraph == null)
                 return;
@@ -82,7 +95,14 @@ namespace Pong.Gameplay.Boss
                 if (!hit.TryGetComponent<PlayerActor>(out PlayerActor player))
                     continue;
 
-                Vector3 directionToTarget = (player.transform.position - origin).normalized;
+                Vector3 directionToTarget = player.transform.position - origin;
+                directionToTarget.y = 0f;
+
+                if (directionToTarget.sqrMagnitude <= 0.0001f)
+                    continue;
+
+                directionToTarget.Normalize();
+
                 float angle = Vector3.Angle(_lockedDirection, directionToTarget);
 
                 if (angle <= coneAngle * 0.5f)
@@ -111,7 +131,6 @@ namespace Pong.Gameplay.Boss
                 Quaternion.LookRotation(_lockedDirection, Vector3.up)
             );
 
-            // Se seu VFX Graph tiver esse parâmetro exposto
             if (vfx.HasFloat("SpitLength"))
             {
                 vfx.SetFloat("SpitLength", coneRadius);
