@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Pong.Framework.BehaviourTree;
+using Pong.Gameplay.Actors;
 using Pong.Systems.Graph;
 using UnityEngine;
 
@@ -8,7 +9,7 @@ namespace Pong.Gameplay.Enemy
 {
     public abstract class EnemyPathStrategyBase : INodeStrategy
     {
-        protected EnemyActor _enemy;
+        protected Actor _actor;
         protected readonly EnemyPathFinder _pathFinder;
         private readonly Func<float> _movementSpeedProvider;
 
@@ -16,16 +17,16 @@ namespace Pong.Gameplay.Enemy
         protected int _currentPathIndex;
         protected GraphNode _currentTargetNode;
 
-        protected EnemyPathStrategyBase(EnemyActor enemy, EnemyPathFinder pathFinder, Func<float> movementSpeedProvider)
+        protected EnemyPathStrategyBase(Actor actor, EnemyPathFinder pathFinder, Func<float> movementSpeedProvider)
         {
-            _enemy = enemy;
+           _actor = actor;
             _pathFinder = pathFinder;
             _movementSpeedProvider = movementSpeedProvider;
             _currentPath = new List<GraphNode>();
             ResetPath();
         }
 
-        protected bool IsReady => _enemy != null && _pathFinder != null;
+        protected bool IsReady =>_actor != null && _pathFinder != null;
 
         protected GraphNode CurrentTargetNode => _currentTargetNode;
 
@@ -81,24 +82,24 @@ namespace Pong.Gameplay.Enemy
 
         protected bool HasReachedTarget(GraphNode targetNode)
         {
-            if (_enemy == null || targetNode == null)
+            if (_actor == null || targetNode == null)
             {
                 return false;
             }
 
-            return (targetNode.transform.position - _enemy.transform.position).sqrMagnitude < 0.25f;
+            return (targetNode.transform.position -_actor.transform.position).sqrMagnitude < 0.25f;
         }
 
         protected void MoveTowardNode(GraphNode targetNode)
         {
-            if (_enemy == null || targetNode == null)
+            if (_actor == null || targetNode == null)
             {
                 return;
             }
 
             float speed = _movementSpeedProvider != null ? Mathf.Max(0f, _movementSpeedProvider()) : 0f;
-            _enemy.transform.position = Vector3.MoveTowards(
-                _enemy.transform.position,
+           _actor.transform.position = Vector3.MoveTowards(
+               _actor.transform.position,
                 targetNode.transform.position,
                 speed * Time.deltaTime
             );

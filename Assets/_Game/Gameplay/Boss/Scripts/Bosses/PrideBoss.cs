@@ -6,7 +6,7 @@ namespace Pong.Gameplay.Boss
     {
         public override void ExecuteAttack()
         {
-            Debug.Log($"{gameObject.name} executed staff and vines behavior.");
+            Debug.Log($"{gameObject.name} executed treasure protection behavior.");
         }
     }
 }
