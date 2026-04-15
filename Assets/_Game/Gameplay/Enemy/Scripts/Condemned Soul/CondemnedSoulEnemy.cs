@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Pong.Framework.BehaviourTree;
+using Pong.Gameplay.Player;
 using Pong.Systems.Graph;
 
 namespace Pong.Gameplay.Enemy
@@ -25,6 +27,8 @@ namespace Pong.Gameplay.Enemy
         private AlmaMoveStrategy _moveStrategy;
         private AlmaPauseStrategy _pauseStrategy;
         private AlmaInvulnerabilityStrategy _invulnerabilityStrategy;
+        private List<PlayerController> _activePlayers;
+        private bool _isAIActive;
         private Material _material;
 
         protected override void Awake()
@@ -41,6 +45,11 @@ namespace Pong.Gameplay.Enemy
                 _material = _renderer.material;
                 _material.color = Color.gray;
             }
+        }
+
+        public override void InitializeAI(List<PlayerController> activePlayers)
+        {
+            _activePlayers = activePlayers ?? new List<PlayerController>();
 
             _tree = new BehaviourTree("Alma");
 
@@ -55,15 +64,25 @@ namespace Pong.Gameplay.Enemy
             cycleSequence.AddChild(new Leaf("Invulnerable", _invulnerabilityStrategy));
 
             _tree.AddChild(cycleSequence);
+            ResetCycle();
+            _isAIActive = true;
         }
 
         private void OnEnable()
         {
-            ExecuteAttack();
+            if (_isAIActive)
+            {
+                ExecuteAttack();
+            }
         }
 
         private void Update()
         {
+            if (!_isAIActive)
+            {
+                return;
+            }
+
             _tree?.Process();
         }
 
@@ -74,7 +93,10 @@ namespace Pong.Gameplay.Enemy
 
         private void OnDisable()
         {
-            ResetCycle();
+            if (_isAIActive)
+            {
+                ResetCycle();
+            }
         }
 
         public void SetCycleColor(Color color)
