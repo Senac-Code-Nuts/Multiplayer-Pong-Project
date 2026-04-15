@@ -37,6 +37,7 @@ namespace Pong.Gameplay.Boss
             _phase = phase;
         }
 
+        public abstract void ExecuteAttack();
         protected virtual void AdvancePhase()
         {
             _phase++;

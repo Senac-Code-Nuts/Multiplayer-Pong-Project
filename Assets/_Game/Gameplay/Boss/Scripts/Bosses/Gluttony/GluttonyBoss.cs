@@ -529,5 +529,10 @@ namespace Pong.Gameplay.Boss
         {
             ResetVisual();
         }
+
+        public override void ExecuteAttack()
+        {
+            
+        }
     }
 }
