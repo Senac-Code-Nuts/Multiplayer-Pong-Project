@@ -126,7 +126,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _speed: 10
-  _playerSide: 2
+  _playerSide: 0
   _influenceSystem: {fileID: 0}
 --- !u!114 &426822721179788484
 MonoBehaviour:

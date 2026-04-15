@@ -1,7 +1,8 @@
-using UnityEngine;
+using System.Threading.Tasks;
 using Pong.Gameplay.Actors;
 using Pong.Gameplay.Enemy;
 using Pong.Gameplay.Player;
+using UnityEngine;
 
 namespace Pong.Gameplay.Relics
 {
@@ -12,7 +13,7 @@ namespace Pong.Gameplay.Relics
         [SerializeField, Range(0f, 25f)] private float _speed;
 
         [Header("Visual")]
-        [SerializeField] private Renderer _renderer;
+        private Renderer _renderer;
         [SerializeField] private Color _boostColor = Color.yellow;
 
         [Header("Damage")]
@@ -24,9 +25,16 @@ namespace Pong.Gameplay.Relics
         private Material _material;
         private Color _defaultColor;
 
+        private Vector3 _originalScale;
+        private bool _isRevealing;
+
         private void Awake()
         {
             _rigidBody = GetComponent<Rigidbody>();
+            _originalScale = transform.localScale;
+            transform.localScale = Vector3.zero;
+            gameObject.SetActive(false);
+
             if (_renderer == null)
             {
                 _renderer = GetComponent<Renderer>();
@@ -49,6 +57,49 @@ namespace Pong.Gameplay.Relics
 
         private void OnEnable()
         {
+            if (_isRevealing)
+            {
+                return;
+            }
+
+            Launch();
+        }
+
+        public async Task AnimateAppearanceAsync(float duration = 1.5f)
+        {
+            if (duration <= 0f)
+            {
+                transform.localScale = _originalScale;
+                gameObject.SetActive(true);
+                Launch();
+                return;
+            }
+
+            _isRevealing = true;
+            _rigidBody.linearVelocity = Vector3.zero;
+            _rigidBody.angularVelocity = Vector3.zero;
+            _rigidBody.isKinematic = true;
+
+            transform.localScale = Vector3.zero;
+            gameObject.SetActive(true);
+
+            float elapsedTime = 0f;
+
+            while (elapsedTime < duration)
+            {
+                float normalizedTime = Mathf.Clamp01(elapsedTime / duration);
+                float smoothTime = Mathf.SmoothStep(0f, 1f, normalizedTime);
+
+                transform.localScale = Vector3.LerpUnclamped(Vector3.zero, _originalScale, smoothTime);
+                transform.Rotate(0f, 360f * Time.deltaTime / duration, 0f, Space.Self);
+
+                elapsedTime += Time.deltaTime;
+                await Task.Yield();
+            }
+
+            transform.localScale = _originalScale;
+            _rigidBody.isKinematic = false;
+            _isRevealing = false;
             Launch();
         }
 
@@ -66,7 +117,6 @@ namespace Pong.Gameplay.Relics
         private void FixedUpdate()
         {
             _rigidBody.linearVelocity = _rigidBody.linearVelocity.normalized * _currentSpeed;
-            Debug.Log(_rigidBody.linearVelocity);
         }
 
         private void OnCollisionEnter(Collision collision)

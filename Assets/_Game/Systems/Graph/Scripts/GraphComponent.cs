@@ -7,7 +7,7 @@ namespace Pong.Systems.Graph
     [ExecuteInEditMode]
     public class GraphComponent : MonoBehaviour
     {
-        [field : SerializeField] public List<GraphNode> Nodes {get; private set;}
+        [field: SerializeField] public List<GraphNode> Nodes { get; private set; }
 
         [SerializeField] private InfluenceSystem _influenceSystem;
 
@@ -15,10 +15,9 @@ namespace Pong.Systems.Graph
         [SerializeField] private Gradient _weightGradient;
         [SerializeField] private float _minWeight;
         [SerializeField] private float _maxWeight;
-
         public float GetDynamicCost(GraphNode from, Connection conn)
         {
-           GraphNode toNode = conn.GetOther(from);
+            GraphNode toNode = conn.GetOther(from);
 
             if (toNode == null) return conn.weight;
 
@@ -32,7 +31,7 @@ namespace Pong.Systems.Graph
 
         private void OnDrawGizmos()
         {
-           if (Nodes == null) return;
+            if (Nodes == null) return;
 
             float minCost = float.MaxValue;
             float maxCost = float.MinValue;
@@ -94,11 +93,11 @@ namespace Pong.Systems.Graph
         [ContextMenu("Randomize Weights")]
         private void RandomizeWeights()
         {
-            foreach(var node in Nodes)
+            foreach (var node in Nodes)
             {
-                foreach(var connection in node.connections)
+                foreach (var connection in node.connections)
                 {
-                    if(connection.nodeA != node) continue;
+                    if (connection.nodeA != node) continue;
 
                     float randomWeight = Random.Range(_minWeight, _maxWeight);
                     connection.weight = randomWeight;
@@ -109,11 +108,11 @@ namespace Pong.Systems.Graph
         [ContextMenu("Reset Weights")]
         private void ResetWeights()
         {
-            foreach(var node in Nodes)
+            foreach (var node in Nodes)
             {
-                foreach(var connection in node.connections)
+                foreach (var connection in node.connections)
                 {
-                    if(connection.nodeA != node) continue;
+                    if (connection.nodeA != node) continue;
 
                     connection.weight = 1;
                 }

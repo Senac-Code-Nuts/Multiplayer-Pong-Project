@@ -1,14 +1,15 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using UnityEngine;
-using Pong.Systems.Input;
+using Pong.Gameplay;
 using Pong.Gameplay.Enemy;
 using Pong.Gameplay.Player;
 using Pong.Shared.Management;
-using Pong.Systems;
+using Pong.Systems.Input;
+using Pong.Systems.Graph;
 using Sirenix.OdinInspector;
+using UnityEngine;
 
-namespace Pong.Gameplay.Scene
+namespace Pong.App
 {
     public class SceneBootstrapper : MonoBehaviour
     {
@@ -16,7 +17,8 @@ namespace Pong.Gameplay.Scene
         [SerializeField] private GamepadsManager _gamepadsManager;
         [SerializeField] private MatchUIManager _uiManager;
         [SerializeField] private GameManager _gameManager;
-        [SerializeField] private EnemyManager _enemyManager; // <--- NOVA REFERÊNCIA
+        [SerializeField] private EnemyManager _enemyManager;
+        [SerializeField] private InfluenceSystem _influenceSystem;
 
         private enum State { Initializing, WaitingForPlayers, Countdown, Injecting, Playing }
 
@@ -32,39 +34,44 @@ namespace Pong.Gameplay.Scene
         {
             try
             {
-                // 1. SETUP: Abre as portas e Spawna Inimigos
                 _currentState = State.WaitingForPlayers;
 
-                _enemyManager.SpawnEnemies(); 
+                _enemyManager.SpawnEnemies();
                 _gamepadsManager.StartPlayerSpawning();
 
-                while (!_gamepadsManager.AllPlayersReady) { await Task.Yield(); }
+                while (!_gamepadsManager.AllPlayersReady)
+                {
+                    await Task.Yield();
+                }
 
-                // 2. COUNTDOWN
                 _currentState = State.Countdown;
                 _uiManager.StartMatchCountdown();
 
-                while (!_uiManager.IsCountdownFinished) { await Task.Yield(); }
+                while (!_uiManager.IsCountdownFinished)
+                {
+                    await Task.Yield();
+                }
 
-                // 3. INJECTION
                 _currentState = State.Injecting;
 
                 List<GameObject> playerObjects = _gamepadsManager.GetActivePlayerInstances();
                 List<PlayerController> activePlayers = new List<PlayerController>();
+
                 foreach (var obj in playerObjects)
                 {
-                    if (obj.TryGetComponent(out PlayerController controller))
+                    if (obj != null && obj.TryGetComponent(out PlayerController controller))
                     {
                         activePlayers.Add(controller);
                     }
                 }
 
-                // <--- DELEGA A INJEÇÃO DE DEPENDÊNCIAS
-                _enemyManager.InjectTargetsAndStartAI(activePlayers);
+                _enemyManager.InjectTargetsAndStartAI(activePlayers, _influenceSystem);
+                
+                await _gameManager.RevealRelic();
 
-                // 4. PLAY
                 _currentState = State.Playing;
                 _gameManager.SetMatchActive(true);
+
             }
             catch (System.Exception e)
             {
