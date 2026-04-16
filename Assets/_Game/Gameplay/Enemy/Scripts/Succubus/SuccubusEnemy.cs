@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Pong.Framework.BehaviourTree;
 using Pong.Systems.Graph;
@@ -22,6 +23,9 @@ namespace Pong.Gameplay.Enemy.Succubus
         private ChaseStrategy _chaseStrategy;
         private PatrolStrategy _patrolStrategy;
         private AttackStrategy _attackStrategy;
+        private List<PlayerController> _activePlayers;
+        private InfluenceSystem _influenceSystem;
+        private bool _isAIActive;
         private Material _meshMaterial;
         private float _colorRedIntensity = 0f;
 
@@ -31,35 +35,47 @@ namespace Pong.Gameplay.Enemy.Succubus
 
             Renderer renderer = GetComponent<Renderer>();
             _meshMaterial = renderer.material;
+        }
+
+        public override void InitializeAI(List<PlayerController> activePlayers, InfluenceSystem influenceSystem)
+        {
+            _activePlayers = activePlayers ?? new List<PlayerController>();
+            _influenceSystem = influenceSystem;
+
+            _graphComponent = _influenceSystem.GraphComponent;
 
             _tree = new BehaviourTree("Succubus");
             var pathFinder = new EnemyPathFinder(_graphComponent);
 
             _chaseStrategy = new ChaseStrategy(this, pathFinder);
+            _chaseStrategy.SetActivePlayers(_activePlayers);
             _patrolStrategy = new PatrolStrategy(this, pathFinder);
             _attackStrategy = new AttackStrategy(this);
-            
+
             var chaseNode = new Leaf("Chase", _chaseStrategy, priority: 10);
             var patrolNode = new Leaf("Patrol", _patrolStrategy, priority: 1);
             var attackNode = new Leaf("Attack", _attackStrategy, priority: 10);
 
-            // Sequence: Passou 5s E tenta Chase
             var chaseSequence = new Sequence("ChaseSequence", priority: 10);
             chaseSequence.AddChild(new Leaf("ChaseInterval5s", new IntervalStrategy(5f)));
             chaseSequence.AddChild(chaseNode);
-            chaseSequence.AddChild(attackNode); // Ataca depois de chegar perto
+            chaseSequence.AddChild(attackNode);
 
-
-            // PrioritySelector: ordena por prioridade
             var prioritySelector = new PrioritySelector("ChaseOrPatrol");
             prioritySelector.AddChild(chaseSequence);
             prioritySelector.AddChild(patrolNode);
 
             _tree.AddChild(prioritySelector);
+            _isAIActive = true;
         }
 
         private void Update()
         {
+            if (!_isAIActive || _tree == null)
+            {
+                return;
+            }
+
             _colorRedIntensity = Mathf.Clamp01(_colorRedIntensity + Time.deltaTime / 5f);
             UpdateMeshColor();
 

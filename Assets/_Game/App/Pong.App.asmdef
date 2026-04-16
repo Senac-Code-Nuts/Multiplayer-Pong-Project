@@ -1,0 +1,19 @@
+{
+    "name": "Pong.App",
+    "rootNamespace": "Pong.App",
+    "references": [
+        "Pong.Core",
+        "Pong.Systems",
+        "Pong.Gameplay",
+        "Pong.Shared"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

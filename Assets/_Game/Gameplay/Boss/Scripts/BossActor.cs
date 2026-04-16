@@ -1,6 +1,9 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Pong.Gameplay.Actors;
 using Pong.Gameplay.Enemy;
+using Pong.Gameplay.Player;
+using Pong.Systems.Graph;
 
 namespace Pong.Gameplay.Boss
 {
@@ -11,8 +14,20 @@ namespace Pong.Gameplay.Boss
 
         protected float _stateTime;
         protected IBossState _currentState;
+        protected List<PlayerController> _activePlayers = new List<PlayerController>();
+        protected InfluenceSystem _influenceSystem;
+        protected bool _isInitialized;
 
         public int Phase => _phase;
+        protected bool IsInitialized => _isInitialized;
+
+        public virtual void InitializeAI(List<PlayerController> activePlayers, InfluenceSystem influenceSystem)
+        {
+            _activePlayers = activePlayers ?? new List<PlayerController>();
+            _influenceSystem = influenceSystem;
+            _isInitialized = true;
+            OnAIInitialized();
+        }
 
         protected virtual void Update()
         {
@@ -37,12 +52,15 @@ namespace Pong.Gameplay.Boss
             _phase = phase;
         }
 
+        protected virtual void OnAIInitialized()
+        {
+        }
+
+        public abstract void ExecuteAttack();
         protected virtual void AdvancePhase()
         {
             _phase++;
         }
-
-        public abstract void ExecuteAttack();
 
         protected override void OnDamageTaken()
         {
