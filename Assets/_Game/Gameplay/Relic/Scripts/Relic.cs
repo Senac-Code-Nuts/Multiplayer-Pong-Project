@@ -1,6 +1,7 @@
 using UnityEngine;
 using Pong.Gameplay.Actors;
 using Pong.Gameplay.Enemy;
+using Pong.Gameplay.Player;
 
 namespace Pong.Gameplay.Relics
 {
@@ -17,6 +18,8 @@ namespace Pong.Gameplay.Relics
 
         [Header("Damage")]
         [SerializeField] private int _damage;
+
+        private bool _isReflected;
 
         private Vector3 _direction;
         private Rigidbody _rigidBody;
@@ -72,8 +75,12 @@ namespace Pong.Gameplay.Relics
             if (collision.gameObject.TryGetComponent(out MinotaurEnemy minotaur) && minotaur.ConsumeCounterAttackTriggered())
             {
                 Debug.Log("<color=cyan>[Relic] Minotaur parry collision detected. Speed boost applied on hit.</color>");
+                InvertDirection(minotaur.transform.forward, true);
+
                 return;
             }
+
+            TryApplyDamage(collision);
 
             Reflect(collision);
 

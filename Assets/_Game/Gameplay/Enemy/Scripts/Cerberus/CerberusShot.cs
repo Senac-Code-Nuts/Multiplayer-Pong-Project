@@ -6,6 +6,7 @@ namespace Pong.Gameplay.Enemy.Cerberus
     public class CerberusShot : MonoBehaviour
     {
         [Header("Specific Attributes")]
+        [SerializeField] private int _damage = 1;
         [SerializeField] private float _lifetime = 4f;
         [SerializeField] private float _bounceAngleLimit = 80f;
 
@@ -53,7 +54,7 @@ namespace Pong.Gameplay.Enemy.Cerberus
         {
             if (other.TryGetComponent<PlayerActor>(out PlayerActor player))
             {
-                player.ApplyDamage(1);
+                player.ApplyDamage(_damage);
             }
         }
     }
