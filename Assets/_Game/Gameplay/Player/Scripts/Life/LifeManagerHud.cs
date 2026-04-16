@@ -6,23 +6,58 @@ namespace Pong.Gameplay.Life
     public class LifeManagerHud : MonoBehaviour
     {
         [SerializeField] private LifeManager _lifeManager;
-        [SerializeField] private Image _fillImage;
+        [SerializeField] private Slider _lifeSlider;
+        [SerializeField] private GameObject _hudContainer;
+
+        private void Awake()
+        {
+            SetVisible(false);
+        }
+
+        private void Start()
+        {
+            RefreshHud();
+        }
 
         private void OnEnable()
         {
-            LifeManager.OnLifeChangeEvent += UptadeLifeHud;            
+            LifeManager.OnLifeChangeEvent += OnLifeChangeDelegate;            
         }
 
         private void OnDisable()
         {
-            LifeManager.OnLifeChangeEvent -= UptadeLifeHud;            
+            LifeManager.OnLifeChangeEvent -= OnLifeChangeDelegate;            
         }
 
-        private void UptadeLifeHud(int newLife)
-        {           
-            float fill = (float)newLife / (float)_lifeManager.MaxLife;            
+        public void OnLifeChangeDelegate(int currentLife)
+        {
+            _lifeSlider.value = currentLife;
+        }
 
-            _fillImage.fillAmount = fill;
+        public void SetVisible(bool isVisible)
+        {
+            if (_hudContainer.activeSelf == isVisible)
+            {
+                if (isVisible)
+                {
+                    RefreshHud();
+                }
+
+                return;
+            }
+
+            _hudContainer.SetActive(isVisible);
+        }
+
+        private void RefreshHud()
+        {
+            if (_lifeManager == null || _lifeSlider == null)
+            {
+                return;
+            }
+
+            _lifeSlider.maxValue = _lifeManager.MaxLife;
+            _lifeSlider.value = _lifeManager.Life;
         }
     }
 }
