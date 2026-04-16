@@ -112,12 +112,30 @@ namespace Pong.Gameplay.Boss
             {
                 _drinkConeTelegraph.SetActive(false);
             }
+        }
+
+        protected override void OnAIInitialized()
+        {
+            _graphComponent = _influenceSystem != null && _influenceSystem.GraphComponent != null
+                ? _influenceSystem.GraphComponent
+                : _graphComponent;
+
+            if (_graphComponent == null)
+            {
+                Debug.LogWarning("[Gluttony] GraphComponent não foi configurado.");
+                return;
+            }
 
             BuildTree();
         }
 
         protected override void Update()
         {
+            if (!IsInitialized)
+            {
+                return;
+            }
+
             base.Update();
 
             if (_isDead || _isStunned)

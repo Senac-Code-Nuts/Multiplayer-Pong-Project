@@ -37,6 +37,7 @@ namespace Pong.App
                 _currentState = State.WaitingForPlayers;
 
                 _enemyManager.SpawnEnemies();
+                _enemyManager.SpawnBosses();
                 _gamepadsManager.StartPlayerSpawning();
 
                 while (!_gamepadsManager.AllPlayersReady)
@@ -66,6 +67,7 @@ namespace Pong.App
                 }
 
                 _enemyManager.InjectTargetsAndStartAI(activePlayers, _influenceSystem);
+                _enemyManager.InjectBossesAndStartAI(activePlayers, _influenceSystem);
                 
                 await _gameManager.RevealRelic();
 

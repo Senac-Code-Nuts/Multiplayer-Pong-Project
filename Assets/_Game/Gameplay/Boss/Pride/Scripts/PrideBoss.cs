@@ -113,6 +113,19 @@ namespace Pong.Gameplay.Boss
                     _projectilePoolParent
                 );
             }
+        }
+
+        protected override void OnAIInitialized()
+        {
+            _graphComponent = _influenceSystem != null && _influenceSystem.GraphComponent != null
+                ? _influenceSystem.GraphComponent
+                : _graphComponent;
+
+            if (_graphComponent == null)
+            {
+                Debug.LogWarning("[Pride] GraphComponent nÃ£o foi configurado.");
+                return;
+            }
 
             BuildTree();
         }
@@ -124,6 +137,11 @@ namespace Pong.Gameplay.Boss
 
         protected override void Update()
         {
+            if (!IsInitialized)
+            {
+                return;
+            }
+
             base.Update();
 
             if (_isDead || _isStunned)
@@ -358,7 +376,7 @@ namespace Pong.Gameplay.Boss
         {
             if (_projectilePool == null)
             {
-                Debug.LogWarning("[Pride] Projectile pool não foi inicializado.");
+                Debug.LogWarning("[Pride] Projectile pool nï¿½o foi inicializado.");
                 return;
             }
 
@@ -388,7 +406,7 @@ namespace Pong.Gameplay.Boss
             PrideAttackVine projectile = _projectilePool.Get();
             if (projectile == null)
             {
-                Debug.LogWarning("[Pride] Pool de projétil vazio.");
+                Debug.LogWarning("[Pride] Pool de projï¿½til vazio.");
                 return;
             }
 

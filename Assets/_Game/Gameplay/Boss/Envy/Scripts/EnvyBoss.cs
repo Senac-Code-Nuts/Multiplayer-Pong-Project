@@ -38,6 +38,20 @@ namespace Pong.Gameplay.Boss
         {
             base.Awake();
             _slotMachine = GetComponent<EnvySlotMachine>();
+        }
+
+        protected override void OnAIInitialized()
+        {
+            _graphComponent = _influenceSystem != null && _influenceSystem.GraphComponent != null
+                ? _influenceSystem.GraphComponent
+                : _graphComponent;
+
+            if (_graphComponent == null)
+            {
+                Debug.LogWarning("[Envy] GraphComponent não foi configurado.");
+                return;
+            }
+
             BuildTree();
         }
 
@@ -48,6 +62,11 @@ namespace Pong.Gameplay.Boss
 
         protected override void Update()
         {
+            if (!IsInitialized)
+            {
+                return;
+            }
+
             base.Update();
 
             _tree?.Process();

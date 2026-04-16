@@ -43,11 +43,29 @@ namespace Pong.Gameplay.Boss
         protected override void Awake()
         {
             base.Awake();
+        }
+
+        protected override void OnAIInitialized()
+        {
+            _graphComponent = _influenceSystem != null && _influenceSystem.GraphComponent != null
+                ? _influenceSystem.GraphComponent
+                : _graphComponent;
+
+            if (_graphComponent == null)
+            {
+                Debug.LogWarning("[Wrath] GraphComponent não foi configurado.");
+                return;
+            }
 
             BuildTree();
         }
         protected override void Update()
         {
+            if (!IsInitialized)
+            {
+                return;
+            }
+
             base.Update();
 
             _tree?.Process();
