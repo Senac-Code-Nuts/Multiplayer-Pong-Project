@@ -6,6 +6,8 @@ namespace Pong.Systems.Graph
     public class InfluenceSystem : MonoBehaviour
     {
         [SerializeField] private List<InfluenceSource> _sources = new List<InfluenceSource>();
+        [field: SerializeField] public GraphComponent GraphComponent { get; private set; }
+
 
         public float GetMultiplier(Vector3 position)
         {
@@ -22,6 +24,14 @@ namespace Pong.Systems.Graph
             }
 
             return 1f + total;
+        }
+
+        public void RegisterSource(InfluenceSource source)
+        {
+            if (!_sources.Contains(source))
+            {
+                _sources.Add(source);
+            }
         }
     }
 }

@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
+using Pong.Core;
+using System.Collections.Generic;
 
 namespace Pong.Systems.Input
 {
@@ -11,6 +13,7 @@ namespace Pong.Systems.Input
         public Transform SpawnPoint;
         public PlayerSide PlayerSide;
     }
+
     public class GamepadsManager : MonoBehaviour
     {
         private const int MAX_PLAYERS = 4;
@@ -24,17 +27,33 @@ namespace Pong.Systems.Input
         [SerializeField, Range(2, 4)] private int _playerCount = DEFAULT_PLAYERS;
         [SerializeField] private bool _enableKeyboardForTesting = false;
 
+        [SerializeField] private Transform _playerParent;
+
+        private bool _isSpawningAllowed = false;
 
         private int PlayerCount
         {
+            get { return _playerCount; }
+        }
+
+        public bool AllPlayersReady
+        {
             get
             {
-                return _playerCount;
+                int count = 0;
+                for (int i = 0; i < PlayerCount; i++)
+                {
+                    if (_activePlayers[i] != null) count++;
+                }
+                return count == PlayerCount;
             }
         }
 
-        private void Start()
+        public void StartPlayerSpawning()
         {
+            _isSpawningAllowed = true;
+            Debug.Log($"{GAMEPAD_TAG} Spawning permitido pelo Bootstrapper. Procurando dispositivos ativos...");
+
             foreach (var gamepad in Gamepad.all)
             {
                 SpawnPlayerForDevice(gamepad);
@@ -55,6 +74,7 @@ namespace Pong.Systems.Input
         {
             InputSystem.onDeviceChange -= OnDeviceChange;
         }
+
         private void OnValidate()
         {
             if (_playerCount != MIN_PLAYERS && _playerCount != MAX_PLAYERS)
@@ -65,10 +85,13 @@ namespace Pong.Systems.Input
 
         private void OnDeviceChange(InputDevice device, InputDeviceChange change)
         {
-            if (change == InputDeviceChange.Added && (device is Gamepad || (_enableKeyboardForTesting && device is Keyboard)))
+            if (change == InputDeviceChange.Added && _isSpawningAllowed && !AllPlayersReady)
             {
-                Debug.Log($"{GAMEPAD_TAG} Device added: {device.displayName}");
-                SpawnPlayerForDevice(device);
+                if (device is Gamepad || (_enableKeyboardForTesting && device is Keyboard))
+                {
+                    Debug.Log($"{GAMEPAD_TAG} Device added: {device.displayName}");
+                    SpawnPlayerForDevice(device);
+                }
             }
 
             if (change == InputDeviceChange.Removed)
@@ -87,8 +110,10 @@ namespace Pong.Systems.Input
                 Debug.Log($"{GAMEPAD_TAG} Device removed: {device.displayName} (Index: {index})");
             }
         }
+
         private void SpawnPlayerForDevice(InputDevice device)
         {
+            if (!_isSpawningAllowed) return; 
             if (IsDeviceAlreadyPaired(device)) return;
 
             int index = GetFirstEmptyIndex();
@@ -106,6 +131,7 @@ namespace Pong.Systems.Input
 
             playerInput.transform.position = slot.SpawnPoint.position;
             playerInput.name = $"Player {index + 1}";
+            playerInput.transform.SetParent(_playerParent, true);
 
             _activePlayers[index] = new PlayerData
             {
@@ -113,6 +139,7 @@ namespace Pong.Systems.Input
                 Device = device,
                 Side = slot.PlayerSide
             };
+            PlayerSpawnEvents.RaisePlayerSpawned(playerInput.gameObject, index, (int)slot.PlayerSide);
 
             Debug.Log($"{GAMEPAD_TAG} Spawned player for device: {device.displayName} at index {index}");
         }
@@ -136,9 +163,23 @@ namespace Pong.Systems.Input
             }
             return -1;
         }
+
         private bool IsDeviceAlreadyPaired(InputDevice device)
         {
             return FindPlayerIndexForDevice(device) != -1;
+        }
+
+        public List<GameObject> GetActivePlayerInstances()
+        {
+            List<GameObject> instances = new List<GameObject>();
+            for (int i = 0; i < PlayerCount; i++)
+            {
+                if (_activePlayers[i] != null && _activePlayers[i].Instance != null)
+                {
+                    instances.Add(_activePlayers[i].Instance);
+                }
+            }
+            return instances;
         }
         #endregion
     }

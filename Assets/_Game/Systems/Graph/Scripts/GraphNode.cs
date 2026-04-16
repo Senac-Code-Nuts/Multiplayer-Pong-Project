@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace Pong.Systems.Graph
@@ -20,9 +21,9 @@ namespace Pong.Systems.Graph
 
                 if (other != null)
                 {
-                    neighbours.Add(other);   
+                    neighbours.Add(other);
                 }
-                    
+
             }
 
             return neighbours;
@@ -58,6 +59,24 @@ namespace Pong.Systems.Graph
             if (_autoTarget != null)
             {
                 ConnectTo(_autoTarget, _autoWeight);
+            }
+        }
+
+        [CustomEditor(typeof(GraphNode))]
+        private class GraphNodeEditor : Editor
+        {
+            public override void OnInspectorGUI()
+            {
+                base.OnInspectorGUI();
+
+                GUILayout.Space(10);
+
+                GraphNode node = (GraphNode)target;
+
+                if (GUILayout.Button("Connect To Target"))
+                {
+                    node.ConnectToTarget();
+                }
             }
         }
     }

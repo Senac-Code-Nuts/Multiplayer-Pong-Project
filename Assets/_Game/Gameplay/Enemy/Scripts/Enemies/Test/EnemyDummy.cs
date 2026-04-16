@@ -1,6 +1,9 @@
 using System.Collections;
-using UnityEngine;
+using System.Collections.Generic;
 using Pong.Gameplay.Enemy;
+using Pong.Gameplay.Player;
+using Pong.Systems.Graph;
+using UnityEngine;
 
 namespace Pong.Gameplay.Enemy.Test
 {
@@ -10,6 +13,8 @@ namespace Pong.Gameplay.Enemy.Test
         [SerializeField] private Renderer[] _renderers;
         [SerializeField] private Color _normalColor = Color.white;
         [SerializeField] private Color _stunnedColor = Color.cyan;
+        private List<PlayerController> _activePlayers;
+        private InfluenceSystem _influenceSystem;
 
         protected override void Awake()
         {
@@ -17,6 +22,12 @@ namespace Pong.Gameplay.Enemy.Test
             _currentHealth = _maxHealth;
 
             CacheDefaultColor();
+        }
+
+        public override void InitializeAI(List<PlayerController> activePlayers, InfluenceSystem influenceSystem)
+        {
+            _activePlayers = activePlayers ?? new List<PlayerController>();
+            _influenceSystem = influenceSystem;
         }
 
         public override void ExecuteAttack()

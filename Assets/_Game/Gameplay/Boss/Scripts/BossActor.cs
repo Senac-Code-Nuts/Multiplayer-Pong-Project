@@ -1,5 +1,6 @@
 using UnityEngine;
 using Pong.Gameplay.Actors;
+using Pong.Gameplay.Enemy;
 
 namespace Pong.Gameplay.Boss
 {
@@ -8,9 +9,39 @@ namespace Pong.Gameplay.Boss
         [Header("Boss")]
         [SerializeField, Range(0, 3)] protected int _phase;
 
+        protected float _stateTime;
+        protected IBossState _currentState;
+
         public int Phase => _phase;
 
+        protected virtual void Update()
+        {
+            if (_currentState == null) return;
+
+            _stateTime += Time.deltaTime;
+            _currentState.OnUpdate();
+        }
+
+        protected virtual void ChangeState(IBossState newState)
+        {
+            _currentState?.OnExit();
+
+            _currentState = newState;
+            _stateTime = 0f;
+
+            _currentState?.OnEnter();
+        }
+
+        protected virtual void SetPhase(int phase)
+        {
+            _phase = phase;
+        }
+
         public abstract void ExecuteAttack();
+        protected virtual void AdvancePhase()
+        {
+            _phase++;
+        }
 
         protected override void OnDamageTaken()
         {

@@ -4,16 +4,21 @@
 TagManager:
   serializedVersion: 3
   tags:
+  - Relic
   - Wall
+  - Boss
+  - EnemyProjectile
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Player
   - Water
   - UI
-  - Lust Projectile
-  - 
+  - Relic
+  - Projectile
+  - Boss
+  - HUD
   - 
   - 
   - 
