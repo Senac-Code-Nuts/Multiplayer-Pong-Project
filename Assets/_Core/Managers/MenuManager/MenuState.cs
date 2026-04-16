@@ -1,6 +1,7 @@
 using System.Data;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
 
 
@@ -21,6 +22,7 @@ namespace MenuManager
         /// reference to which state it is
         /// </summary>
         [SerializeField] private StateType _stateType;
+        [SerializeField] private GameObject _FirstSelectedScreenButton;
 
         /// <summary>
         /// get setter, unsure of its usability, 
@@ -30,6 +32,12 @@ namespace MenuManager
         {
             get { return _stateType; }
             private set { _StateType = value; }
+        }
+
+        public GameObject _firstButton
+        {
+            get {return _FirstSelectedScreenButton;}
+            private set {_FirstSelectedScreenButton = value;}
         }
 
         /// <summary>
@@ -68,6 +76,11 @@ namespace MenuManager
         {
             LocalExit();
             gameObject.SetActive(false);
+        }
+
+        public void SelectThat(GameObject butt)
+        {
+            EventSystem.current.SetSelectedGameObject(butt);
         }
 
     }

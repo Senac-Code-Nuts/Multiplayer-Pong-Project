@@ -17,7 +17,7 @@ namespace MenuManager
 
         public override void LocalStart()
         {
-
+            SelectThat(_firstButton);
         }
 
         public override void LocalUpdate()

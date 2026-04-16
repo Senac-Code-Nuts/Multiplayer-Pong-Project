@@ -24,7 +24,7 @@ namespace MenuManager
 
         public override void LocalStart()
         {
-
+            SelectThat(_firstButton);
             int masterLevel = PlayerPrefs.GetInt("MasterVolume");
             int musicLevel = PlayerPrefs.GetInt("MusicVolume");
             int sfxLevel = PlayerPrefs.GetInt("SFXVolume");
