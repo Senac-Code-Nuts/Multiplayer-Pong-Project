@@ -467,10 +467,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _enemyPrefabs:
-  - {fileID: 1128052536487738876, guid: d6414430c39847d4badfc09ac8e390b1, type: 3}
-  - {fileID: 5227405886908166763, guid: f555dd2e207d4c840b90c83b9cd86641, type: 3}
-  - {fileID: 5227405886908166763, guid: f555dd2e207d4c840b90c83b9cd86641, type: 3}
-  - {fileID: 5227405886908166763, guid: f555dd2e207d4c840b90c83b9cd86641, type: 3}
+  - {fileID: 7527777348739844291, guid: 6b45a76a6041f8140894b362c6412b2a, type: 3}
+  - {fileID: 7527777348739844291, guid: 6b45a76a6041f8140894b362c6412b2a, type: 3}
+  - {fileID: -7742706546396546427, guid: bef7aa8982f488f43a29b8e2ef4915a6, type: 3}
+  - {fileID: -7742706546396546427, guid: bef7aa8982f488f43a29b8e2ef4915a6, type: 3}
+  - {fileID: -7742706546396546427, guid: bef7aa8982f488f43a29b8e2ef4915a6, type: 3}
   _spawnPoints:
   - {fileID: 507488963}
   - {fileID: 1417315346}
