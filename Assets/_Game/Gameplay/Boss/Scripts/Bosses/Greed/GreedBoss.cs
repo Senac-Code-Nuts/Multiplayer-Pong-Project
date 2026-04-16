@@ -1,6 +1,7 @@
 using Pong.Framework.BehaviourTree;
 using Pong.Gameplay.Enemy;
 using Pong.Gameplay.Enemy.Succubus;
+using Pong.Systems.Audio;
 using Pong.Systems.Graph;
 using UnityEngine;
 
@@ -23,6 +24,10 @@ namespace Pong.Gameplay.Boss.Greed
 
         [Header("Treasure Settings")]
         public bool IsTouched { get; set; }
+
+        [Header("Audio Settings")]
+        [field: SerializeField] public AudioClip HurtClip {get; private set;}
+        [field: SerializeField] public AudioClip AttackClip {get; private set;}
 
         private IntervalStrategy _greedIntervalStrategy;
         private GreedAttackStrategy _greedAttackStrategy;
@@ -84,6 +89,15 @@ namespace Pong.Gameplay.Boss.Greed
             _tree.Process();
             HandleVulnerability();
         }
+
+        public override void ApplyDamage(int damage)
+        {
+            if(HurtClip != null)
+            {
+                AudioManager.Instance.PlaySFX(HurtClip);
+            }
+            base.ApplyDamage(damage);
+        }
         protected override void OnDeath()
         {
             if (_isDead)
@@ -122,6 +136,10 @@ namespace Pong.Gameplay.Boss.Greed
         public override void ExecuteAttack()
         {
             Debug.Log($"<color=red>[Boss] {gameObject.name} executou o hit!</color>");
+            if(AttackClip != null)
+            {
+                AudioManager.Instance.PlaySFX(AttackClip);
+            }
         }
         private void OnDrawGizmos()
         {

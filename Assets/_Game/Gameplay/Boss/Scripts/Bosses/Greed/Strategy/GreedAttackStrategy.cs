@@ -57,6 +57,11 @@ namespace Pong.Gameplay.Boss.Greed
                 if (hit.CompareTag("Player"))
                 {
                     Debug.Log($"<color=orange>[Attack] Jogador {hit.name} tomou dano</color>");
+                    var player = hit.gameObject.GetComponent<GreedBoss>();
+                    if(player != null)
+                    {
+                        player.ApplyDamage(_greedBoss.Damage);
+                    }
                 }
             }
         }
