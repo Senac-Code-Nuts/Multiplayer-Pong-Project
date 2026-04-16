@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 3
   tags:
   - Relic
+  - Wall
+  - Boss
+  - EnemyProjectile
   layers:
   - Default
   - TransparentFX
@@ -13,6 +16,8 @@ TagManager:
   - Water
   - UI
   - Relic
+  - Projectile
+  - Boss
   - HUD
   - 
   - 
