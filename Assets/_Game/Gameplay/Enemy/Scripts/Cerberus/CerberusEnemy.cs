@@ -4,6 +4,7 @@ using Pong.Framework.BehaviourTree;
 using Pong.Gameplay.Player;
 using Pong.Systems.Graph;
 using Pong.Core.Gizmo;
+using Pong.Systems.Audio;
 
 namespace Pong.Gameplay.Enemy.Cerberus
 {
@@ -29,6 +30,10 @@ namespace Pong.Gameplay.Enemy.Cerberus
         [SerializeField] private Transform _projectileSpawnPoint;
         [SerializeField] private CerberusShot _shotPrefab;
         [SerializeField] private Renderer _renderer;
+
+        [Header("Audio Settings")]
+        [field: SerializeField] public AudioClip AttackClip {get; private set;}
+        [field: SerializeField] public AudioClip HurtClip {get; private set;}
 
         private Color _defaultColor;
         private BehaviourTree _tree;
@@ -92,6 +97,15 @@ namespace Pong.Gameplay.Enemy.Cerberus
             }
         }
 
+        public override void ApplyDamage(int damage)
+        {
+            if(HurtClip != null)
+            {
+                AudioManager.Instance.PlaySFX(HurtClip);
+            }
+            base.ApplyDamage(damage);
+        }
+
         private void OnDisable()
         {
             if (_renderer != null)
@@ -116,6 +130,11 @@ namespace Pong.Gameplay.Enemy.Cerberus
 
             float angleStep = _projectileCount > 1 ? _coneAngle / (_projectileCount - 1) : 0f;
             float startAngle = -_coneAngle * 0.5f;
+
+            if(AttackClip != null)
+            {
+                AudioManager.Instance.PlaySFX(AttackClip);
+            }
 
             for (int i = 0; i < _projectileCount; i++)
             {

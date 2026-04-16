@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Pong.Gameplay.Actors;
 using Pong.Gameplay.Enemy;
 using Pong.Gameplay.Player;
+using Pong.Systems.Audio;
 using UnityEngine;
 
 namespace Pong.Gameplay.Relics
@@ -18,6 +19,9 @@ namespace Pong.Gameplay.Relics
 
         [Header("Damage")]
         [SerializeField] private int _damage;
+
+        [Header("Audio Settings")]
+        [SerializeField] private AudioClip _bumpClip;
 
         private Vector3 _direction;
         private Rigidbody _rigidBody;
@@ -121,6 +125,10 @@ namespace Pong.Gameplay.Relics
 
         private void OnCollisionEnter(Collision collision)
         {
+            if(_bumpClip != null)
+            {
+                AudioManager.Instance.PlaySFX(_bumpClip);
+            }
             TryApplyDamage(collision);
 
             if (collision.collider.TryGetComponent(out PlayerController player)) {

@@ -1,6 +1,7 @@
 using Pong.Framework.BehaviourTree;
 using Pong.Gameplay.Enemy;
 using Pong.Gameplay.Player;
+using Pong.Systems.Audio;
 using Pong.Systems.Graph;
 using UnityEngine;
 
@@ -33,6 +34,10 @@ namespace Pong.Gameplay.Boss
         [Header("Move Settings")]
         [SerializeField] private  GraphComponent _graphComponent;
         [SerializeField] private float _moveSpeed = 3f;
+
+        [Header("Audio Settings")]
+        [field: SerializeField] public AudioClip AttackClip {get; private set;}
+        [field: SerializeField] public AudioClip HurtClip {get; private set;}
         public bool _canMove {get; private set;} = true;
 
         public enum AttackType
@@ -72,6 +77,17 @@ namespace Pong.Gameplay.Boss
             IsAttacking = false;
             _cooldownTimer = _attackCooldown;
             AllowMovement();
+        }
+
+        public override void ApplyDamage(int damage)
+        {
+            if(HurtClip != null)
+            {
+                AudioManager.Instance.PlaySFX(HurtClip);
+            }
+            
+            base.ApplyDamage(damage);
+            
         }
         private void BuildTree()
         {
@@ -162,6 +178,11 @@ namespace Pong.Gameplay.Boss
         {
             Debug.Log("Spin attack");
             Collider[] hits = Physics.OverlapSphere(transform.position, AttackRadius);
+            if(AttackClip != null)
+            {
+               AudioManager.Instance.PlaySFX(AttackClip); 
+            }
+            
 
             foreach(var hit in hits)
             {
@@ -187,6 +208,12 @@ namespace Pong.Gameplay.Boss
             Vector3 direction = -(target.transform.position - transform.position).normalized;
 
             projectile.Launch(direction, _throwForce);
+            if(AttackClip != null)
+            {
+               AudioManager.Instance.PlaySFX(AttackClip); 
+            }
+            
+
             return pain;
         }
 

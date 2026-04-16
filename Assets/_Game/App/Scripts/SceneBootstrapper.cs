@@ -8,6 +8,7 @@ using Pong.Systems.Input;
 using Pong.Systems.Graph;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using Pong.Systems.Audio;
 
 namespace Pong.App
 {
@@ -19,6 +20,13 @@ namespace Pong.App
         [SerializeField] private GameManager _gameManager;
         [SerializeField] private EnemyManager _enemyManager;
         [SerializeField] private InfluenceSystem _influenceSystem;
+
+        [Header("Audio settings")]
+        [SerializeField] private AudioClip _enemyTrack;
+        [SerializeField] private AudioClip _bossTrack;
+        private enum SceneTrack {Enemy, Boss};
+        [SerializeField] private SceneTrack _activeTrack;
+
 
         private enum State { Initializing, WaitingForPlayers, Countdown, Injecting, Playing }
 
@@ -34,6 +42,16 @@ namespace Pong.App
         {
             try
             {
+                if( _enemyTrack != null && _bossTrack != null)
+                {
+                    if(_activeTrack == SceneTrack.Enemy)
+                    {
+                        AudioManager.Instance.PlayTrack(_enemyTrack);
+                    } else
+                    {
+                        AudioManager.Instance.PlayTrack(_bossTrack);
+                    }
+                }
                 _currentState = State.WaitingForPlayers;
 
                 _enemyManager.SpawnEnemies();

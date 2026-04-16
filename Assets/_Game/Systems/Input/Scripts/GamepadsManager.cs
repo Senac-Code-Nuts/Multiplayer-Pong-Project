@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 using System;
 using Pong.Core;
 using System.Collections.Generic;
+using Pong.Systems.Audio;
 
 namespace Pong.Systems.Input
 {
@@ -28,6 +29,9 @@ namespace Pong.Systems.Input
         [SerializeField] private bool _enableKeyboardForTesting = false;
 
         [SerializeField] private Transform _playerParent;
+
+        [Header("Audio Settings")]
+        [SerializeField] private AudioClip _poofClip;
 
         private bool _isSpawningAllowed = false;
 
@@ -56,6 +60,10 @@ namespace Pong.Systems.Input
 
             foreach (var gamepad in Gamepad.all)
             {
+                if(_poofClip != null)
+                {
+                    AudioManager.Instance.PlaySFX(_poofClip);
+                }
                 SpawnPlayerForDevice(gamepad);
             }
 

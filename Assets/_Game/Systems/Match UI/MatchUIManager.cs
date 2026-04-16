@@ -4,6 +4,7 @@ using TMPro;
 using Pong.Systems.Input;
 using UnityEngine;
 using Unity.Cinemachine;
+using Pong.Systems.Audio;
 
 namespace Pong.Shared.Management
 {
@@ -22,6 +23,9 @@ namespace Pong.Shared.Management
         [Header("Countdown")]
         [SerializeField, Min(0.05f)] private float _duration = 1f;
         [SerializeField, Min(0f)] private float _cameraFocusLeadTime = 0.2f;
+
+        [Header("Audio Settings")]
+        [SerializeField] private AudioClip _countdownClip;
 
         private Coroutine _countdownRoutine;
         private Coroutine _goRoutine;
@@ -43,6 +47,7 @@ namespace Pong.Shared.Management
 
         private IEnumerator CountdownSequence()
         {
+            AudioManager.Instance.PlaySFX(_countdownClip);
             for (int i = 3; i > 0; i--)
             {
                 _uiText.text = i.ToString();

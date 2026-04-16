@@ -1,5 +1,6 @@
 using Pong.Framework.BehaviourTree;
 using Pong.Gameplay.Enemy;
+using Pong.Systems.Audio;
 using Pong.Systems.Graph;
 using UnityEngine;
 
@@ -31,6 +32,10 @@ namespace Pong.Gameplay.Boss
         [Header("Move Settings")]
         [SerializeField] private  GraphComponent _graphComponent;
         [SerializeField] private float _moveSpeed = 3f;
+
+        [Header("Audio Settings")]
+        [field: SerializeField] public AudioClip AttackClip {get; private set;}
+        [field: SerializeField] public AudioClip HurtClip {get; private set;}
         public bool CanMove {get; private set;} = true;
 
 
@@ -111,6 +116,11 @@ namespace Pong.Gameplay.Boss
                 return;
 
             OnDamageTaken();
+            if(HurtClip != null)
+            {
+                AudioManager.Instance.PlaySFX(HurtClip);
+            }
+            
 
             if (!_isVulnerable)
                 return;
@@ -160,6 +170,12 @@ namespace Pong.Gameplay.Boss
             {
                 return;
             }
+
+            if(AttackClip != null)
+            {
+               AudioManager.Instance.PlaySFX(AttackClip); 
+            }
+            
 
             FireProjectiles360();
 

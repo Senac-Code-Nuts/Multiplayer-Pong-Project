@@ -1,4 +1,5 @@
 using Pong.Framework.BehaviourTree;
+using Pong.Systems.Audio;
 using UnityEngine;
 
 namespace Pong.Gameplay.Enemy.Succubus
@@ -59,6 +60,10 @@ namespace Pong.Gameplay.Enemy.Succubus
         private void ExecuteHit()
         {
             Debug.Log("<color=red>[Attack] Succubus usou Ataque em Área!</color>");
+            if(_enemy.AttackClip != null)
+            {
+                AudioManager.Instance.PlaySFX(_enemy.AttackClip);
+            }
 
             Collider[] hitColliders = Physics.OverlapSphere(_enemy.transform.position, _attackRadius);
 

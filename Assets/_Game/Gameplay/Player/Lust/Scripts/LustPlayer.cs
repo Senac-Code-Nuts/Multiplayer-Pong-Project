@@ -1,3 +1,4 @@
+using Pong.Systems.Audio;
 using UnityEngine;
 
 namespace Pong.Gameplay.Player.Lust
@@ -13,6 +14,11 @@ namespace Pong.Gameplay.Player.Lust
         [Header("Balance Settings")]
         [SerializeField, Range(0.1f, 5f)] private float _bossPullDistance = 1.5f;
         [SerializeField, Range(0.1f, 3f)] private float _stopDistanceFromPlayer = 1f;
+
+        [Header("Audio Settings")]
+        [field: SerializeField] public AudioClip HabilityClip {get; private set;}
+        [field: SerializeField] public AudioClip HurtClip {get; private set;}
+        [field: SerializeField] public AudioClip StunClip {get; private set;}
 
         [Header("Debug")]
         [SerializeField] private bool _useDebug;
@@ -42,11 +48,33 @@ namespace Pong.Gameplay.Player.Lust
             }
         }
 
+        public override void ApplyDamage(int damage)
+        {
+            if(HurtClip != null)
+            {
+                AudioManager.Instance.PlaySFX(HurtClip);
+            }
+            base.ApplyDamage(damage);
+        }
+        public override void ApplyStun(float duration)
+        {
+            if(StunClip != null)
+            {
+                AudioManager.Instance.PlaySFX(StunClip);
+            }
+            base.ApplyStun(duration);
+        }
+
         private void SpawnProjectile()
         {
             if (_projectilePrefab == null || _projectileSpawnPoint == null)
             {
                 return;
+            }
+
+            if(HabilityClip != null)
+            {
+                AudioManager.Instance.PlaySFX(HabilityClip);
             }
 
             for(int i = 0; i < _projectileCount; i++)

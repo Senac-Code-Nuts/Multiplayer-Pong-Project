@@ -4,6 +4,7 @@ using Pong.Framework.BehaviourTree;
 using Pong.Gameplay.Player;
 using Pong.Systems.Graph;
 using Pong.Gameplay.Relics;
+using Pong.Systems.Audio;
 
 namespace Pong.Gameplay.Enemy
 {
@@ -23,6 +24,10 @@ namespace Pong.Gameplay.Enemy
         [SerializeField] private GraphComponent _graphComponent;
         [SerializeField] private Relic _relic;
         [SerializeField] private Renderer _renderer;
+
+        [Header("Audio Settings")]
+        [field: SerializeField] public AudioClip AttackClip {get; private set;}
+        [field: SerializeField] public AudioClip HurtClip {get; private set;}
 
         private BehaviourTree _tree;
         private MinotaurMoveStrategy _moveStrategy;
@@ -199,6 +204,11 @@ namespace Pong.Gameplay.Enemy
                 ExecuteAttack();
             }
 
+            if(HurtClip != null)
+            {
+                AudioManager.Instance.PlaySFX(HurtClip);
+            }
+
             base.ApplyDamage(damage);
         }
 
@@ -217,6 +227,10 @@ namespace Pong.Gameplay.Enemy
 
                 Debug.Log("<color=cyan>[Minotaur] Parry hit. Reflecting relic.</color>");
                 _relic.InvertDirection(attackAxis);
+                if(AttackClip != null)
+                {
+                    AudioManager.Instance.PlaySFX(AttackClip);
+                }
             }
 
             _hasCounterAttackTriggered = true;

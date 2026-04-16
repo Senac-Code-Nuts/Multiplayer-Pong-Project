@@ -1,6 +1,7 @@
 using Pong.Framework.BehaviourTree;
 using Pong.Framework.Strategy;
 using Pong.Gameplay.Enemy;
+using Pong.Systems.Audio;
 using Pong.Systems.Graph;
 using UnityEngine;
 
@@ -64,6 +65,10 @@ namespace Pong.Gameplay.Boss
         [SerializeField] private Color _telegraphColor = Color.yellow;
         [SerializeField] private Color _executeColor = Color.red;
         [SerializeField] private Color _vulnerableColor = Color.magenta;
+
+        [Header("Audio Settings")]
+        [field: SerializeField] public AudioClip AttackClip {get; private set;}
+        [field: SerializeField] public AudioClip HurtClip {get; private set;}
 
         private Transform _lastTarget;
         private int _sameTargetCount = 0;
@@ -178,6 +183,16 @@ namespace Pong.Gameplay.Boss
             return selector;
         }
 
+        public override void ApplyDamage(int damage)
+        {
+            if(HurtClip != null)
+            {
+                AudioManager.Instance.PlaySFX(HurtClip);
+            }
+            
+            base.ApplyDamage(damage);
+        }
+
         public void SetAttack(AttackType type)
         {
             CurrentAttack = type;
@@ -186,6 +201,11 @@ namespace Pong.Gameplay.Boss
         public void StartAttack()
         {
             IsAttacking = true;
+            if(AttackClip != null)
+            {
+                AudioManager.Instance.PlaySFX(AttackClip);
+            }
+
             StopMovement();
         }
 
@@ -358,7 +378,7 @@ namespace Pong.Gameplay.Boss
         {
             if (_projectilePool == null)
             {
-                Debug.LogWarning("[Pride] Projectile pool não foi inicializado.");
+                Debug.LogWarning("[Pride] Projectile pool nï¿½o foi inicializado.");
                 return;
             }
 
@@ -388,7 +408,7 @@ namespace Pong.Gameplay.Boss
             PrideAttackVine projectile = _projectilePool.Get();
             if (projectile == null)
             {
-                Debug.LogWarning("[Pride] Pool de projétil vazio.");
+                Debug.LogWarning("[Pride] Pool de projï¿½til vazio.");
                 return;
             }
 

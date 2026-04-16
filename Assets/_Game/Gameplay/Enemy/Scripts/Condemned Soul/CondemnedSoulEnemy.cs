@@ -3,6 +3,7 @@ using UnityEngine;
 using Pong.Framework.BehaviourTree;
 using Pong.Gameplay.Player;
 using Pong.Systems.Graph;
+using Pong.Systems.Audio;
 
 namespace Pong.Gameplay.Enemy
 {
@@ -22,6 +23,10 @@ namespace Pong.Gameplay.Enemy
         [Header("Components")]
         [SerializeField] private GraphComponent _graphComponent;
         [SerializeField] private Renderer _renderer;
+
+        [Header("Audio Settings")]
+        [field: SerializeField] public AudioClip AttackClip {get; private set;}
+        [field: SerializeField] public AudioClip HurtClip {get; private set;}
 
         private BehaviourTree _tree;
         private AlmaMoveStrategy _moveStrategy;
@@ -90,8 +95,21 @@ namespace Pong.Gameplay.Enemy
             _tree?.Process();
         }
 
+        public override void ApplyDamage(int damage)
+        {
+            if(HurtClip != null)
+            {
+                AudioManager.Instance.PlaySFX(HurtClip);
+            }
+            base.ApplyDamage(damage);
+        }
+
         public override void ExecuteAttack()
         {
+            if(AttackClip != null)
+            {
+                AudioManager.Instance.PlaySFX(AttackClip);
+            }
             ResetCycle();
         }
 

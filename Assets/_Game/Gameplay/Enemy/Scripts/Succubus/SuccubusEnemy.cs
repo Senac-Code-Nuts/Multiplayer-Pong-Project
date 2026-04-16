@@ -4,6 +4,7 @@ using Pong.Framework.BehaviourTree;
 using Pong.Systems.Graph;
 using Pong.Gameplay.Player;
 using Pong.Core.Gizmo;
+using Pong.Systems.Audio;
 
 namespace Pong.Gameplay.Enemy.Succubus
 {
@@ -18,6 +19,10 @@ namespace Pong.Gameplay.Enemy.Succubus
 
         [Header("Pathfinding")]
         [SerializeField] private GraphComponent _graphComponent;
+
+        [Header("Audio Settings")]
+        [field: SerializeField] public AudioClip AttackClip {get; private set;}
+        [field: SerializeField] public AudioClip HurtClip {get; private set;}
 
         private BehaviourTree _tree;
         private ChaseStrategy _chaseStrategy;
@@ -67,6 +72,15 @@ namespace Pong.Gameplay.Enemy.Succubus
 
             _tree.AddChild(prioritySelector);
             _isAIActive = true;
+        }
+
+        public override void ApplyDamage(int damage)
+        {
+            if(HurtClip != null)
+            {
+                AudioManager.Instance.PlaySFX(HurtClip);
+            }
+            base.ApplyDamage(damage);
         }
 
         private void Update()

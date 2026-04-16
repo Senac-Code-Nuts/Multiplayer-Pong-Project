@@ -1,6 +1,7 @@
 using Pong.Framework.BehaviourTree;
 using Pong.Framework.Strategy;
 using Pong.Gameplay.Enemy;
+using Pong.Systems.Audio;
 using Pong.Systems.Graph;
 using UnityEngine;
 using UnityEngine.VFX;
@@ -67,6 +68,10 @@ namespace Pong.Gameplay.Boss
         [SerializeField] private Color _defaultColor = Color.white;
         [SerializeField] private Color _telegraphColor = Color.yellow;
         [SerializeField] private Color _executeColor = Color.red;
+
+        [Header("Audio Settings")]
+        [field: SerializeField] public AudioClip AttackClip {get; private set;}
+        [field: SerializeField] public AudioClip HurtClip {get; private set;}
 
         private BehaviourTree _tree;
         private GluttonyPatrolStrategy _patrolStrategy;
@@ -185,6 +190,16 @@ namespace Pong.Gameplay.Boss
             return selector;
         }
 
+        public override void ApplyDamage(int damage)
+        {
+            if(HurtClip != null)
+            {
+               AudioManager.Instance.PlaySFX(HurtClip); 
+            }
+            
+            base.ApplyDamage(damage);
+        }
+
         public void SetAttack(AttackType type)
         {
             CurrentAttack = type;
@@ -193,6 +208,10 @@ namespace Pong.Gameplay.Boss
         public void StartAttack()
         {
             IsAttacking = true;
+            if(AttackClip != null)
+            {
+                AudioManager.Instance.PlaySFX(AttackClip);
+            }
             StopMovement();
         }
 

@@ -1,5 +1,6 @@
 using UnityEngine;
 using Pong.Gameplay.Relics;
+using Pong.Systems.Audio;
 
 namespace Pong.Gameplay.Player
 {
@@ -10,6 +11,11 @@ namespace Pong.Gameplay.Player
         private int _copyCount = 1;
         [SerializeField] private Relic _relicPrefab;
 
+        [Header("Audio Settings")]
+        [field: SerializeField] public AudioClip HabilityClip {get; private set;}
+        [field: SerializeField] public AudioClip HurtClip {get; private set;}
+        [field: SerializeField] public AudioClip StunClip {get; private set;}
+
         [Header("Debug")]
         [SerializeField] private bool _useDebug;
 
@@ -18,6 +24,11 @@ namespace Pong.Gameplay.Player
         protected override void UseAbility()
         {
             if (_isCopyModeActive) return;
+
+            if(HabilityClip != null)
+            {
+                AudioManager.Instance.PlaySFX(HabilityClip);
+            }
 
             ActivateCopyMode();
             StartCoroutine(AbilityCooldownRoutine());
@@ -46,6 +57,24 @@ namespace Pong.Gameplay.Player
                 ActivateCopyMode();
             }
 
+        }
+
+        public override void ApplyDamage(int damage)
+        {
+            if(HurtClip != null)
+            {
+                AudioManager.Instance.PlaySFX(HurtClip);
+            }
+            base.ApplyDamage(damage);
+        }
+
+        public override void ApplyStun(float duration)
+        {
+            if(StunClip != null)
+            {
+                AudioManager.Instance.PlaySFX(StunClip);
+            }
+            base.ApplyStun(duration);
         }
         private void ActivateCopyMode()
         {

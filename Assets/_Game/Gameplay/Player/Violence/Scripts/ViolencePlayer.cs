@@ -1,6 +1,7 @@
 using UnityEngine;
 using Pong.Gameplay.Enemy;
 using Pong.Gameplay.Boss;
+using Pong.Systems.Audio;
 
 namespace Pong.Gameplay.Player
 {
@@ -13,12 +14,39 @@ namespace Pong.Gameplay.Player
 
         [Header("Debug")]
         [SerializeField] private bool _useDebug;
+
+        [Header("Audio Settings")]
+        [field: SerializeField] public AudioClip HabilityClip {get; private set;}
+        [field: SerializeField] public AudioClip HurtClip {get; private set;}
+        [field: SerializeField] public AudioClip StunClip {get; private set;}
         private int _maxEnemyTargets = 1;
 
         protected override void UseAbility()
         {
+            if(HabilityClip != null)
+            {
+                AudioManager.Instance.PlaySFX(HabilityClip);
+            }
             StunTargets();
             StartCoroutine(AbilityCooldownRoutine());
+        }
+
+        public override void ApplyDamage(int damage)
+        {
+            if(HurtClip != null)
+            {
+                AudioManager.Instance.PlaySFX(HurtClip);
+            }
+            base.ApplyDamage(damage);
+        }
+
+        public override void ApplyStun(float duration)
+        {
+            if(StunClip != null)
+            {
+                AudioManager.Instance.PlaySFX(StunClip);
+            }
+            base.ApplyStun(duration);
         }
 
         protected override void LevelUp()

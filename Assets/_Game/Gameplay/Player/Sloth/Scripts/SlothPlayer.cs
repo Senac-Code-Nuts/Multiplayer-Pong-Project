@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Pong.Systems.Audio;
 using UnityEngine;
 
 namespace Pong.Gameplay.Player
@@ -14,6 +15,12 @@ namespace Pong.Gameplay.Player
         [SerializeField] private GameObject _selectionMarkerPrefab;
         [SerializeField, Range(0.1f, 2f)] private float _rotationInterval = 0.5f;
         [SerializeField] private Vector3 _markerOffset = new Vector3(0f, 2f, 0f);
+
+        [Header("Audio Settings")]
+        [field: SerializeField] public AudioClip HabilityClip {get; private set;}
+        [field: SerializeField] public AudioClip HurtClip {get; private set;}
+        [field: SerializeField] public AudioClip StunClip {get; private set;}
+        [field: SerializeField] public AudioClip ShieldClip {get; private set;}
 
         [Header("Debug")]
         [SerializeField] private bool _useDebug;
@@ -57,6 +64,23 @@ namespace Pong.Gameplay.Player
             }
         }
 
+        public override void ApplyDamage(int damage)
+        {
+            if(HurtClip != null)
+            {
+                AudioManager.Instance.PlaySFX(HurtClip);
+            }
+            base.ApplyDamage(damage);
+        }
+        public override void ApplyStun(float duration)
+        {
+            if(StunClip != null)
+            {
+                AudioManager.Instance.PlaySFX(StunClip);
+            }
+            base.ApplyStun(duration);
+        }
+
         private void CachePlayers()
         {
             _players = FindObjectsByType<PlayerActor>(FindObjectsSortMode.None);
@@ -88,6 +112,10 @@ namespace Pong.Gameplay.Player
 
             if (!_canConfirmSelection) return;
 
+            if(HabilityClip != null)
+            {
+                AudioManager.Instance.PlaySFX(HabilityClip);
+            }
             ConfirmShield();
         }
 
@@ -220,6 +248,11 @@ namespace Pong.Gameplay.Player
                 if (target == null) continue;
 
                 target.ReceiveShield();
+            }
+
+            if(ShieldClip != null)
+            {
+                AudioManager.Instance.PlaySFX(ShieldClip);
             }
 
             ExitSelectionMode();
