@@ -10,6 +10,7 @@ namespace Pong.Gameplay
         public static GameManager Instance { get; private set; }
 
         [SerializeField] private Relic _relicObject;
+        public Relic RelicObject => _relicObject;
 
         private const string TAG = "<color=green><b>[GameManager]</b></color> ";
 

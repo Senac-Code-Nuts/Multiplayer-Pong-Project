@@ -36,7 +36,7 @@ namespace Pong.App
             {
                 _currentState = State.WaitingForPlayers;
 
-                _enemyManager.SpawnEnemies();
+                _enemyManager.SpawnEnemies(_influenceSystem, _gameManager != null ? _gameManager.RelicObject : null);
                 _enemyManager.SpawnBosses();
                 _gamepadsManager.StartPlayerSpawning();
 
