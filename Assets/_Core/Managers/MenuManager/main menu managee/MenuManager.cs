@@ -12,7 +12,7 @@ namespace MenuManager
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Start()
         {
-            StateMachina = GetComponentInChildren<MenuStateMachine>();
+            StateMachina = GetComponent<MenuStateMachine>();
             Debug.Log(StateMachina.name);
         }
 
@@ -34,10 +34,13 @@ namespace MenuManager
         {
             StateMachina.ClearState();
         }
-        // Update is called once per frame
-        void Update()
+        public void Exit()
         {
-
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
         }
     }
 }
