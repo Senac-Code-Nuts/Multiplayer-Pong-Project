@@ -4,6 +4,7 @@ using TMPro;
 using Pong.Systems.Input;
 using UnityEngine;
 using Unity.Cinemachine;
+using Pong.Systems.Audio;
 
 namespace Pong.Shared.Management
 {
@@ -22,6 +23,13 @@ namespace Pong.Shared.Management
         [Header("Countdown")]
         [SerializeField, Min(0.05f)] private float _duration = 1f;
         [SerializeField, Min(0f)] private float _cameraFocusLeadTime = 0.2f;
+
+        [Header("Audios")]
+        [SerializeField] private AudioClip _oneClip;
+        [SerializeField] private AudioClip _twoClip;
+        [SerializeField] private AudioClip _threeClip;
+        [SerializeField] private AudioClip _fourClip;
+        [SerializeField] private AudioClip _goClip;
 
         private Coroutine _countdownRoutine;
         private Coroutine _goRoutine;
@@ -46,7 +54,29 @@ namespace Pong.Shared.Management
             for (int i = 3; i > 0; i--)
             {
                 _uiText.text = i.ToString();
-                
+
+                switch (i)
+                {
+                    case 3:
+                        if(_threeClip != null)
+                        {
+                            AudioManager.Instance.PlaySFX(_threeClip);
+                        }
+                        break;
+                    case 2:
+                        if(_twoClip != null)
+                        {
+                            AudioManager.Instance.PlaySFX(_twoClip);
+                        }
+                        break;
+                    case 1:
+                        if(_oneClip != null)
+                        {
+                            AudioManager.Instance.PlaySFX(_oneClip);
+                        }
+                        break;
+                }
+
                 if (_countdownCameras.Count > 0)
                 {
                     int camIndex = (3 - i) % _countdownCameras.Count;
@@ -59,6 +89,10 @@ namespace Pong.Shared.Management
             IsCountdownFinished = true; 
 
             _uiText.text = "GO!";
+            if(_goClip != null)
+            {
+                AudioManager.Instance.PlaySFX(_goClip);
+            }
             SetFocusCamera(_gameCamera);
 
             if (_goRoutine != null) StopCoroutine(_goRoutine);
