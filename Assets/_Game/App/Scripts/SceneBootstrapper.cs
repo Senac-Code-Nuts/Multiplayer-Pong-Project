@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Pong.Gameplay;
 using Pong.Gameplay.Enemy;
+using Pong.Gameplay.Life;
 using Pong.Gameplay.Player;
 using Pong.Shared.Management;
 using Pong.Systems.Input;
@@ -19,6 +20,7 @@ namespace Pong.App
         [SerializeField] private GameManager _gameManager;
         [SerializeField] private EnemyManager _enemyManager;
         [SerializeField] private InfluenceSystem _influenceSystem;
+        [SerializeField] private LifeManagerHud _lifeManagerHud;
 
         private enum State { Initializing, WaitingForPlayers, Countdown, Injecting, Playing }
 
@@ -46,12 +48,15 @@ namespace Pong.App
                 }
 
                 _currentState = State.Countdown;
+                _lifeManagerHud?.SetVisible(false);
                 _uiManager.StartMatchCountdown();
 
                 while (!_uiManager.IsCountdownFinished)
                 {
                     await Task.Yield();
                 }
+
+                _lifeManagerHud?.SetVisible(true);
 
                 _currentState = State.Injecting;
 
