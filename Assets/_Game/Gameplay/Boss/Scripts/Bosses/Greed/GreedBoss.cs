@@ -33,11 +33,27 @@ namespace Pong.Gameplay.Boss.Greed
         protected override void Awake()
         {
             base.Awake();
+            _isVulnerable = false;
+        }
+
+        protected override void OnAIInitialized()
+        {
+            _graphComponent = _influenceSystem != null && _influenceSystem.GraphComponent != null
+                ? _influenceSystem.GraphComponent
+                : _graphComponent;
+
+            if (_graphComponent == null)
+            {
+                Debug.LogWarning("[Greed] GraphComponent não foi configurado.");
+                return;
+            }
+
             _tree = new BehaviourTree("Greed tree");
 
             var pathFinder = new EnemyPathFinder(_graphComponent);
             _greedAttackStrategy = new GreedAttackStrategy(this);
             _greedChaseStrategy = new GreedChaseStrategy(this, pathFinder);
+            _greedChaseStrategy.SetActivePlayers(_activePlayers);
             _greedPatrolStrategy = new GreedPatrolStrategy(this, pathFinder);
             _greedIntervalStrategy = new IntervalStrategy(_intervalTime);
 
@@ -60,9 +76,13 @@ namespace Pong.Gameplay.Boss.Greed
 
         protected override void Update()
         {
+            if (!IsInitialized || _tree == null)
+            {
+                return;
+            }
+
             _tree.Process();
             HandleVulnerability();
-            OnDeath();
         }
         protected override void OnDeath()
         {

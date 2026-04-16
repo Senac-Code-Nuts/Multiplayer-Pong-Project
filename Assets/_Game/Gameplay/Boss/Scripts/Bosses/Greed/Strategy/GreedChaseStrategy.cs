@@ -2,28 +2,36 @@
 using UnityEngine;
 using Pong.Framework.BehaviourTree;
 using Pong.Gameplay.Player;
-using Pong.Systems.Input;
-using Pong.Gameplay.Boss.Greed;
+using System.Collections.Generic;
 
-namespace Pong.Gameplay
+namespace Pong.Gameplay.Boss.Greed
 {
     public class GreedChaseStrategy : EnemyPathStrategyBase
     {
         private readonly GreedBoss _greedBoss;
         private Transform _target;
-        private PlayerController[] _cachedPlayers;
+        private List<PlayerController> _activePlayers;
+        private List<Transform> _cachedPlayers;
         private const float AttackRangeThreshold = 2.5f;
 
         public GreedChaseStrategy(GreedBoss boss, EnemyPathFinder pathFinder) : base(boss, pathFinder, () => boss != null ? boss.ChaseSpeed : 0f)
         {
             _greedBoss = boss;
+            _activePlayers = new List<PlayerController>();
+            _cachedPlayers = null;
+        }
+
+        public void SetActivePlayers(List<PlayerController> activePlayers)
+        {
+            _activePlayers = activePlayers ?? new List<PlayerController>();
+            _cachedPlayers = null;
+            _target = null;
         }
 
         public void SetTarget()
         {
-            _cachedPlayers = null; 
             CachePlayersIfNeeded();
-            _target = FindFarthestPlayer()?.transform;
+            _target = FindFarthestPlayer();
 
             if (_target != null)
             {
@@ -37,37 +45,49 @@ namespace Pong.Gameplay
 
         private void CachePlayersIfNeeded()
         {
-            var manager = GamepadsManager.Instance;
-            if (manager == null) return;
-            GameObject[] gameObjects = manager.GetActivePlayerControllers();
-            if (gameObjects == null) return;
-            var validPlayers = new System.Collections.Generic.List<PlayerController>();
-            foreach (var go in gameObjects)
+            if (_cachedPlayers != null)
             {
-                if (go != null)
+                return;
+            }
+
+            _cachedPlayers = new List<Transform>();
+
+            foreach (var player in _activePlayers)
+            {
+                if (player != null)
                 {
-                    var pc = go.GetComponent<PlayerController>();
-                    if (pc != null) validPlayers.Add(pc);
+                    _cachedPlayers.Add(player.transform);
                 }
             }
-            _cachedPlayers = validPlayers.ToArray();
         }
 
-        private PlayerController FindFarthestPlayer()
+        private Transform FindFarthestPlayer()
         {
-            if (_cachedPlayers == null || _cachedPlayers.Length == 0) return null;
-            PlayerController farthestPlayer = null;
+            if (_cachedPlayers == null || _cachedPlayers.Count == 0)
+            {
+                Debug.LogWarning("[Chase] Nenhum player ativo encontrado para perseguir.");
+                return null;
+            }
+
+            Transform farthestPlayer = null;
             float maxDistance = float.MinValue;
+
             foreach (var player in _cachedPlayers)
             {
                 if (player == null) continue;
-                float distance = Vector3.Distance(_greedBoss.transform.position, player.transform.position);
+                float distance = Vector3.Distance(_greedBoss.transform.position, player.position);
                 if (distance > maxDistance)
                 {
                     maxDistance = distance;
                     farthestPlayer = player;
                 }
             }
+
+            if (farthestPlayer != null)
+            {
+                Debug.Log($"[Chase] Target setado: {farthestPlayer.name} (farthest)");
+            }
+
             return farthestPlayer;
         }
 
@@ -114,6 +134,7 @@ namespace Pong.Gameplay
         {
             base.Reset();
             _target = null;
+            _cachedPlayers = null;
         }
     }
 }
