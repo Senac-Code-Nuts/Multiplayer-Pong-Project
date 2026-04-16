@@ -25,10 +25,6 @@ namespace Pong.Systems.Input
 
         private void OnEnable()
         {
-            _moveAction.Enable();
-            _castAction.Enable();
-            _pauseAction.Enable();
-
             _moveAction.performed += OnMove;
             _castAction.performed += OnCast;
             _pauseAction.performed += OnPause;
@@ -36,10 +32,6 @@ namespace Pong.Systems.Input
 
         private void OnDisable()
         {
-            _moveAction.Disable();
-            _castAction.Disable();
-            _pauseAction.Disable();
-
             _moveAction.performed -= OnMove;
             _castAction.performed -= OnCast;
             _pauseAction.performed -= OnPause;

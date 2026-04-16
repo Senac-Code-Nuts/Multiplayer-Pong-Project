@@ -1,6 +1,8 @@
-using UnityEngine;
+using System.Threading.Tasks;
 using Pong.Gameplay.Actors;
 using Pong.Gameplay.Enemy;
+using Pong.Gameplay.Player;
+using UnityEngine;
 
 namespace Pong.Gameplay.Relics
 {
@@ -8,11 +10,10 @@ namespace Pong.Gameplay.Relics
     public class Relic : MonoBehaviour
     {
         [Header("Speed")]
-        [SerializeField, Range(0f, 10f)] private float _speed;
-        [SerializeField, Range(1f, 4f)] private float _attackBoostMultiplier = 1.5f;
+        [SerializeField, Range(0f, 25f)] private float _speed;
 
         [Header("Visual")]
-        [SerializeField] private Renderer _renderer;
+        private Renderer _renderer;
         [SerializeField] private Color _boostColor = Color.yellow;
 
         [Header("Damage")]
@@ -20,15 +21,20 @@ namespace Pong.Gameplay.Relics
 
         private Vector3 _direction;
         private Rigidbody _rigidBody;
-        private float _baseSpeed;
         private float _currentSpeed;
-        private bool _returnToBaseSpeedOnNextCollision;
         private Material _material;
         private Color _defaultColor;
+
+        private Vector3 _originalScale;
+        private bool _isRevealing;
 
         private void Awake()
         {
             _rigidBody = GetComponent<Rigidbody>();
+            _originalScale = transform.localScale;
+            transform.localScale = Vector3.zero;
+            gameObject.SetActive(false);
+
             if (_renderer == null)
             {
                 _renderer = GetComponent<Renderer>();
@@ -40,12 +46,60 @@ namespace Pong.Gameplay.Relics
                 _defaultColor = _material.color;
             }
 
-            _baseSpeed = _speed;
             _currentSpeed = _speed;
         }
 
         private void Start()
         {
+            _rigidBody.linearVelocity = Vector3.zero;
+            UpdateVisual(false);
+        }
+
+        private void OnEnable()
+        {
+            if (_isRevealing)
+            {
+                return;
+            }
+
+            Launch();
+        }
+
+        public async Task AnimateAppearanceAsync(float duration = 1.5f)
+        {
+            if (duration <= 0f)
+            {
+                transform.localScale = _originalScale;
+                gameObject.SetActive(true);
+                Launch();
+                return;
+            }
+
+            _isRevealing = true;
+            _rigidBody.linearVelocity = Vector3.zero;
+            _rigidBody.angularVelocity = Vector3.zero;
+            _rigidBody.isKinematic = true;
+
+            transform.localScale = Vector3.zero;
+            gameObject.SetActive(true);
+
+            float elapsedTime = 0f;
+
+            while (elapsedTime < duration)
+            {
+                float normalizedTime = Mathf.Clamp01(elapsedTime / duration);
+                float smoothTime = Mathf.SmoothStep(0f, 1f, normalizedTime);
+
+                transform.localScale = Vector3.LerpUnclamped(Vector3.zero, _originalScale, smoothTime);
+                transform.Rotate(0f, 360f * Time.deltaTime / duration, 0f, Space.Self);
+
+                elapsedTime += Time.deltaTime;
+                await Task.Yield();
+            }
+
+            transform.localScale = _originalScale;
+            _rigidBody.isKinematic = false;
+            _isRevealing = false;
             Launch();
         }
 
@@ -55,7 +109,7 @@ namespace Pong.Gameplay.Relics
             float dirZ = Random.Range(-1f, 1f);
 
             _direction = new Vector3(dirX, 0, dirZ).normalized;
-            _currentSpeed = _baseSpeed;
+            _currentSpeed = _speed;
             _rigidBody.linearVelocity = _direction * _currentSpeed;
             UpdateVisual(false);
         }
@@ -69,6 +123,16 @@ namespace Pong.Gameplay.Relics
         {
             TryApplyDamage(collision);
 
+            if (collision.collider.TryGetComponent(out PlayerController player)) {
+                player.ResetVelocity();
+            }
+
+            if (collision.collider.TryGetComponent(out EnemyActor actor) || collision.collider.GetComponentInParent<EnemyActor>() != null)
+            {
+                Reflect(collision);
+                return;
+            }
+
             if (collision.gameObject.TryGetComponent(out MinotaurEnemy minotaur) && minotaur.ConsumeCounterAttackTriggered())
             {
                 Debug.Log("<color=cyan>[Relic] Minotaur parry collision detected. Speed boost applied on hit.</color>");
@@ -76,11 +140,6 @@ namespace Pong.Gameplay.Relics
             }
 
             Reflect(collision);
-
-            if (_returnToBaseSpeedOnNextCollision)
-            {
-                RestoreBaseSpeed();
-            }
         }
 
         private void Reflect(Collision collision)
@@ -101,10 +160,10 @@ namespace Pong.Gameplay.Relics
 
         public void InvertDirection()
         {
-            InvertDirection(_direction, false, _attackBoostMultiplier);
+            InvertDirection(_direction);
         }
 
-        public void InvertDirection(Vector3 attackAxis, bool shouldBoost = false, float speedMultiplier = 1.5f)
+        public void InvertDirection(Vector3 attackAxis)
         {
             if (attackAxis.sqrMagnitude < 0.0001f)
             {
@@ -123,18 +182,8 @@ namespace Pong.Gameplay.Relics
             }
 
             _direction = _direction.normalized;
-            _currentSpeed = shouldBoost ? _baseSpeed * speedMultiplier : _baseSpeed;
+            _currentSpeed = _speed;
             _rigidBody.linearVelocity = _direction * _currentSpeed;
-            _returnToBaseSpeedOnNextCollision = shouldBoost;
-            UpdateVisual(shouldBoost);
-        }
-
-        private void RestoreBaseSpeed()
-        {
-            _currentSpeed = _baseSpeed;
-            _rigidBody.linearVelocity = _direction * _currentSpeed;
-            _returnToBaseSpeedOnNextCollision = false;
-            Debug.Log("<color=gray>[Relic] Returned to base speed.</color>");
             UpdateVisual(false);
         }
 

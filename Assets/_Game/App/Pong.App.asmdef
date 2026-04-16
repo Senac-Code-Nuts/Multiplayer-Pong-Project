@@ -1,8 +1,11 @@
 {
-    "name": "Pong.Shared",
-    "rootNamespace": "Pong.Shared",
+    "name": "Pong.App",
+    "rootNamespace": "Pong.App",
     "references": [
-        "GUID:1b8f9525283e91040aab8b6b72c7e4bd"
+        "Pong.Core",
+        "Pong.Systems",
+        "Pong.Gameplay",
+        "Pong.Shared"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

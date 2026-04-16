@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Pong.Framework.BehaviourTree;
+using Pong.Gameplay.Player;
 using Pong.Systems.Graph;
 using Pong.Gameplay.Relics;
 
@@ -25,6 +27,9 @@ namespace Pong.Gameplay.Enemy
         private BehaviourTree _tree;
         private MinotaurMoveStrategy _moveStrategy;
         private MinotaurCounterWindowStrategy _counterWindowStrategy;
+        private List<PlayerController> _activePlayers;
+        private InfluenceSystem _influenceSystem;
+        private bool _isAIActive;
         private Material _material;
 
         private bool _isCounterAttackReady;
@@ -59,6 +64,14 @@ namespace Pong.Gameplay.Enemy
                 _material = _renderer.material;
                 _material.color = Color.gray;
             }
+        }
+
+        public override void InitializeAI(List<PlayerController> activePlayers, InfluenceSystem influenceSystem)
+        {
+            _activePlayers = activePlayers ?? new List<PlayerController>();
+            _influenceSystem = influenceSystem;
+
+            _graphComponent = _influenceSystem.GraphComponent;
 
             _tree = new BehaviourTree("Minotaur");
 
@@ -71,6 +84,8 @@ namespace Pong.Gameplay.Enemy
             cycleSelector.AddChild(new Leaf("Move", _moveStrategy, priority: 1));
 
             _tree.AddChild(cycleSelector);
+            ResetCycle();
+            _isAIActive = true;
         }
 
         private void OnEnable()
@@ -80,6 +95,11 @@ namespace Pong.Gameplay.Enemy
 
         private void Update()
         {
+            if (!_isAIActive)
+            {
+                return;
+            }
+
             _tree?.Process();
         }
 
@@ -195,8 +215,8 @@ namespace Pong.Gameplay.Enemy
                     attackAxis.y = 0f;
                 }
 
-                Debug.Log("<color=cyan>[Minotaur] Parry hit. Reflecting relic and boosting speed.</color>");
-                _relic.InvertDirection(attackAxis, true, _attackBoostMultiplier);
+                Debug.Log("<color=cyan>[Minotaur] Parry hit. Reflecting relic.</color>");
+                _relic.InvertDirection(attackAxis);
             }
 
             _hasCounterAttackTriggered = true;

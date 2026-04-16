@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Pong.Framework.BehaviourTree;
+using Pong.Gameplay.Player;
 using Pong.Systems.Graph;
 using Pong.Core.Gizmo;
 
@@ -32,6 +34,9 @@ namespace Pong.Gameplay.Enemy.Cerberus
         private BehaviourTree _tree;
         private CerberusAttackStrategy _attackStrategy;
         private CerberusPatrolStrategy _patrolStrategy;
+        private List<PlayerController> _activePlayers;
+        private InfluenceSystem _influenceSystem;
+        private bool _isAIActive;
 
         public float TimeBetweenAttacks => _timeBetweenAttacks;
         public float PreAttackTime => _preAttackTime;
@@ -41,7 +46,18 @@ namespace Pong.Gameplay.Enemy.Cerberus
         {
             base.Awake();
             _renderer = GetComponent<Renderer>();
-            _defaultColor = _renderer.material.color;
+            if (_renderer != null)
+            {
+                _defaultColor = _renderer.material.color;
+            }
+        }
+
+        public override void InitializeAI(List<PlayerController> activePlayers, InfluenceSystem influenceSystem)
+        {
+            _activePlayers = activePlayers ?? new List<PlayerController>();
+            _influenceSystem = influenceSystem;
+
+            _graphComponent = _influenceSystem.GraphComponent;
 
             _tree = new BehaviourTree("CerberusTree");
 
@@ -57,14 +73,17 @@ namespace Pong.Gameplay.Enemy.Cerberus
             prioritySelector.AddChild(patrolNode);
 
             _tree.AddChild(prioritySelector);
+            _isAIActive = true;
         }
 
         private void Update()
         {
-            if (_tree != null)
+            if (!_isAIActive || _tree == null)
             {
-                _tree.Process();
+                return;
             }
+
+            _tree.Process();
 
             if (_attackStrategy != null && _attackStrategy.JustFinished && _patrolStrategy != null)
             {
@@ -72,9 +91,13 @@ namespace Pong.Gameplay.Enemy.Cerberus
                 Debug.Log("<color=cyan>[Cerberus] Voltando a patrulhar após ataque!</color>");
             }
         }
+
         private void OnDisable()
         {
-            _renderer.material.color = _defaultColor;
+            if (_renderer != null)
+            {
+                _renderer.material.color = _defaultColor;
+            }
         }
         public override void ExecuteAttack()
         {
