@@ -78,7 +78,6 @@ namespace Pong.Gameplay.Relics
             _isRevealing = true;
             _rigidBody.linearVelocity = Vector3.zero;
             _rigidBody.angularVelocity = Vector3.zero;
-            _rigidBody.isKinematic = true;
 
             transform.localScale = Vector3.zero;
             gameObject.SetActive(true);
@@ -98,7 +97,6 @@ namespace Pong.Gameplay.Relics
             }
 
             transform.localScale = _originalScale;
-            _rigidBody.isKinematic = false;
             _isRevealing = false;
             Launch();
         }
