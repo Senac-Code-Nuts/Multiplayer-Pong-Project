@@ -6,8 +6,6 @@ namespace MenuManager
 {
     public class MainMenuManager : MonoBehaviour
     {
-
-
         private MenuStateMachine StateMachina;
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Start()
