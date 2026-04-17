@@ -586,7 +586,7 @@ MonoBehaviour:
   - {fileID: 1307643262847235447, guid: 9597ed158424f9f42b7fe404986fb41b, type: 3}
   _bossSpawnPoints:
   - {fileID: 1833346421}
-  _enemyParent: {fileID: 0}
+  _enemyParent: {fileID: 2032657787}
 --- !u!4 &507488963 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7877455373723518901, guid: dd7561146ee0d14409d1842859109dea, type: 3}
@@ -769,7 +769,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21271c40daba74947931c68be1318037, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxLife: 1
 --- !u!1 &720608888
 GameObject:
   m_ObjectHideFlags: 0
@@ -1510,7 +1509,7 @@ MonoBehaviour:
   _gameManager: {fileID: 2067724708}
   _enemyManager: {fileID: 502501445}
   _influenceSystem: {fileID: 1265117883}
-  _lifeManagerHud: {fileID: 0}
+  _lifeManagerHud: {fileID: 694646875}
   _currentState: 0
 --- !u!1 &1143474400
 GameObject:
@@ -1536,13 +1535,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1143474400}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -7.5, y: 2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 408317902}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1001 &1156956998
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2530,13 +2529,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1600896294}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 7.5, y: 2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 408317902}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!1 &1638483957
 GameObject:
   m_ObjectHideFlags: 0
@@ -2829,19 +2828,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2b8b1121c9d9984ab96f0dd33ff749b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerSlots:
-  - Prefab: {fileID: 1558463620509405343, guid: 46d0c511096c5cc4e880208ae85af0f8, type: 3}
+  _characterSelectionSession: {fileID: 11400000, guid: faaa22b0131c9d541a29d81e390bf193, type: 2}
+  _characterSpawnEntries:
+  - CharacterType: 1
+    Prefab: {fileID: 6971873844655511209, guid: 41b9d1bf03757af4e951c3f2d3525094, type: 3}
     SpawnPoint: {fileID: 1953007874}
     PlayerSide: 1
-  - Prefab: {fileID: 1558463620509405343, guid: 46d0c511096c5cc4e880208ae85af0f8, type: 3}
-    SpawnPoint: {fileID: 2147361303}
-    PlayerSide: 1
-  - Prefab: {fileID: 1558463620509405343, guid: d5722268199f6ce46934aaa8fd0b7acf, type: 3}
+    PlayerOrder: 0
+  - CharacterType: 4
+    Prefab: {fileID: 2327735062683202070, guid: 133588ec6bfb94a4288aaf4d5aec7078, type: 3}
     SpawnPoint: {fileID: 1600896295}
     PlayerSide: 0
-  - Prefab: {fileID: 1558463620509405343, guid: d5722268199f6ce46934aaa8fd0b7acf, type: 3}
+    PlayerOrder: 1
+  - CharacterType: 2
+    Prefab: {fileID: 7864121296518740194, guid: cfba0d379938102488c285751e1ba0ce, type: 3}
+    SpawnPoint: {fileID: 2147361303}
+    PlayerSide: 1
+    PlayerOrder: 2
+  - CharacterType: 3
+    Prefab: {fileID: 3208024656542229028, guid: 4fa5b19b215441f4ab3907f00921ea7f, type: 3}
     SpawnPoint: {fileID: 1143474401}
     PlayerSide: 0
+    PlayerOrder: 3
   _playerCount: 2
   _enableKeyboardForTesting: 1
   _playerParent: {fileID: 1355683865}
@@ -2922,7 +2930,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 40505902205b70349bc1040faeb6e272, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.042253435
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 40505902205b70349bc1040faeb6e272, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2930,7 +2938,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 40505902205b70349bc1040faeb6e272, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.25553417
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 40505902205b70349bc1040faeb6e272, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2938,15 +2946,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 40505902205b70349bc1040faeb6e272, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 40505902205b70349bc1040faeb6e272, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 40505902205b70349bc1040faeb6e272, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 40505902205b70349bc1040faeb6e272, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -2998,13 +3006,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1953007873}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 2, z: 7.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 408317902}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1 &1953510063
 GameObject:
   m_ObjectHideFlags: 0
@@ -3285,8 +3293,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2041704774}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2, z: 1.7}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 1.7, y: 2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

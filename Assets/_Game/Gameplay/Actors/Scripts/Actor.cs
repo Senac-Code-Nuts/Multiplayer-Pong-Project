@@ -10,6 +10,11 @@ namespace Pong.Gameplay.Actors
         [SerializeField] protected int _currentHealth;
         [SerializeField] protected int _damage;
 
+        [Header("Damage Visual")]
+        [SerializeField] private Renderer[] _damageFlashRenderers;
+        [SerializeField] private Color _damageFlashColor = Color.red;
+        [SerializeField, Min(0f)] private float _damageFlashDuration = 0.1f;
+
         [Header("States")]
         [SerializeField] protected bool _isVulnerable = true;
         [SerializeField] protected bool _isStunned = false;
@@ -20,6 +25,8 @@ namespace Pong.Gameplay.Actors
         [SerializeField] protected Vector3 _stunOffset = new Vector3(0f, 1.8f, 0f);
 
         protected GameObject _activeStunVfx;
+        private Color[] _damageFlashOriginalColors;
+        private Coroutine _damageFlashRoutine;
 
         public int CurrentHealth => _currentHealth;
         public int Damage => _damage;
@@ -30,7 +37,15 @@ namespace Pong.Gameplay.Actors
 
         protected virtual void Awake()
         {
+            _isDead = false;
+            _isStunned = false;
+            _isVulnerable = true;
             _currentHealth = _maxHealth;
+
+            if (_damageFlashRenderers == null || _damageFlashRenderers.Length == 0)
+            {
+                _damageFlashRenderers = GetComponentsInChildren<Renderer>(true);
+            }
         }
 
         #region Damage
@@ -42,6 +57,7 @@ namespace Pong.Gameplay.Actors
             _currentHealth -= damage;
 
             OnDamageTaken();
+            FlashDamageVisual();
 
             if (_currentHealth <= 0)
             {
@@ -59,6 +75,7 @@ namespace Pong.Gameplay.Actors
             if (_isDead)
                 return;
 
+            StopDamageFlash();
             _isDead = true;
             OnDeath();
         }
@@ -119,5 +136,154 @@ namespace Pong.Gameplay.Actors
             _isVulnerable = value;
         }
         #endregion
+
+        private void FlashDamageVisual()
+        {
+            Renderer[] renderers = GetDamageFlashRenderers();
+
+            if (renderers.Length == 0 || _damageFlashDuration <= 0f)
+                return;
+
+            if (_damageFlashRoutine != null)
+            {
+                StopCoroutine(_damageFlashRoutine);
+                _damageFlashRoutine = null;
+                RestoreDamageFlashColors(renderers);
+            }
+
+            CacheDamageFlashColors(renderers);
+            SetDamageFlashColors(renderers, _damageFlashColor);
+
+            _damageFlashRoutine = StartCoroutine(DamageFlashRoutine(renderers));
+        }
+
+        private IEnumerator DamageFlashRoutine(Renderer[] renderers)
+        {
+            yield return new WaitForSeconds(_damageFlashDuration);
+
+            RestoreDamageFlashColors(renderers);
+            _damageFlashRoutine = null;
+        }
+
+        private void StopDamageFlash()
+        {
+            if (_damageFlashRoutine != null)
+            {
+                StopCoroutine(_damageFlashRoutine);
+                _damageFlashRoutine = null;
+            }
+
+            RestoreDamageFlashColors(GetDamageFlashRenderers());
+        }
+
+        private Renderer[] GetDamageFlashRenderers()
+        {
+            if (_damageFlashRenderers == null)
+            {
+                _damageFlashRenderers = GetComponentsInChildren<Renderer>(true);
+            }
+
+            return _damageFlashRenderers;
+        }
+
+        private void CacheDamageFlashColors(Renderer[] renderers)
+        {
+            if (_damageFlashOriginalColors == null || _damageFlashOriginalColors.Length != renderers.Length)
+            {
+                _damageFlashOriginalColors = new Color[renderers.Length];
+            }
+
+            for (int i = 0; i < renderers.Length; i++)
+            {
+                _damageFlashOriginalColors[i] = GetRendererColor(renderers[i]);
+            }
+        }
+
+        private void RestoreDamageFlashColors(Renderer[] renderers)
+        {
+            if (_damageFlashOriginalColors == null || _damageFlashOriginalColors.Length != renderers.Length)
+                return;
+
+            for (int i = 0; i < renderers.Length; i++)
+            {
+                SetRendererColor(renderers[i], _damageFlashOriginalColors[i]);
+            }
+        }
+
+        private void SetDamageFlashColors(Renderer[] renderers, Color color)
+        {
+            for (int i = 0; i < renderers.Length; i++)
+            {
+                SetRendererColor(renderers[i], color);
+            }
+        }
+
+        private static Color GetRendererColor(Renderer renderer)
+        {
+            if (renderer == null)
+                return Color.white;
+
+            if (IsVfxRenderer(renderer))
+                return Color.white;
+
+            if (renderer is SpriteRenderer spriteRenderer)
+            {
+                return spriteRenderer.color;
+            }
+
+            Material sharedMaterial = renderer.sharedMaterial;
+
+            if (sharedMaterial != null)
+            {
+                if (sharedMaterial.HasProperty("_BaseColor"))
+                {
+                    return sharedMaterial.GetColor("_BaseColor");
+                }
+
+                if (sharedMaterial.HasProperty("_Color"))
+                {
+                    return sharedMaterial.GetColor("_Color");
+                }
+            }
+
+            return Color.white;
+        }
+
+        private static void SetRendererColor(Renderer renderer, Color color)
+        {
+            if (renderer == null)
+                return;
+
+            if (IsVfxRenderer(renderer))
+                return;
+
+            if (renderer is SpriteRenderer spriteRenderer)
+            {
+                spriteRenderer.color = color;
+                return;
+            }
+
+            Material sharedMaterial = renderer.sharedMaterial;
+
+            if (sharedMaterial == null)
+                return;
+
+            Material material = renderer.material;
+
+            if (sharedMaterial.HasProperty("_BaseColor"))
+            {
+                material.SetColor("_BaseColor", color);
+            }
+
+            if (sharedMaterial.HasProperty("_Color"))
+            {
+                material.SetColor("_Color", color);
+            }
+        }
+
+        private static bool IsVfxRenderer(Renderer renderer)
+        {
+            return renderer != null && renderer.GetType().Name == "VFXRenderer";
+        }
     }
 }

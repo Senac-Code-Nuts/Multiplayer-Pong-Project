@@ -1331,7 +1331,7 @@ MonoBehaviour:
   _gameManager: {fileID: 2067724708}
   _enemyManager: {fileID: 502501445}
   _influenceSystem: {fileID: 1265117883}
-  _lifeManagerHud: {fileID: 0}
+  _lifeManagerHud: {fileID: 1338350239}
   _currentState: 0
 --- !u!1 &1142530410
 GameObject:
@@ -2634,19 +2634,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2b8b1121c9d9984ab96f0dd33ff749b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerSlots:
-  - Prefab: {fileID: 1558463620509405343, guid: 46d0c511096c5cc4e880208ae85af0f8, type: 3}
+  _characterSelectionSession: {fileID: 11400000, guid: faaa22b0131c9d541a29d81e390bf193, type: 2}
+  _characterSpawnEntries:
+  - CharacterType: 1
+    Prefab: {fileID: 1558463620509405343, guid: 65b3e9e3e6ef5db44a694af63621a81b, type: 3}
     SpawnPoint: {fileID: 1953007874}
     PlayerSide: 1
-  - Prefab: {fileID: 1558463620509405343, guid: 46d0c511096c5cc4e880208ae85af0f8, type: 3}
-    SpawnPoint: {fileID: 2147361303}
-    PlayerSide: 1
-  - Prefab: {fileID: 1558463620509405343, guid: d5722268199f6ce46934aaa8fd0b7acf, type: 3}
+    PlayerOrder: 0
+  - CharacterType: 4
+    Prefab: {fileID: 1558463620509405343, guid: 90078b98243c6fb4e9bfe21c03f928da, type: 3}
     SpawnPoint: {fileID: 1600896295}
     PlayerSide: 0
-  - Prefab: {fileID: 1558463620509405343, guid: d5722268199f6ce46934aaa8fd0b7acf, type: 3}
+    PlayerOrder: 1
+  - CharacterType: 2
+    Prefab: {fileID: 1558463620509405343, guid: 587a0333e289cd949abf1b767dd095e0, type: 3}
+    SpawnPoint: {fileID: 2147361303}
+    PlayerSide: 1
+    PlayerOrder: 2
+  - CharacterType: 3
+    Prefab: {fileID: 1558463620509405343, guid: 4d28123470d58db44bac2d54663306b3, type: 3}
     SpawnPoint: {fileID: 1143474401}
     PlayerSide: 0
+    PlayerOrder: 3
   _playerCount: 2
   _enableKeyboardForTesting: 1
   _playerParent: {fileID: 1355683865}

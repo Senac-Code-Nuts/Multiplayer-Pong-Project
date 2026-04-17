@@ -112,12 +112,10 @@ namespace Pong.Gameplay.Boss
 
         protected override void OnDamageTaken()
         {
-            Debug.Log($"{gameObject.name} boss took damage.");
         }
 
         protected override void OnDeath()
         {
-            Debug.Log($"{gameObject.name} boss died.");
         }
     }
 }

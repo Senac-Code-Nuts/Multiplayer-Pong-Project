@@ -1,4 +1,5 @@
 using Pong.Framework.BehaviourTree;
+using Pong.Gameplay.Player;
 using UnityEngine;
 
 namespace Pong.Gameplay.Boss.Greed
@@ -54,14 +55,10 @@ namespace Pong.Gameplay.Boss.Greed
             Collider[] hitColliders = Physics.OverlapSphere(_greedBoss.transform.position, _attackRadius);
             foreach (var hit in hitColliders)
             {
-                if (hit.CompareTag("Player"))
+                if (hit.GetComponentInParent<PlayerActor>() is PlayerActor player)
                 {
-                    Debug.Log($"<color=orange>[Attack] Jogador {hit.name} tomou dano</color>");
-                    var player = hit.gameObject.GetComponent<GreedBoss>();
-                    if(player != null)
-                    {
-                        player.ApplyDamage(_greedBoss.Damage);
-                    }
+                    Debug.Log($"<color=orange>[Attack] Jogador {player.name} tomou dano</color>");
+                    player.ApplyDamage(_greedBoss.Damage);
                 }
             }
         }

@@ -202,6 +202,7 @@ namespace Pong.Gameplay.Player
                 }
 
                 marker.transform.SetParent(target.transform);
+                marker.transform.localScale = Vector3.one;
                 marker.transform.localPosition = _markerOffset;
                 marker.transform.localRotation = Quaternion.identity;
             }

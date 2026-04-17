@@ -22,15 +22,13 @@ namespace Pong.Gameplay.Boss
 
         private void OnTriggerEnter(Collider other)
         {
-            if(other.gameObject.CompareTag("Player"))
+            PlayerActor playerActor = other.GetComponentInParent<PlayerActor>();
+
+            if(playerActor != null)
             {
                 if(!_hasHit)
                 {
-                    var playerActor = other.gameObject.GetComponent<PlayerActor>();
-                    if(playerActor != null)
-                    {
-                        playerActor.ApplyDamage(_projectileDamage);
-                    } 
+                    playerActor.ApplyDamage(_projectileDamage);
 
                     _hasHit = true;
                 }
