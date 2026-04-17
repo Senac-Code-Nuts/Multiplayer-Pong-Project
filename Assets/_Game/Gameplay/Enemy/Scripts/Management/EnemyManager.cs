@@ -1,11 +1,13 @@
-using System.Collections.Generic;
-using UnityEngine;
-using Pong.Gameplay.Enemy;
 using Pong.Gameplay.Boss;
+using Pong.Gameplay.Enemy;
 using Pong.Gameplay.Player;
 using Pong.Gameplay.Relics;
 using Pong.Systems.Graph;
+using Pong.Systems.MapSelection;
 using Sirenix.OdinInspector;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Pong.Gameplay.Enemy
 {
@@ -28,12 +30,34 @@ namespace Pong.Gameplay.Enemy
         [ShowIf(nameof(_useBosses))]
         [SerializeField] private List<Transform> _bossSpawnPoints = new List<Transform>();
 
+        [Header("Scene")]
+        [SerializeField] private string _mapSceneName = "Map";
+
+        private bool _hasFinishedRoom;
+
         private List<EnemyActor> _activeEnemies = new List<EnemyActor>();
         private List<BossActor> _activeBosses = new List<BossActor>();
 
         [SerializeField] private Transform _enemyParent;
 
         private const string TAG = "<color=red><b>[EnemyManager]</b></color>";
+
+        private void Update()
+        {
+            if (_hasFinishedRoom)
+                return;
+
+            if (!_useBosses && AreAllEnemiesDefeated())
+            {
+                CompleteEnemyRoom();
+                return;
+            }
+
+            if (AreAllPlayersDead())
+            {
+                ReturnToMapWithoutCompleting();
+            }
+        }
 
         public void SpawnEnemies(InfluenceSystem influenceSystem, Relic relic = null)
         {
@@ -125,6 +149,61 @@ namespace Pong.Gameplay.Enemy
 
                 boss.gameObject.SetActive(true);
             }
+        }
+
+        private void CompleteEnemyRoom()
+        {
+            _hasFinishedRoom = true;
+
+            Debug.Log($"{TAG} Sala concluída.");
+
+            if (MapProgressManager.Instance != null)
+            {
+                MapProgressManager.Instance.CompleteCurrentPhase();
+            }
+
+            SceneManager.LoadScene(_mapSceneName);
+        }
+
+        private void ReturnToMapWithoutCompleting()
+        {
+            _hasFinishedRoom = true;
+
+            Debug.Log($"{TAG} Todos os jogadores morreram. Voltando para o mapa.");
+
+            SceneManager.LoadScene(_mapSceneName);
+        }
+
+        private bool AreAllPlayersDead()
+        {
+            PlayerActor[] players = FindObjectsByType<PlayerActor>(FindObjectsSortMode.None);
+
+            if (players == null || players.Length == 0)
+                return false;
+
+            for (int i = 0; i < players.Length; i++)
+            {
+                if (players[i] != null && players[i].IsAlive)
+                    return false;
+            }
+
+            return true;
+        }
+
+        private bool AreAllEnemiesDefeated()
+        {
+            if (_activeEnemies.Count == 0)
+                return false;
+
+            for (int i = 0; i < _activeEnemies.Count; i++)
+            {
+                EnemyActor enemy = _activeEnemies[i];
+
+                if (enemy != null && enemy.gameObject.activeInHierarchy)
+                    return false;
+            }
+
+            return true;
         }
     }
 }

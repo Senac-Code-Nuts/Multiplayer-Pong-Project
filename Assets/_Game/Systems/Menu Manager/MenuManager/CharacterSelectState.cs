@@ -1,7 +1,5 @@
-using MenuManager;
-using Pong.Systems.Selection;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using Pong.Systems.Selection;
 
 namespace MenuManager
 {
@@ -9,7 +7,8 @@ namespace MenuManager
     {
         [SerializeField] private CharacterSelectionManager _selectionManager;
         [SerializeField] private CharacterSelectionInputHandler _inputHandler;
-        [SerializeField] private string _combatSceneName;
+        [SerializeField] private CutsceneController _cutsceneController;
+        [SerializeField] private GameObject _selectionPanel;
 
         private bool _isLoadingScene = false;
 
@@ -26,21 +25,33 @@ namespace MenuManager
             {
                 _inputHandler.ResetInputState();
             }
+
+            if (_selectionPanel != null)
+            {
+                _selectionPanel.SetActive(true);
+            }
         }
 
         public override void LocalUpdate()
         {
             if (_selectionManager == null) return;
             if (_isLoadingScene) return;
-
-            Debug.Log("[CharacterSelectState] Updating");
-
             if (!_selectionManager.CanStartMatch()) return;
 
-            Debug.Log("[CharacterSelectState] Starting match");
-
             _isLoadingScene = true;
-            SceneManager.LoadScene(_combatSceneName);
+
+            if (_selectionPanel != null)
+            {
+                _selectionPanel.SetActive(false);
+            }
+
+            if (_cutsceneController != null)
+            {
+                _cutsceneController.PlayCutscene();
+                return;
+            }
+
+            Debug.LogWarning("[CharacterSelectState] CutsceneController não configurado.");
         }
 
         public override void LocalFixedUpdate()
