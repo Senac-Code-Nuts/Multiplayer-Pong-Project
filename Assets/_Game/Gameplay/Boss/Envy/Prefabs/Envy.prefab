@@ -160,13 +160,16 @@ MonoBehaviour:
   _maxHealth: 0
   _currentHealth: 0
   _damage: 0
+  _damageFlashRenderers: []
+  _damageFlashColor: {r: 1, g: 0, b: 0, a: 1}
+  _damageFlashDuration: 0.1
   _isVulnerable: 1
   _isStunned: 0
   _isDead: 0
   _stunVfxPrefab: {fileID: 0}
   _stunOffset: {x: 0, y: 1.8, z: 0}
   _phase: 0
-  _projectilePrefab: {fileID: 0}
+  _projectilePrefab: {fileID: 4128795202327811931, guid: e198c6a4309fd584496e0c1a5475d3fe, type: 3}
   _projectileSpawnPoint: {fileID: 0}
   _projectileCount: 0
   _projectileSpeed: 0
