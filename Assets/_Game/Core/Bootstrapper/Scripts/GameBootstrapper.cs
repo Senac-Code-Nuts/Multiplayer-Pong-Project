@@ -21,6 +21,11 @@ namespace Pong.Core
             instance.name = "[ CORE SYSTEMS ]";
             Object.DontDestroyOnLoad(instance);
 
+            if (GameStateSystem.Instance != null)
+            {
+                GameStateSystem.Instance.ResetToMenu();
+            }
+
             Debug.Log($"{BOOTSTRAP_TAG}: Core systems initialized successfully.");
         }
     }

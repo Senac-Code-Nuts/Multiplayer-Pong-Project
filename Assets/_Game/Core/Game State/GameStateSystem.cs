@@ -24,6 +24,13 @@ namespace Pong.Core
             }
 
             Instance = this;
+            ResetToMenu();
+        }
+
+        public void ResetToMenu()
+        {
+            CurrentState = GameState.Menu;
+            OnGameStateChanged?.Invoke(CurrentState);
         }
 
         public void ChangeState(GameState newState)
