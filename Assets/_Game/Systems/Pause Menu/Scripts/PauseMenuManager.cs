@@ -11,7 +11,7 @@ namespace Pong.Systems
 
         [SerializeField] private GameObject _pauseMenuContainer;
 
-        [SerializeField] private string _mainMenuSceneName = "MainMenu";
+        private string _mainMenuSceneName = "MenuScene";
 
         private void Awake()
         {

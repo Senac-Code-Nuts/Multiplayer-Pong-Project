@@ -14,6 +14,7 @@ namespace MenuManager
         [SerializeField] private string _nextSceneName = "Map";
 
         private MenuMusicPlayer _menuMusicPlayer;
+        
 
         [Header("Skip")]
         [SerializeField, Min(0.1f)] private float _holdToSkipDuration = 1.5f;
