@@ -57,6 +57,9 @@ namespace MenuManager
 
             if (_videoPlayer != null)
             {
+                string videoPath = System.IO.Path.Combine(Application.streamingAssetsPath, "cutscene/cutscene.mp4");
+                _videoPlayer.source = VideoSource.Url;
+                _videoPlayer.url = videoPath;
                 _videoPlayer.time = 0;
                 _videoPlayer.Play();
             }
