@@ -54,6 +54,15 @@ namespace Pong.Gameplay.Enemy
             if (_hasFinishedRoom)
                 return;
 
+            if(_useBosses)
+            {
+                if(AreAllBossesDefeated())
+                {
+                    CompleteEnemyRoom();
+                    return;
+                }
+            }
+
             if (!_useBosses && AreAllEnemiesDefeated())
             {
                 CompleteEnemyRoom();
@@ -212,6 +221,28 @@ namespace Pong.Gameplay.Enemy
 
                 if (enemy != null && enemy.gameObject.activeInHierarchy)
                     return false;
+            }
+
+            return true;
+        }
+
+        private bool AreAllBossesDefeated()
+        {
+            if(_activeBosses.Count == 0)
+            {
+                return false;
+            }
+
+            for(int i = 0; i < _activeBosses.Count; i++)
+            {
+                BossActor boss = _activeBosses[i];
+
+                if(boss != null && !boss.IsDead)
+                {
+                    return false;
+                }
+
+                
             }
 
             return true;

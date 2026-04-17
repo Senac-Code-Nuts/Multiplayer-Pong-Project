@@ -22,6 +22,7 @@ namespace Pong.Gameplay.Boss
         protected InfluenceSystem _influenceSystem;
         protected bool _isInitialized;
         private bool _initializationFailed;
+       
 
         public int Phase => _phase;
         protected bool IsInitialized => _isInitialized;
@@ -121,6 +122,7 @@ namespace Pong.Gameplay.Boss
 
         protected override void OnDeath()
         {
+            gameObject.SetActive(false);
         }
 
         protected void PlayHurtSfx()
