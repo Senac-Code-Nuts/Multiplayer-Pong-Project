@@ -4,6 +4,8 @@ using TMPro;
 using Pong.Systems.Input;
 using UnityEngine;
 using Unity.Cinemachine;
+using UnityEngine.VFX;
+using Pong.Systems.Audio;
 
 namespace Pong.Shared.Management
 {
@@ -16,6 +18,7 @@ namespace Pong.Shared.Management
         [Header("Cameras")]
         [SerializeField] private CinemachineCamera _gameCamera;
         [SerializeField] private List<CinemachineCamera> _countdownCameras = new List<CinemachineCamera>();
+        [SerializeField] private List<VisualEffect> _countdownSmokeEffects = new List<VisualEffect>();
         [SerializeField, Min(1)] private int _activePriority = 20;
         [SerializeField, Min(0)] private int _inactivePriority = 0;
 
@@ -23,219 +26,184 @@ namespace Pong.Shared.Management
         [SerializeField, Min(0.05f)] private float _duration = 1f;
         [SerializeField, Min(0f)] private float _cameraFocusLeadTime = 0.2f;
 
+        [Header("Audio Clips")]
+        [SerializeField] private string _oneClipPath = "SFX/SFX_Count_1.wav";
+        [SerializeField] private string _twoClipPath = "SFX/SFX_Count_2.wav";
+        [SerializeField] private string _threeClipPath = "SFX/SFX_Count_3.wav";
+        [SerializeField] private string _goClipPath = "SFX/SFX_Count_Go.wav";
+
+        private readonly List<VisualEffect> _runtimeCountdownSmokeEffects = new List<VisualEffect>();
         private Coroutine _countdownRoutine;
         private Coroutine _goRoutine;
+        private int _activeCountdownCameraIndex = -1;
 
         public bool IsCountdownFinished { get; private set; }
         public bool IsGoFinished { get; private set; }
 
         private void Awake()
         {
-            HideGroup(_uiGroup);
-            ClearText(_uiText);
-            IsCountdownFinished = false;
-            SetGameCameraActive();
+            InitializeCountdownSmokeEffects();
         }
 
-        public void StartCountdown()
+        public void StartMatchCountdown()
         {
-            if (_countdownRoutine != null)
-            {
-                StopCoroutine(_countdownRoutine);
-            }
-
-            if (_goRoutine != null)
-            {
-                StopCoroutine(_goRoutine);
-                _goRoutine = null;
-            }
-
+            IsCountdownFinished = false;
             IsGoFinished = false;
+            _activeCountdownCameraIndex = -1;
+            
+            _uiGroup.alpha = 1f;
+            _gameCamera.Priority = _inactivePriority;
+            SetAllCountdownSmokeActive(false);
 
-            _countdownRoutine = StartCoroutine(CountdownRoutine());
+            if (_countdownRoutine != null) StopCoroutine(_countdownRoutine);
+            _countdownRoutine = StartCoroutine(CountdownSequence());
         }
 
-        public void ShowGo()
+        private IEnumerator CountdownSequence()
         {
-            if (_goRoutine != null)
+            for (int i = 3; i > 0; i--)
             {
-                StopCoroutine(_goRoutine);
-            }
-
-            _goRoutine = StartCoroutine(GoRoutine());
-        }
-
-        public void PlayGoAnimation()
-        {
-            ShowGo();
-        }
-
-        private IEnumerator CountdownRoutine()
-        {
-            IsCountdownFinished = false;
-            ShowGroup(_uiGroup);
-
-            int playersToReveal = Mathf.Min(GetPlayerCountFromGamepads(), _countdownCameras.Count);
-
-            for (int i = 0; i < playersToReveal; i++)
-            {
-                SetCountdownCameraActive(i);
-                if (_cameraFocusLeadTime > 0f)
+                _uiText.text = i.ToString();
+                string clipToPlay = i switch
                 {
-                    yield return new WaitForSeconds(_cameraFocusLeadTime);
+                    3 => _threeClipPath,
+                    2 => _twoClipPath,
+                    1 => _oneClipPath,
+                    _ => string.Empty
+                };
+
+                if (!string.IsNullOrWhiteSpace(clipToPlay) && AudioManager.Instance != null)
+                {
+                    AudioManager.Instance.PlaySFX(clipToPlay);
                 }
 
-                if (GamepadsManager.Instance != null)
+                if (_countdownCameras.Count > 0)
                 {
-                    yield return GamepadsManager.Instance.RevealPlayerRoutine(i);
+                    int camIndex = (3 - i) % _countdownCameras.Count;
+                    SetFocusCamera(camIndex);
                 }
 
-                SetText(_uiText, (playersToReveal - i).ToString());
                 yield return new WaitForSeconds(_duration);
-
-                if (i < playersToReveal - 1)
-                {
-                    ClearText(_uiText);
-                }
             }
 
-            ClearText(_uiText);
-            HideGroup(_uiGroup);
-            SetGameCameraActive();
-            IsCountdownFinished = true;
-            _countdownRoutine = null;
-        }
+            IsCountdownFinished = true; 
 
-        private IEnumerator GoRoutine()
-        {
-            IsGoFinished = false;
-            SetGameCameraActive();
-            ShowGroup(_uiGroup);
-            SetText(_uiText, "GO!");
-
-            yield return new WaitForSeconds(_duration);
-
-            ClearText(_uiText);
-            HideGroup(_uiGroup);
-            IsGoFinished = true;
-            _goRoutine = null;
-        }
-
-        private void SetCountdownCameraActive(int countdownIndex)
-        {
-            if (_countdownCameras == null || _countdownCameras.Count == 0)
+            _uiText.text = "GO!";
+            if (!string.IsNullOrWhiteSpace(_goClipPath) && AudioManager.Instance != null)
             {
-                SetGameCameraActive();
+                AudioManager.Instance.PlaySFX(_goClipPath);
+            }
+            SetFocusCamera(_gameCamera);
+            SetAllCountdownSmokeActive(false);
+
+            if (_goRoutine != null) StopCoroutine(_goRoutine);
+            _goRoutine = StartCoroutine(FinishGoSequence());
+        }
+
+        private IEnumerator FinishGoSequence()
+        {
+            yield return new WaitForSeconds(1f);
+            _uiGroup.alpha = 0f;
+            IsGoFinished = true; 
+        }
+
+        private void SetFocusCamera(int cameraIndex)
+        {
+            if (cameraIndex < 0 || cameraIndex >= _countdownCameras.Count)
+            {
                 return;
             }
 
-            for (int i = 0; i < _countdownCameras.Count; i++)
+            _activeCountdownCameraIndex = cameraIndex;
+
+            foreach (var cam in _countdownCameras)
             {
-                CinemachineCamera camera = _countdownCameras[i];
-                if (camera == null)
+                cam.Priority = _inactivePriority;
+            }
+
+            CinemachineCamera targetCam = _countdownCameras[cameraIndex];
+            targetCam.Priority = _activePriority;
+
+            ActivateSmokeForCamera(cameraIndex);
+        }
+
+        private void SetFocusCamera(CinemachineCamera targetCam)
+        {
+            foreach (var cam in _countdownCameras)
+            {
+                cam.Priority = _inactivePriority;
+            }
+
+            targetCam.Priority = _activePriority;
+            _activeCountdownCameraIndex = -1;
+        }
+
+        private void ActivateSmokeForCamera(int cameraIndex)
+        {
+            SetAllCountdownSmokeActive(false);
+
+            if (cameraIndex < 0 || cameraIndex >= _runtimeCountdownSmokeEffects.Count)
+            {
+                return;
+            }
+
+            VisualEffect smokeEffect = _runtimeCountdownSmokeEffects[cameraIndex];
+            if (smokeEffect == null)
+            {
+                return;
+            }
+
+            smokeEffect.gameObject.SetActive(true);
+            smokeEffect.Play();
+        }
+
+        private void SetAllCountdownSmokeActive(bool active)
+        {
+            for (int i = 0; i < _runtimeCountdownSmokeEffects.Count; i++)
+            {
+                VisualEffect smokeEffect = _runtimeCountdownSmokeEffects[i];
+                if (smokeEffect == null)
                 {
                     continue;
                 }
 
-                if (i < countdownIndex - 1)
+                if (active)
                 {
-                    camera.Priority.Value = _inactivePriority;
+                    smokeEffect.gameObject.SetActive(true);
+                    smokeEffect.Play();
+                }
+                else
+                {
+                    smokeEffect.Stop();
+                    smokeEffect.gameObject.SetActive(false);
                 }
             }
+        }
 
-            int cameraIndex = countdownIndex % _countdownCameras.Count;
-            CinemachineCamera activeCamera = _countdownCameras[cameraIndex];
+        private void InitializeCountdownSmokeEffects()
+        {
+            _runtimeCountdownSmokeEffects.Clear();
 
-            if (activeCamera != null)
+            for (int i = 0; i < _countdownSmokeEffects.Count; i++)
             {
-                activeCamera.Priority.Value = _activePriority;
-            }
-
-            int previousCameraIndex = countdownIndex - 1;
-            if (previousCameraIndex >= 0 && previousCameraIndex < _countdownCameras.Count)
-            {
-                CinemachineCamera previousCamera = _countdownCameras[previousCameraIndex];
-                if (previousCamera != null)
+                VisualEffect smokeEffect = _countdownSmokeEffects[i];
+                if (smokeEffect == null)
                 {
-                    previousCamera.Priority.Value = _inactivePriority;
+                    _runtimeCountdownSmokeEffects.Add(null);
+                    continue;
                 }
-            }
 
-            if (_gameCamera != null)
-            {
-                _gameCamera.Priority.Value = _inactivePriority;
-            }
-        }
-
-        private void SetGameCameraActive()
-        {
-            if (_countdownCameras != null)
-            {
-                for (int i = 0; i < _countdownCameras.Count; i++)
+                if (smokeEffect.gameObject.scene.IsValid())
                 {
-                    CinemachineCamera camera = _countdownCameras[i];
-                    if (camera == null)
-                    {
-                        continue;
-                    }
-
-                    camera.Priority.Value = _inactivePriority;
+                    smokeEffect.gameObject.SetActive(false);
+                    _runtimeCountdownSmokeEffects.Add(smokeEffect);
+                    continue;
                 }
+
+                VisualEffect instance = Instantiate(smokeEffect, transform);
+                instance.gameObject.SetActive(false);
+                _runtimeCountdownSmokeEffects.Add(instance);
             }
-
-            if (_gameCamera != null)
-            {
-                _gameCamera.Priority.Value = _activePriority;
-            }
-        }
-
-        private void ShowGroup(CanvasGroup canvasGroup)
-        {
-            if (canvasGroup == null)
-            {
-                return;
-            }
-
-            canvasGroup.alpha = 1f;
-            canvasGroup.interactable = true;
-            canvasGroup.blocksRaycasts = true;
-        }
-
-        private void HideGroup(CanvasGroup canvasGroup)
-        {
-            if (canvasGroup == null)
-            {
-                return;
-            }
-
-            canvasGroup.alpha = 0f;
-            canvasGroup.interactable = false;
-            canvasGroup.blocksRaycasts = false;
-        }
-
-        private void SetText(TMP_Text text, string value)
-        {
-            if (text == null)
-            {
-                return;
-            }
-
-            text.text = value;
-        }
-
-        private void ClearText(TMP_Text text)
-        {
-            SetText(text, string.Empty);
-        }
-
-        private int GetPlayerCountFromGamepads()
-        {
-            if (GamepadsManager.Instance == null)
-            {
-                return 2;
-            }
-
-            return Mathf.Clamp(GamepadsManager.Instance.GetPlayerCount(), 2, 4);
         }
     }
 }

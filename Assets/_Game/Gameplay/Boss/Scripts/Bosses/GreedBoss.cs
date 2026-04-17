@@ -4,9 +4,13 @@ namespace Pong.Gameplay.Boss
 {
     public class GreedBoss : BossActor
     {
+        protected override void OnAIInitialized()
+        {
+        }
+
         public override void ExecuteAttack()
         {
-            Debug.Log($"{gameObject.name} executed treasure protection behavior.");
+            
         }
     }
 }

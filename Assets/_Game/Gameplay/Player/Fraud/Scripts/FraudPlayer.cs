@@ -17,6 +17,7 @@ namespace Pong.Gameplay.Player
 
         protected override void UseAbility()
         {
+            Debug.Log($"[FraudPlayer] UseAbility on {name}. CopyModeActive={_isCopyModeActive}");
             if (_isCopyModeActive) return;
 
             ActivateCopyMode();
@@ -54,8 +55,10 @@ namespace Pong.Gameplay.Player
 
         public void TryCopyRelic(Relic relic)
         {
+            string relicName = relic != null ? relic.name : "null";
+
             if (!_isCopyModeActive) return;
-            if (relic == null || _relicPrefab == null) return;
+            if (relic == null) return;
 
             SpawnCopies(relic);
             ConsumeCopyMode();
@@ -72,12 +75,12 @@ namespace Pong.Gameplay.Player
                 );
 
                 Relic copyRelic = Instantiate(
-                    _relicPrefab,
+                    originalRelic,
                     originalRelic.transform.position + spawnOffset,
                     Quaternion.identity
                 );
 
-                //copyRelic.SetAsFraudCopy(true);
+                copyRelic.gameObject.SetActive(true);
             }
         }
 

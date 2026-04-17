@@ -1,17 +1,22 @@
-using UnityEngine;
+using System.Threading.Tasks;
 using Pong.Gameplay.Actors;
 using Pong.Gameplay.Enemy;
+using Pong.Gameplay.Player;
+using Pong.Systems.Audio;
+using UnityEngine;
 
 namespace Pong.Gameplay.Relics
 {
     [RequireComponent(typeof(Rigidbody))]
     public class Relic : MonoBehaviour
     {
+        private const string RELIC_BOUNCE_SFX = "SFX/SFX_Relic_Bounce.wav";
+
         [Header("Speed")]
         [SerializeField, Range(0f, 25f)] private float _speed;
 
         [Header("Visual")]
-        [SerializeField] private Renderer _renderer;
+        private Renderer _renderer;
         [SerializeField] private Color _boostColor = Color.yellow;
 
         [Header("Damage")]
@@ -23,9 +28,16 @@ namespace Pong.Gameplay.Relics
         private Material _material;
         private Color _defaultColor;
 
+        private Vector3 _originalScale;
+        private bool _isRevealing;
+
         private void Awake()
         {
             _rigidBody = GetComponent<Rigidbody>();
+            _originalScale = transform.localScale;
+            transform.localScale = Vector3.zero;
+            gameObject.SetActive(false);
+
             if (_renderer == null)
             {
                 _renderer = GetComponent<Renderer>();
@@ -48,6 +60,49 @@ namespace Pong.Gameplay.Relics
 
         private void OnEnable()
         {
+            if (_isRevealing)
+            {
+                return;
+            }
+
+            Launch();
+        }
+
+        public async Task AnimateAppearanceAsync(float duration = 1.5f)
+        {
+            if (duration <= 0f)
+            {
+                transform.localScale = _originalScale;
+                gameObject.SetActive(true);
+                Launch();
+                return;
+            }
+
+            _isRevealing = true;
+            _rigidBody.linearVelocity = Vector3.zero;
+            _rigidBody.angularVelocity = Vector3.zero;
+            _rigidBody.isKinematic = true;
+
+            transform.localScale = Vector3.zero;
+            gameObject.SetActive(true);
+
+            float elapsedTime = 0f;
+
+            while (elapsedTime < duration)
+            {
+                float normalizedTime = Mathf.Clamp01(elapsedTime / duration);
+                float smoothTime = Mathf.SmoothStep(0f, 1f, normalizedTime);
+
+                transform.localScale = Vector3.LerpUnclamped(Vector3.zero, _originalScale, smoothTime);
+                transform.Rotate(0f, 360f * Time.deltaTime / duration, 0f, Space.Self);
+
+                elapsedTime += Time.deltaTime;
+                await Task.Yield();
+            }
+
+            transform.localScale = _originalScale;
+            _rigidBody.isKinematic = false;
+            _isRevealing = false;
             Launch();
         }
 
@@ -64,12 +119,34 @@ namespace Pong.Gameplay.Relics
 
         private void FixedUpdate()
         {
-            _rigidBody.linearVelocity = _direction.normalized * _currentSpeed;
+            _rigidBody.linearVelocity = _rigidBody.linearVelocity.normalized * _currentSpeed;
         }
 
         private void OnCollisionEnter(Collision collision)
         {
             TryApplyDamage(collision);
+
+            if (collision.collider.TryGetComponent(out FraudPlayer fraudPlayer) || collision.collider.GetComponentInParent<FraudPlayer>() != null)
+            {
+                FraudPlayer targetFraudPlayer = collision.collider.GetComponentInParent<FraudPlayer>();
+
+                if (targetFraudPlayer != null)
+                {
+                    Debug.Log($"[Relic] {name} collided with FraudPlayer {targetFraudPlayer.name}");
+                    targetFraudPlayer.TryCopyRelic(this);
+                    if (collision.collider.TryGetComponent(out PlayerController fraudPlayerController))
+                    {
+                        fraudPlayerController.ResetVelocity();
+                    }
+                    return;
+                }
+            }
+
+            if (collision.collider.TryGetComponent(out PlayerController player))
+            {
+                player.ResetVelocity();
+                return;
+            }
 
             if (collision.collider.TryGetComponent(out EnemyActor actor) || collision.collider.GetComponentInParent<EnemyActor>() != null)
             {
@@ -91,6 +168,12 @@ namespace Pong.Gameplay.Relics
             Vector3 normal = collision.contacts[0].normal;
             _direction = Vector3.Reflect(_direction, normal);
             _rigidBody.linearVelocity = _direction.normalized * _currentSpeed;
+            _rigidBody.linearVelocity = _rigidBody.linearVelocity.normalized * _currentSpeed;
+
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySFX(RELIC_BOUNCE_SFX);
+            }
         }
 
         private void TryApplyDamage(Collision collision)

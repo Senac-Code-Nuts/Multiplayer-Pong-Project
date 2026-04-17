@@ -1,2 +1,18 @@
 fileFormatVersion: 2
 guid: 4d4be44a963148a47841968b53ff019c
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - _uiGroup: {instanceID: 0}
+  - _uiText: {instanceID: 0}
+  - _gameCamera: {instanceID: 0}
+  - _oneClip: {fileID: 8300000, guid: 4066e20b7057af34b973efb6a847b848, type: 3}
+  - _twoClip: {fileID: 8300000, guid: f2bb6482b562f4d40a38702ed42bafad, type: 3}
+  - _threeClip: {fileID: 8300000, guid: bb2b010ae92d0bd439d85dcd930473f7, type: 3}
+  - _goClip: {fileID: 8300000, guid: 97e268472bbbe2c4b993bef152cd35fc, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

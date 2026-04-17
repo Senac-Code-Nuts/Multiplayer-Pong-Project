@@ -45,13 +45,16 @@ namespace Pong.Systems.Audio {
         }
 
         private void Start() {
-            int masterLevel = PlayerPrefs.GetInt("MasterVolume", 4);
-            int musicLevel = PlayerPrefs.GetInt("MusicVolume", 4);
-            int sfxLevel = PlayerPrefs.GetInt("SFXVolume", 4);
-
-            SetMasterVolume(masterLevel * 0.25f);
-            SetMusicVolume(musicLevel * 0.25f);
-            SetSFXVolume(sfxLevel * 0.25f);
+            int masterLevel = PlayerPrefs.GetInt("MasterVolume",100);
+            int musicLevel = PlayerPrefs.GetInt("MusicVolume",100);
+            int sfxLevel = PlayerPrefs.GetInt("SFXVolume", 100);
+            Debug.Log(masterLevel);
+            Debug.Log(musicLevel);
+            Debug.Log(sfxLevel);
+            SetMasterVolume(masterLevel / 100f);
+            
+            SetMusicVolume(musicLevel / 100f);
+            SetSFXVolume(sfxLevel / 100f);
         }
         #region Play Audio
         /// <summary>

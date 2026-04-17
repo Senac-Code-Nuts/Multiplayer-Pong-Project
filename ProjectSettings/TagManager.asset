@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 3
   tags:
   - Relic
+  - Wall
+  - Boss
+  - EnemyProjectile
   layers:
   - Default
   - TransparentFX
@@ -13,9 +16,9 @@ TagManager:
   - Water
   - UI
   - Relic
+  - Projectile
+  - Boss
   - HUD
-  - 
-  - 
   - 
   - 
   - 
@@ -41,6 +44,9 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: VFX
+    uniqueID: 2840015413
     locked: 0
   m_RenderingLayers:
   - Default
