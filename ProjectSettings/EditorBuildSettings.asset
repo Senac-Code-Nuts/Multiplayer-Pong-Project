@@ -5,21 +5,6 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/Scenes/Levels/Testing/Menu.unity
-    guid: 269bbf05ecdff6042a61e30447fc9464
-  - enabled: 0
-    path: Assets/Scenes/Levels/Testing/SM_Cerberus.unity
-    guid: 1dcc53ed3a0dc7e41a1a9f7d3c457676
-  - enabled: 0
-    path: Assets/Scenes/Levels/Testing/SM_Minotaur.unity
-    guid: dd1d338105fb92f4cb1c58a73779bd04
-  - enabled: 0
-    path: Assets/Scenes/Levels/Testing/SM_Soul.unity
-    guid: ee2c62b3df339bf4fa7b35ae53b93f4e
-  - enabled: 0
-    path: Assets/Scenes/Levels/Testing/SM_Succubus.unity
-    guid: df8538ae0f4578144b544822390e7e0f
   - enabled: 1
     path: Assets/Scenes/Menu/MenuScene.unity
     guid: d7674f6760d123a4d9563bdac0280990
