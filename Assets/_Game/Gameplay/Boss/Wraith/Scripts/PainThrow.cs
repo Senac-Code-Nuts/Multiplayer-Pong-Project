@@ -1,10 +1,11 @@
 using UnityEngine;
+using Pong.Gameplay.Player;
 
 namespace Pong.Gameplay.Boss
 {
     public class PainThrow : MonoBehaviour
     {
-        [SerializeField] private float _painDamage;
+        [SerializeField] private int _painDamage;
         private Rigidbody _rigidBody;
         private bool _isStuck = false;
 
@@ -26,6 +27,12 @@ namespace Pong.Gameplay.Boss
                 
                 _rigidBody.linearVelocity = Vector3.zero;
                 _rigidBody.isKinematic = true;
+
+                var playerActor = collision.gameObject.GetComponent<PlayerActor>();
+                if(playerActor != null)
+                {
+                    playerActor.ApplyDamage(_painDamage);
+                }
 
                 transform.SetParent(collision.transform);
 

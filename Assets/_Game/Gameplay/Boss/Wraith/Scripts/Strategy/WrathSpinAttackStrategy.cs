@@ -58,7 +58,7 @@ namespace Pong.Gameplay.Boss
 
             if(_timer >= _boss.TelegraphTime)
             {
-                _boss.ExecuteSpinAttack();
+                _boss.ExecuteAttack();
                 _currentState = AttackState.Recovery;
                 _timer = 0f;
             }
@@ -136,7 +136,7 @@ namespace Pong.Gameplay.Boss
 
         protected override void OnTimerCompleted()
         {
-            _boss.ExecuteSpinAttack();
+            _boss.ExecuteAttack();
             _boss.SetVulnerable(true);
         }
     }

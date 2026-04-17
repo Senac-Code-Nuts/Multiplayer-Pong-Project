@@ -1,6 +1,7 @@
 using Pong.Framework.BehaviourTree;
 using Pong.Gameplay.Enemy;
 using Pong.Gameplay.Enemy.Succubus;
+using Pong.Systems.Audio;
 using Pong.Systems.Graph;
 using UnityEngine;
 
@@ -24,6 +25,10 @@ namespace Pong.Gameplay.Boss.Greed
         [Header("Treasure Settings")]
         public bool IsTouched { get; set; }
 
+        [Header("Audio Settings")]
+        [field: SerializeField] public AudioClip HurtClip {get; private set;}
+        [field: SerializeField] public AudioClip AttackClip {get; private set;}
+
         private IntervalStrategy _greedIntervalStrategy;
         private GreedAttackStrategy _greedAttackStrategy;
         private GreedChaseStrategy _greedChaseStrategy;
@@ -33,11 +38,23 @@ namespace Pong.Gameplay.Boss.Greed
         protected override void Awake()
         {
             base.Awake();
+            _isVulnerable = false;
+        }
+
+        protected override void OnAIInitialized()
+        {
+            if (!TryResolveGraphComponent(ref _graphComponent))
+            {
+                FailAIInitialization("[Greed] GraphComponent não foi configurado.");
+                return;
+            }
+
             _tree = new BehaviourTree("Greed tree");
 
             var pathFinder = new EnemyPathFinder(_graphComponent);
             _greedAttackStrategy = new GreedAttackStrategy(this);
             _greedChaseStrategy = new GreedChaseStrategy(this, pathFinder);
+            _greedChaseStrategy.SetActivePlayers(_activePlayers);
             _greedPatrolStrategy = new GreedPatrolStrategy(this, pathFinder);
             _greedIntervalStrategy = new IntervalStrategy(_intervalTime);
 
@@ -60,9 +77,22 @@ namespace Pong.Gameplay.Boss.Greed
 
         protected override void Update()
         {
+            if (!IsInitialized || _tree == null)
+            {
+                return;
+            }
+
             _tree.Process();
             HandleVulnerability();
-            OnDeath();
+        }
+
+        public override void ApplyDamage(int damage)
+        {
+            if (HurtClip != null && AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySFX(HurtClip);
+            }
+            base.ApplyDamage(damage);
         }
         protected override void OnDeath()
         {
@@ -102,6 +132,10 @@ namespace Pong.Gameplay.Boss.Greed
         public override void ExecuteAttack()
         {
             Debug.Log($"<color=red>[Boss] {gameObject.name} executou o hit!</color>");
+            if (AttackClip != null && AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySFX(AttackClip);
+            }
         }
         private void OnDrawGizmos()
         {

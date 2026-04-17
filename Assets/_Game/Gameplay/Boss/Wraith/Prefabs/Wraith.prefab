@@ -169,7 +169,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 4
+  m_Constraints: 118
   m_CollisionDetection: 0
 --- !u!114 &5937964320741311629
 MonoBehaviour:
@@ -195,6 +195,14 @@ MonoBehaviour:
   _attackCooldown: 7
   _painPrefab: {fileID: 7620028326664333429, guid: 67a11c2da32e66b42b67860db172c490, type: 3}
   _painSpawnPoint: {fileID: 28385014602780996}
+  <PainTelegraphTime>k__BackingField: 0
+  <PostThrowDelay>k__BackingField: 0.5
   _throwForce: 10
+  _painRotateSpeed: 0
+  _melleeDamage: 0
+  <TelegraphTime>k__BackingField: 1
+  <ChaseDistance>k__BackingField: 2.5
+  <RecoveryTime>k__BackingField: 1.5
+  <AttackRadius>k__BackingField: 3.5
   _graphComponent: {fileID: 0}
   _moveSpeed: 3

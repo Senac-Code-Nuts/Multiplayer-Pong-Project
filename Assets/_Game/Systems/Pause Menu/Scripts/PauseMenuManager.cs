@@ -1,5 +1,6 @@
 using Pong.Core;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Pong.Systems
 {
@@ -10,7 +11,9 @@ namespace Pong.Systems
 
         [SerializeField] private GameObject _pauseMenuContainer;
 
-        public void Awake()
+        [SerializeField] private string _mainMenuSceneName = "MainMenu";
+
+        private void Awake()
         {
             if (Instance != null && Instance != this)
             {
@@ -19,9 +22,35 @@ namespace Pong.Systems
             }
 
             Instance = this;
+
+            GameStateSystem.OnGameStateChanged += HandleGameStateChanged;
         }
+
+        private void Start()
+        {
+            if (gameStateSystem != null)
+            {
+                HandleGameStateChanged(gameStateSystem.CurrentState);
+            }
+        }
+
+        private void OnDestroy()
+        {
+            GameStateSystem.OnGameStateChanged -= HandleGameStateChanged;
+
+            if (Instance == this)
+            {
+                Instance = null;
+            }
+        }
+
         public void TogglePauseMenu()
         {
+            if (gameStateSystem == null)
+            {
+                return;
+            }
+
             if (gameStateSystem.CurrentState == GameState.Playing)
             {
                 gameStateSystem.ChangeState(GameState.Paused);
@@ -31,29 +60,22 @@ namespace Pong.Systems
                 gameStateSystem.ChangeState(GameState.Playing);
             }
         }
-        private void OnEnable()
-        {
-            GameStateSystem.OnGameStateChanged += HandleGameStateChanged;
-        }
-        private void OnDisable()
-        {
-            GameStateSystem.OnGameStateChanged -= HandleGameStateChanged;
-        }
+
         private void HandleGameStateChanged(GameState newState)
         {
-            switch (newState)
+            bool isPaused = newState == GameState.Paused;
+
+            if (_pauseMenuContainer != null)
             {
-                case GameState.Playing:
-                    _pauseMenuContainer.SetActive(false);
-                    Time.timeScale = 1f;
-                    break;
-                case GameState.Paused:
-                    _pauseMenuContainer.SetActive(true);
-                    Time.timeScale = 0f;
-                    break;
-                default:
-                    break;
+                _pauseMenuContainer.SetActive(isPaused);
             }
+
+            Time.timeScale = isPaused ? 0f : 1f;
+        }
+        public void ReturnToMainMenu()
+        {
+            Time.timeScale = 1f;
+            SceneManager.LoadScene(_mainMenuSceneName);
         }
     }
 }
