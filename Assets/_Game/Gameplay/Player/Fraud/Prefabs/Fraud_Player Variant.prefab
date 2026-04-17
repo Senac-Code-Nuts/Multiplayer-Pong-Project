@@ -103,12 +103,12 @@ MonoBehaviour:
   _inputReader: {fileID: 7180688116601788347}
   _abilityCooldown: 0
   _level: 1
-  _shieldVisualPrefab: {fileID: 0}
+  _shieldVisualPrefab: {fileID: 1964327490352400623, guid: 9356753afbeaccd4fb48402f8a110ecc, type: 3}
   _hasShield: 0
   _shieldOffset: {x: 0, y: 1.8, z: 0}
   _shieldVisualScale: {x: 0.5, y: 0.5, z: 0.5}
   _isCopyModeActive: 0
-  _relicPrefab: {fileID: 5642087065606961590, guid: 81753672ad690c84c88006bd4db16d0f, type: 3}
+  _relicPrefab: {fileID: 5642087065606961590, guid: 64349d988dae90a46b2f94189cb4fcab, type: 3}
   _useDebug: 0
 --- !u!54 &6825667133006466454
 Rigidbody:
