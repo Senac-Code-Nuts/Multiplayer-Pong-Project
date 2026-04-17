@@ -4,57 +4,66 @@ namespace Pong.Gameplay.Boss.Greed
 {
     public class GreedCircle : MonoBehaviour
     {
-        [Header("References")]
-        [SerializeField] private GreedBoss _greedBoss;
-        [SerializeField] private Treasure _treasure;
+        private GreedBoss _boss;
 
+        [SerializeField] private Transform _target;
+        [SerializeField] private float _radius = 3f;
+        [SerializeField] private float _followSpeed = 5f;
 
-        [Header("Movement Settings")]
-        [SerializeField] private float _radius;
-        [SerializeField] private float _followSpeed;
-        [SerializeField] private Vector3 _offset = new Vector3(0, 0.1f, 0);
+        [Header("Visual")]
+        [SerializeField] private Renderer _renderer;
+        [SerializeField] private Color _protected = Color.blue;
+        [SerializeField] private Color _vulnerable = Color.red;
 
-        //private SphereCollider _sphereCollider;
-        private void Start()
+        public void SetBoss(GreedBoss boss)
         {
-            //_sphereCollider = GetComponent<SphereCollider>();
-            _followSpeed = _greedBoss.PatrolSpeed + (_greedBoss.PatrolSpeed * 0.1f);
-        }
-        private void LateUpdate()
-        {
-            if (_greedBoss == null || _treasure == null) return;
-
-            HandleMovement();
-            HandleBossProtection();
+            _boss = boss;
         }
 
-        private void HandleMovement()
+        private void Update()
         {
-            if (_greedBoss.IsTouched)
-            {
-                Vector3 targetPos = _treasure.transform.position + _offset;
-                transform.position = Vector3.Lerp(transform.position, targetPos, _followSpeed * Time.deltaTime);
-            }
-            else
-            {
-                Vector3 targetPos = _greedBoss.transform.position + _offset;
-                transform.position = Vector3.Lerp(transform.position, targetPos, _followSpeed * Time.deltaTime);
-            }
+            Follow();
+            HandleProtection();
+            UpdateVisual();
         }
 
-        private void HandleBossProtection()
+        private void Follow()
         {
-            float distanceToBoss = Vector3.Distance(transform.position, _greedBoss.transform.position);
-            if (distanceToBoss <= _radius)
-            {
-                _greedBoss.SetVulnerability(false);
-                //_sphereCollider.enabled = true;
-            }
-            else
-            {
-                //_sphereCollider.enabled = false;
-                _greedBoss.SetVulnerability(true);
-            }
+            if (_target == null)
+                return;
+
+            transform.position = Vector3.Lerp(
+                transform.position,
+                _target.position,
+                _followSpeed * Time.deltaTime
+            );
+        }
+
+        private void HandleProtection()
+        {
+            if (_boss == null)
+                return;
+
+            if (_boss.IsTouched)
+                return;
+
+            float dist = Vector3.Distance(transform.position, _boss.transform.position);
+
+            _boss.SetVulnerability(dist > _radius);
+        }
+
+        private void UpdateVisual()
+        {
+            if (_renderer == null || _boss == null)
+                return;
+
+            _renderer.material.color = _boss.IsTouched ? _vulnerable : _protected;
+        }
+
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawWireSphere(transform.position, _radius);
         }
     }
 }

@@ -18,25 +18,38 @@ namespace Pong.Gameplay.Boss.Greed
 
         [Header("Time Settings")]
         [SerializeField] private float _intervalTime;
-        [SerializeField] private float _vulnerableTime;
-        [SerializeField] private float _vulnerableTimer;
+        [SerializeField] private float _vulnerableTime = 3f;
+        private float _vulnerableTimer;
+
+        [Header("References")]
+        [SerializeField] private Treasure _treasure;
+        [SerializeField] private GreedCircle _circle;
 
         [Header("Treasure Settings")]
         public bool IsTouched { get; set; }
 
-        [Header("Audio Settings")]
-        [field: SerializeField] public AudioClip HurtClip {get; private set;}
-        [field: SerializeField] public AudioClip AttackClip {get; private set;}
-
-        private IntervalStrategy _greedIntervalStrategy;
-        private GreedAttackStrategy _greedAttackStrategy;
-        private GreedChaseStrategy _greedChaseStrategy;
-        private GreedPatrolStrategy _greedPatrolStrategy;
+        private IntervalStrategy _intervalStrategy;
+        private GreedAttackStrategy _attackStrategy;
+        private GreedChaseStrategy _chaseStrategy;
+        private GreedPatrolStrategy _patrolStrategy;
         private BehaviourTree _tree;
 
         protected override void Awake()
         {
             base.Awake();
+
+            if (_treasure == null)
+                _treasure = GetComponentInChildren<Treasure>();
+
+            if (_circle == null)
+                _circle = GetComponentInChildren<GreedCircle>();
+
+            if (_treasure != null)
+                _treasure.SetBoss(this);
+
+            if (_circle != null)
+                _circle.SetBoss(this);
+
             _isVulnerable = false;
         }
 
@@ -44,42 +57,41 @@ namespace Pong.Gameplay.Boss.Greed
         {
             if (!TryResolveGraphComponent(ref _graphComponent))
             {
-                FailAIInitialization("[Greed] GraphComponent não foi configurado.");
+                FailAIInitialization("[Greed] GraphComponent não configurado.");
                 return;
             }
 
             _tree = new BehaviourTree("Greed tree");
 
             var pathFinder = new EnemyPathFinder(_graphComponent);
-            _greedAttackStrategy = new GreedAttackStrategy(this);
-            _greedChaseStrategy = new GreedChaseStrategy(this, pathFinder);
-            _greedChaseStrategy.SetActivePlayers(_activePlayers);
-            _greedPatrolStrategy = new GreedPatrolStrategy(this, pathFinder);
-            _greedIntervalStrategy = new IntervalStrategy(_intervalTime);
 
-            var angerSequence = new Sequence("AngerMode", priority: 100);
-            angerSequence.AddChild(new Leaf("CheckIsTouched", new ConditionStrategy(() => IsTouched)));
-            angerSequence.AddChild(new Leaf("Chase", _greedChaseStrategy));
-            angerSequence.AddChild(new Leaf("Attack", _greedAttackStrategy));
+            _attackStrategy = new GreedAttackStrategy(this);
+            _chaseStrategy = new GreedChaseStrategy(this, pathFinder);
+            _chaseStrategy.SetActivePlayers(_activePlayers);
 
-            var normalSequence = new Sequence("NormalMode", priority: 10);
-            normalSequence.AddChild(new Leaf("Wait", _greedIntervalStrategy));
-            normalSequence.AddChild(new Leaf("Patrol", _greedPatrolStrategy));
+            _patrolStrategy = new GreedPatrolStrategy(this, pathFinder);
+            _intervalStrategy = new IntervalStrategy(_intervalTime);
 
-            var rootSelector = new PrioritySelector("NormalOrAnger");
-            rootSelector.AddChild(angerSequence);
-            rootSelector.AddChild(normalSequence);
+            var anger = new Sequence("AngerMode", 100);
+            anger.AddChild(new Leaf("CheckTouched", new ConditionStrategy(() => IsTouched)));
+            anger.AddChild(new Leaf("Chase", _chaseStrategy));
+            anger.AddChild(new Leaf("Attack", _attackStrategy));
 
-            _tree.AddChild(rootSelector);
-            _isVulnerable = false;
+            var normal = new Sequence("NormalMode", 10);
+            normal.AddChild(new Leaf("Wait", _intervalStrategy));
+            normal.AddChild(new Leaf("Patrol", _patrolStrategy));
+
+            var root = new PrioritySelector("Root");
+            root.AddChild(anger);
+            root.AddChild(normal);
+
+            _tree.AddChild(root);
         }
 
         protected override void Update()
         {
             if (!IsInitialized || _tree == null)
-            {
                 return;
-            }
 
             _tree.Process();
             HandleVulnerability();
@@ -87,52 +99,49 @@ namespace Pong.Gameplay.Boss.Greed
 
         public override void ApplyDamage(int damage)
         {
-            PlayHurtSfx();
+            if (!_isVulnerable)
+            {
+                Debug.Log("[Greed] Invulnerável");
+                return;
+            }
+
             base.ApplyDamage(damage);
         }
-        protected override void OnDeath()
+
+        public override void ExecuteAttack()
         {
-            if (_isDead)
-            {
-                Debug.Log($"[Boss] {gameObject.name} morreu.");
-                gameObject.SetActive(false);
-            }
+            Debug.Log("[Greed] Executou ataque");
+            PlayAttackSfx();
         }
-        public void SetVulnerability(bool cantakeDamege)
+
+        public void SetVulnerability(bool value)
         {
-            _isVulnerable = cantakeDamege;
+            _isVulnerable = value;
         }
+
         private void HandleVulnerability()
         {
-            if (IsTouched)
-            {
-                _vulnerableTimer += Time.deltaTime;
-                _isVulnerable = true;
+            if (!IsTouched) return;
 
-                if (_vulnerableTimer >= _vulnerableTime)
-                {
-                    Debug.Log("[Boss] Tempo de vulnerabilidade acabou. Resetando.");
-                    ResetStatesBoss();
-                }
+            _vulnerableTimer += Time.deltaTime;
+
+            if (_vulnerableTimer >= _vulnerableTime)
+            {
+                ResetState();
             }
         }
-        private void ResetStatesBoss()
+
+        private void ResetState()
         {
+            Debug.Log("[Greed] Reset");
+
             IsTouched = false;
             _isVulnerable = false;
             _vulnerableTimer = 0f;
-            _greedChaseStrategy.Reset();
-            _greedAttackStrategy.Reset();
-            _greedIntervalStrategy.Reset();
-        }
-        public override void ExecuteAttack()
-        {
-            Debug.Log($"<color=red>[Boss] {gameObject.name} executou o hit!</color>");
-            PlayAttackSfx();
-        }
-        private void OnDrawGizmos()
-        {
-            _greedAttackStrategy?.DrawGizmos(this.transform.position);
+
+            _chaseStrategy.Reset();
+            _attackStrategy.Reset();
+            _intervalStrategy.Reset();
         }
     }
 }

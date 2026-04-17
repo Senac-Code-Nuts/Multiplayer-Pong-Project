@@ -665,6 +665,11 @@ MonoBehaviour:
   - {fileID: 7612913773440125642, guid: ae623e2bc5c3b8142b1b8093b74827db, type: 3}
   _bossSpawnPoints:
   - {fileID: 1833346421}
+  _mapSceneName: Map
+  _normalRoomMusicPath: Musica/musica_pong_final
+  _bossRoomMusicPath: Musica/Musica_Boss_Pongatorio
+  _musicVolume: 0.35
+  _musicChannel: 0
   _enemyParent: {fileID: 0}
 --- !u!4 &507488963 stripped
 Transform:
@@ -2441,10 +2446,10 @@ MonoBehaviour:
   _inactivePriority: 0
   _duration: 1
   _cameraFocusLeadTime: 0.2
-  _oneClip: {fileID: 0}
-  _twoClip: {fileID: 0}
-  _threeClip: {fileID: 0}
-  _goClip: {fileID: 0}
+  _oneClipPath: SFX/SFX_Count_1.wav
+  _twoClipPath: SFX/SFX_Count_2.wav
+  _threeClipPath: SFX/SFX_Count_3.wav
+  _goClipPath: SFX/SFX_Count_Go.wav
 --- !u!1 &1600896294
 GameObject:
   m_ObjectHideFlags: 0

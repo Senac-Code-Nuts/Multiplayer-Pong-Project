@@ -1,75 +1,46 @@
-using Pong.Gameplay.Relics;
 using UnityEngine;
 
 namespace Pong.Gameplay.Boss.Greed
 {
     public class Treasure : MonoBehaviour
     {
-        [Header("References")]
-        [SerializeField] private GreedBoss _greedBoss;
-        [Tooltip("O ponto que o tesouro vai seguir")]
-        [SerializeField] private Transform _newPoint; 
+        private GreedBoss _boss;
 
-        [Header("Follow Settings")]
-        [SerializeField] private float _smoothSpeed = 5f;
-        [Tooltip("Ajustar a posi��o do tesouro caso n�o tenha")]
-        [SerializeField] private Vector3 _offset = new Vector3(1f, -1f, 0);
+        [Header("Follow")]
+        [SerializeField] private Vector3 _localOffset = new Vector3(0.8f, 0.5f, 0f);
 
-        [Header("Arena Limits")]
-        [SerializeField] private Transform _arenaCenter;
-        [SerializeField] private float _arenaWidth;
-        [SerializeField] private float _arenaLength;
-        public bool teste;
+        [Header("Visual")]
+        [SerializeField] private Renderer _renderer;
+        [SerializeField] private Color _normal = Color.yellow;
+        [SerializeField] private Color _hit = Color.red;
 
-        private void Update()
+        public void SetBoss(GreedBoss boss)
         {
-            if (!_greedBoss.IsTouched)
+            _boss = boss;
+        }
+
+        private void LateUpdate()
+        {
+            if (_boss == null)
+                return;
+
+            transform.position = _boss.transform.position + _localOffset;
+
+            if (_renderer != null)
             {
-                Vector3 targetPos = _newPoint != null ? _newPoint.position : _greedBoss.transform.position + _offset;
-                Vector3 clampedPos = RestrictToArena(targetPos);
-                FollowTarget(clampedPos);
+                _renderer.material.color = _boss.IsTouched ? _hit : _normal;
             }
-
-            if (teste)
-                _greedBoss.IsTouched = true;
         }
 
-        private Vector3 RestrictToArena(Vector3 target)
+        private void OnCollisionEnter(Collision collision)
         {
-            if (_arenaCenter == null) return target;
+            if (!collision.gameObject.CompareTag("Relic"))
+                return;
 
-            float minX = _arenaCenter.position.x - (_arenaWidth / 2);
-            float maxX = _arenaCenter.position.x + (_arenaWidth / 2);
-            float minZ = _arenaCenter.position.z - (_arenaLength / 2);
-            float maxZ = _arenaCenter.position.z + (_arenaLength / 2);
+            Debug.Log("[Treasure] Hit!");
 
-            float clampedX = Mathf.Clamp(target.x, minX, maxX);
-            float clampedZ = Mathf.Clamp(target.z, minZ, maxZ);
-            return new Vector3(clampedX, target.y, clampedZ);
-        }
-        private void OnDrawGizmos()
-        {
-            if (_arenaCenter == null) return;
-            Gizmos.color = Color.yellow;
-            Vector3 size = new Vector3(_arenaWidth, 1f, _arenaLength);
-            Gizmos.DrawWireCube(_arenaCenter.position, size);
-        }
-
-        private void FollowTarget(Vector3 targetPos)
-        {
-            transform.position = Vector3.Lerp(transform.position, targetPos, _smoothSpeed * Time.deltaTime);
-        }
-
-        private void OnCollisionEnter(Collision other)
-        {
-            if (other.gameObject.TryGetComponent<Relic>(out Relic relic)) 
-            {
-                if (_greedBoss != null)
-                {
-                        _greedBoss.IsTouched = true;
-                        Debug.Log($"{relic.name} atingiu o tesouro");
-                }
-            }
+            _boss.IsTouched = true;
+            _boss.SetVulnerability(true);
         }
     }
 }
