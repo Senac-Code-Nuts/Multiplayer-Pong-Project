@@ -139,19 +139,34 @@ namespace Pong.Systems.Input
             if (!_isSpawningAllowed) return;
             if (IsDeviceAlreadyPaired(device)) return;
 
+            bool hasSelectionSessionPlayers = HasSelectionSessionPlayers();
+
             int index = GetFirstEmptyIndex();
             if (index == -1) return;
             if (index >= PlayerCount) return;
 
             if (!TryGetSpawnEntry(index, out CharacterSpawnEntry spawnEntry))
             {
-                Debug.LogWarning($"{GAMEPAD_TAG} Nenhum CharacterSpawnEntry válido encontrado para player index {index}");
-                return;
+                if (!hasSelectionSessionPlayers)
+                {
+                    if (!TryGetDefaultSpawnEntry(index, out spawnEntry))
+                    {
+                        Debug.LogWarning($"{GAMEPAD_TAG} Nenhum CharacterSpawnEntry padrï¿½o vï¿½lido encontrado para player index {index}");
+                        return;
+                    }
+
+                    Debug.Log($"{GAMEPAD_TAG} Sem seleï¿½ï¿½o do menu. Usando spawn padrï¿½o para player index {index}.");
+                }
+                else
+                {
+                    Debug.LogWarning($"{GAMEPAD_TAG} Nenhum CharacterSpawnEntry vï¿½lido encontrado para player index {index}");
+                    return;
+                }
             }
 
             if (spawnEntry.Prefab == null || spawnEntry.SpawnPoint == null)
             {
-                Debug.LogWarning($"{GAMEPAD_TAG} SpawnEntry inválido para {spawnEntry.CharacterType}");
+                Debug.LogWarning($"{GAMEPAD_TAG} SpawnEntry invï¿½lido para {spawnEntry.CharacterType}");
                 return;
             }
 
@@ -186,7 +201,7 @@ namespace Pong.Systems.Input
         {
             spawnEntry = default;
 
-            if (_characterSelectionSession == null)
+            if (!HasSelectionSessionPlayers())
                 return false;
 
             if (!_characterSelectionSession.TryGetSelectedCharacter(playerIndex, out CharacterType selectedCharacter))
@@ -202,6 +217,18 @@ namespace Pong.Systems.Input
             }
 
             return false;
+        }
+
+        private bool TryGetDefaultSpawnEntry(int playerIndex, out CharacterSpawnEntry spawnEntry)
+        {
+            spawnEntry = default;
+
+            if (playerIndex < 0 || playerIndex >= _characterSpawnEntries.Length)
+                return false;
+
+            spawnEntry = _characterSpawnEntries[playerIndex];
+
+            return spawnEntry.Prefab != null && spawnEntry.SpawnPoint != null;
         }
 
         private int FindPlayerIndexForDevice(InputDevice device)
@@ -229,6 +256,11 @@ namespace Pong.Systems.Input
         private bool IsDeviceAlreadyPaired(InputDevice device)
         {
             return FindPlayerIndexForDevice(device) != -1;
+        }
+
+        private bool HasSelectionSessionPlayers()
+        {
+            return _characterSelectionSession != null && _characterSelectionSession.HasAnyRegisteredPlayers;
         }
 
         public List<GameObject> GetActivePlayerInstances()

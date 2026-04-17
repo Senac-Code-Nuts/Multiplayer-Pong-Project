@@ -10,6 +10,20 @@ namespace Pong.Systems.Selection
 
         public PlayerSelectionEntry[] PlayerSelections => _playerSelections;
 
+        public bool HasAnyRegisteredPlayers
+        {
+            get
+            {
+                for (int i = 0; i < _playerSelections.Length; i++)
+                {
+                    if (_playerSelections[i].IsRegistered)
+                        return true;
+                }
+
+                return false;
+            }
+        }
+
         public void ResetSession()
         {
             for (int i = 0; i < _playerSelections.Length; i++)
