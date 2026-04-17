@@ -29,7 +29,10 @@ namespace MenuManager
         {
             StateMachina.ChangeState(StateMachina.currentState, MenuState.StateType.Padrao);
         }
-
+        public void ChangeToCharacterSelect()
+        {
+            StateMachina.ChangeState(StateMachina.currentState, MenuState.StateType.characterSelect);
+        }
         public void ChangeToNull()
         {
             StateMachina.ClearState();
