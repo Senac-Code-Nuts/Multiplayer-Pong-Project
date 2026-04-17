@@ -96,11 +96,14 @@ MonoBehaviour:
   _maxHealth: 0
   _currentHealth: 0
   _damage: 0
+  _damageFlashRenderers: []
+  _damageFlashColor: {r: 1, g: 0, b: 0, a: 1}
+  _damageFlashDuration: 0.1
   _isVulnerable: 1
   _isStunned: 0
   _isDead: 0
   _stunVfxPrefab: {fileID: 3382951440209629269, guid: b055950fcc14a6649b78e958b4008970, type: 3}
-  _stunOffset: {x: 0, y: 1.8, z: 0}
+  _stunOffset: {x: 0, y: 50, z: 0}
   _playerOrder: -1
   _inputReader: {fileID: 8029383864578983817}
   _abilityCooldown: 0
@@ -112,7 +115,7 @@ MonoBehaviour:
   _stunRadius: 5
   _enemyStunDuration: 1
   _bossStunDuration: 1
-  _useDebug: 0
+  _useDebug: 1
 --- !u!54 &8384792853760253689
 Rigidbody:
   m_ObjectHideFlags: 0

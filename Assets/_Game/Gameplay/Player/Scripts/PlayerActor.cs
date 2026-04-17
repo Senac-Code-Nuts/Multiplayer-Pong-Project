@@ -35,6 +35,11 @@ namespace Pong.Gameplay.Player
         protected override void Awake()
         {
             base.Awake();
+
+            if (_inputReader == null)
+            {
+                _inputReader = GetComponent<InputReader>();
+            }
         }
 
         public void SetPlayerOrder(int playerOrder)
@@ -66,7 +71,8 @@ namespace Pong.Gameplay.Player
 
         private void HandleAbility()
         {
-            if (_isDead || _isStunned || !_canUseAbility) return;
+            if (_isDead || _isStunned || !_canUseAbility)
+                return;
 
             UseAbility();
         }
@@ -85,7 +91,6 @@ namespace Pong.Gameplay.Player
             if (_hasShield)
             {
                 ConsumeShield();
-                Debug.Log($"{gameObject.name} blocked damage with shield.");
                 return;
             }
 
@@ -122,8 +127,6 @@ namespace Pong.Gameplay.Player
                     follower.Initialize(transform, _shieldOffset);
                 }
             }
-
-            Debug.Log($"{gameObject.name} received shield.");
         }
 
         private void ConsumeShield()
@@ -135,21 +138,16 @@ namespace Pong.Gameplay.Player
                 Destroy(_activeShieldVisual);
                 _activeShieldVisual = null;
             }
-
-            Debug.Log($"{gameObject.name} shield consumed.");
         }
 
         protected abstract void UseAbility();
 
         protected override void OnDamageTaken()
         {
-            Debug.Log($"{gameObject.name} took damage.");
         }
 
         protected override void OnDeath()
         {
-            Debug.Log($"{gameObject.name} died.");
-
             if (_activeShieldVisual != null)
             {
                 Destroy(_activeShieldVisual);

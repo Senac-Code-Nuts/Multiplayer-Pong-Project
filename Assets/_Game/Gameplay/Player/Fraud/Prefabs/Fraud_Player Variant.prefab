@@ -91,6 +91,9 @@ MonoBehaviour:
   _maxHealth: 0
   _currentHealth: 0
   _damage: 0
+  _damageFlashRenderers: []
+  _damageFlashColor: {r: 1, g: 0, b: 0, a: 1}
+  _damageFlashDuration: 0.1
   _isVulnerable: 1
   _isStunned: 0
   _isDead: 0

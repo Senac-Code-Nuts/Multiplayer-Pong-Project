@@ -49,7 +49,8 @@ namespace Pong.Gameplay.Player
 
             foreach (Collider hit in hits)
             {
-                if (hit.TryGetComponent(out EnemyActor enemy))
+                EnemyActor enemy = hit.GetComponentInParent<EnemyActor>();
+                if (enemy != null)
                 {
                     if (stunnedEnemies >= _maxEnemyTargets)
                         continue;
@@ -59,7 +60,8 @@ namespace Pong.Gameplay.Player
                     continue;
                 }
 
-                if (hit.TryGetComponent(out BossActor boss))
+                BossActor boss = hit.GetComponentInParent<BossActor>();
+                if (boss != null)
                 {
                     boss.ApplyStun(_bossStunDuration);
                 }

@@ -37,6 +37,9 @@ namespace Pong.Gameplay.Actors
 
         protected virtual void Awake()
         {
+            _isDead = false;
+            _isStunned = false;
+            _isVulnerable = true;
             _currentHealth = _maxHealth;
 
             if (_damageFlashRenderers == null || _damageFlashRenderers.Length == 0)
@@ -220,6 +223,9 @@ namespace Pong.Gameplay.Actors
             if (renderer == null)
                 return Color.white;
 
+            if (IsVfxRenderer(renderer))
+                return Color.white;
+
             if (renderer is SpriteRenderer spriteRenderer)
             {
                 return spriteRenderer.color;
@@ -248,6 +254,9 @@ namespace Pong.Gameplay.Actors
             if (renderer == null)
                 return;
 
+            if (IsVfxRenderer(renderer))
+                return;
+
             if (renderer is SpriteRenderer spriteRenderer)
             {
                 spriteRenderer.color = color;
@@ -270,6 +279,11 @@ namespace Pong.Gameplay.Actors
             {
                 material.SetColor("_Color", color);
             }
+        }
+
+        private static bool IsVfxRenderer(Renderer renderer)
+        {
+            return renderer != null && renderer.GetType().Name == "VFXRenderer";
         }
     }
 }
