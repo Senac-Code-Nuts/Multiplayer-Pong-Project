@@ -7,6 +7,13 @@ namespace Pong.Gameplay.Boss
 {
     public class GluttonyConeAttack : MonoBehaviour
     {
+        [Header("Fairness")]
+        [SerializeField, Range(0f, 15f)] private float _angleTolerance = 5f;
+
+        [Header("VFX")]
+        [SerializeField] private Vector3 _vfxRotationOffset;
+        [SerializeField] private bool _useVfxSpawnPointAsDamageOrigin = true;
+
         private Vector3 _lockedDirection;
         private Coroutine _vfxRoutine;
 
@@ -44,7 +51,8 @@ namespace Pong.Gameplay.Boss
             if (coneTelegraph == null)
                 return;
 
-            float radius = Mathf.Lerp(0.1f, coneRadius, progress);
+            float clampedProgress = Mathf.Clamp01(progress);
+            float radius = Mathf.Lerp(0.1f, coneRadius, clampedProgress);
             float width = Mathf.Tan(coneAngle * 0.5f * Mathf.Deg2Rad) * radius;
 
             coneTelegraph.transform.forward = _lockedDirection;
@@ -76,8 +84,18 @@ namespace Pong.Gameplay.Boss
                 coneTelegraph.SetActive(false);
             }
 
+            Transform damageOrigin = GetDamageOrigin(origin, drinkVfxSpawnPoint);
+
             PlayVfx(origin, drinkVfx, drinkVfxSpawnPoint, drinkVfxStopDelay, coneRadius);
-            ApplyDamage(origin.position, damage, coneRadius, coneAngle, playerLayerMask);
+            ApplyDamage(damageOrigin.position, damage, coneRadius, coneAngle, playerLayerMask);
+        }
+
+        private Transform GetDamageOrigin(Transform origin, Transform vfxSpawnPoint)
+        {
+            if (_useVfxSpawnPointAsDamageOrigin && vfxSpawnPoint != null)
+                return vfxSpawnPoint;
+
+            return origin;
         }
 
         private void ApplyDamage(
@@ -90,7 +108,7 @@ namespace Pong.Gameplay.Boss
         {
             Collider[] hits = Physics.OverlapSphere(origin, coneRadius, playerLayerMask);
 
-            foreach (var hit in hits)
+            foreach (Collider hit in hits)
             {
                 if (!hit.TryGetComponent<PlayerActor>(out PlayerActor player))
                     continue;
@@ -104,8 +122,9 @@ namespace Pong.Gameplay.Boss
                 directionToTarget.Normalize();
 
                 float angle = Vector3.Angle(_lockedDirection, directionToTarget);
+                float allowedAngle = Mathf.Max(0f, (coneAngle * 0.5f) - _angleTolerance);
 
-                if (angle <= coneAngle * 0.5f)
+                if (angle <= allowedAngle)
                 {
                     Debug.Log($"<color=red>[Gluttony] Bebida acertou: {player.name}</color>");
                     player.ApplyDamage(damage);
@@ -126,9 +145,12 @@ namespace Pong.Gameplay.Boss
 
             Transform spawn = vfxSpawnPoint != null ? vfxSpawnPoint : origin;
 
+            Quaternion baseRotation = Quaternion.LookRotation(_lockedDirection, Vector3.up);
+            Quaternion offsetRotation = Quaternion.Euler(_vfxRotationOffset);
+
             vfx.transform.SetPositionAndRotation(
                 spawn.position,
-                Quaternion.LookRotation(_lockedDirection, Vector3.up)
+                baseRotation * offsetRotation
             );
 
             if (vfx.HasFloat("SpitLength"))

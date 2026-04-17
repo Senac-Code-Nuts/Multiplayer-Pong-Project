@@ -7,7 +7,7 @@ namespace Pong.Gameplay.Life
         public static LifeManager Instance { get; private set; }
 
         private int _life;
-        private int _maxLife = 3;
+        private int _maxLife = 5;
         public int Life => _life;
         public int MaxLife => _maxLife;
 
