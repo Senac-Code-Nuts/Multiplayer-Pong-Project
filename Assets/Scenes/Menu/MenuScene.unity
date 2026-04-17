@@ -3326,7 +3326,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 100
   m_WholeNumbers: 1
-  m_Value: 100
+  m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -3916,7 +3916,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 100
   m_WholeNumbers: 1
-  m_Value: 100
+  m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -5390,7 +5390,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 20, y: 0}
+  m_SizeDelta: {x: 90, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1465999025
 MonoBehaviour:
@@ -5837,6 +5837,7 @@ GameObject:
   - component: {fileID: 1533489981}
   - component: {fileID: 1533489982}
   - component: {fileID: 1533489983}
+  - component: {fileID: 1533489984}
   m_Layer: 5
   m_Name: Menu Manager
   m_TagString: Untagged
@@ -5928,6 +5929,22 @@ MonoBehaviour:
   _holdToSkipDuration: 1.5
   _skipProgressFillImage: {fileID: 2054470114}
   _enableKeyboardForTesting: 1
+--- !u!114 &1533489984
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1533489978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff2f0688f0328b648a6f27520951a56e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _musicPath: Musica/musica_pong_final
+  _channel: 0
+  _loop: 1
+  _startingVolume: 0.126
 --- !u!1 &1535189932
 GameObject:
   m_ObjectHideFlags: 0
@@ -6240,7 +6257,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 20, y: 0}
+  m_SizeDelta: {x: 90, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1573173358
 CanvasRenderer:
@@ -7153,7 +7170,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 100
   m_WholeNumbers: 1
-  m_Value: 100
+  m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -8368,7 +8385,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 20, y: 0}
+  m_SizeDelta: {x: 90, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2006855131
 MonoBehaviour:

@@ -25,12 +25,10 @@ namespace MenuManager
         public override void LocalStart()
         {
             SelectThat(_firstButton);
-            int masterLevel = PlayerPrefs.GetInt("MasterVolume");
-            int musicLevel = PlayerPrefs.GetInt("MusicVolume");
-            int sfxLevel = PlayerPrefs.GetInt("SFXVolume");
-            Debug.Log(masterLevel);
-            Debug.Log(musicLevel);
-            Debug.Log(sfxLevel);
+            int masterLevel = PlayerPrefs.GetInt("MasterVolume", 100);
+            int musicLevel = PlayerPrefs.GetInt("MusicVolume", 100);
+            int sfxLevel = PlayerPrefs.GetInt("SFXVolume", 100);
+
             MasterSlid.value = masterLevel;
             MusicSlid.value = musicLevel;
             EffectSlid.value = sfxLevel;
@@ -43,22 +41,28 @@ namespace MenuManager
 
         public void Masterchanged()
         {
-            AudioManager.Instance.SetMasterVolume(MasterSlid.value, false);
-            PlayerPrefs.SetInt("MasterVolume", (int)(MasterSlid.value));
+            float normalizedVolume = Mathf.Clamp01(MasterSlid.value / 100f);
+
+            AudioManager.Instance.SetMasterVolume(normalizedVolume, false);
+            PlayerPrefs.SetInt("MasterVolume", Mathf.RoundToInt(MasterSlid.value));
             PlayerPrefs.Save();
         }
 
         public void Musichanged()
         {
-            AudioManager.Instance.SetMusicVolume(MusicSlid.value, false);
-            PlayerPrefs.SetInt("MusicVolume", (int)(MusicSlid.value));
+            float normalizedVolume = Mathf.Clamp01(MusicSlid.value / 100f);
+
+            AudioManager.Instance.SetMusicVolume(normalizedVolume, false);
+            PlayerPrefs.SetInt("MusicVolume", Mathf.RoundToInt(MusicSlid.value));
             PlayerPrefs.Save();
         }
 
         public void EffectsChanged()
         {
-            AudioManager.Instance.SetSFXVolume(EffectSlid.value, false);
-            PlayerPrefs.SetInt("SFXVolume", (int)(EffectSlid.value));
+            float normalizedVolume = Mathf.Clamp01(EffectSlid.value / 100f);
+
+            AudioManager.Instance.SetSFXVolume(normalizedVolume, false);
+            PlayerPrefs.SetInt("SFXVolume", Mathf.RoundToInt(EffectSlid.value));
             PlayerPrefs.Save();
         }
     }

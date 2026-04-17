@@ -51,9 +51,10 @@ namespace Pong.Systems.Audio {
             Debug.Log(masterLevel);
             Debug.Log(musicLevel);
             Debug.Log(sfxLevel);
-            SetMasterVolume(masterLevel);
-            SetMusicVolume(musicLevel);
-            SetSFXVolume(sfxLevel);
+            SetMasterVolume(masterLevel / 100f);
+            
+            SetMusicVolume(musicLevel / 100f);
+            SetSFXVolume(sfxLevel / 100f);
         }
         #region Play Audio
         /// <summary>

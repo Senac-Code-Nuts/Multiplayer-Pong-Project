@@ -13,6 +13,8 @@ namespace MenuManager
         [SerializeField] private VideoPlayer _videoPlayer;
         [SerializeField] private string _nextSceneName = "Map";
 
+        private MenuMusicPlayer _menuMusicPlayer;
+
         [Header("Skip")]
         [SerializeField, Min(0.1f)] private float _holdToSkipDuration = 1.5f;
         [SerializeField] private Image _skipProgressFillImage;
@@ -24,6 +26,8 @@ namespace MenuManager
 
         private void OnEnable()
         {
+            _menuMusicPlayer = GetComponent<MenuMusicPlayer>();
+
             if (_videoPlayer != null)
             {
                 _videoPlayer.loopPointReached += OnVideoFinished;
@@ -43,6 +47,8 @@ namespace MenuManager
             _isPlaying = true;
             _isEnding = false;
             _currentHoldTime = 0f;
+
+            _menuMusicPlayer?.PauseMusic();
 
             if (_cutscenePanel != null)
             {
@@ -104,6 +110,8 @@ namespace MenuManager
             {
                 _cutscenePanel.SetActive(false);
             }
+
+            _menuMusicPlayer?.ResumeMusic();
 
             UpdateSkipUI();
             SceneManager.LoadScene(_nextSceneName);

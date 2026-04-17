@@ -2,6 +2,7 @@ using Pong.Gameplay.Boss;
 using Pong.Gameplay.Enemy;
 using Pong.Gameplay.Player;
 using Pong.Gameplay.Relics;
+using Pong.Systems.Audio;
 using Pong.Systems.Graph;
 using Pong.Systems.MapSelection;
 using Sirenix.OdinInspector;
@@ -32,6 +33,12 @@ namespace Pong.Gameplay.Enemy
 
         [Header("Scene")]
         [SerializeField] private string _mapSceneName = "Map";
+
+        [Header("Music")]
+        [SerializeField] private string _normalRoomMusicPath = "Musica/musica_pong_final";
+        [SerializeField] private string _bossRoomMusicPath = "Musica/Musica_Boss_Pongatorio";
+        [SerializeField, Range(0f, 1f)] private float _musicVolume = 0.35f;
+        [SerializeField] private int _musicChannel = 0;
 
         private bool _hasFinishedRoom;
 
@@ -78,6 +85,8 @@ namespace Pong.Gameplay.Enemy
 
                 _activeEnemies.Add(spawnedEnemy);
             }
+
+            PlayRoomMusic(false);
             
             Debug.Log($"{TAG} {_activeEnemies.Count} inimigos preparados para a batalha.");
         }
@@ -118,6 +127,8 @@ namespace Pong.Gameplay.Enemy
                 spawnedBoss.gameObject.SetActive(false);
                 _activeBosses.Add(spawnedBoss);
             }
+
+            PlayRoomMusic(true);
 
             if (_activeBosses.Count > 0)
             {
@@ -204,6 +215,26 @@ namespace Pong.Gameplay.Enemy
             }
 
             return true;
+        }
+
+        private void PlayRoomMusic(bool bossRoom)
+        {
+            if (AudioManager.Instance == null)
+            {
+                return;
+            }
+
+            string musicPath = bossRoom ? _bossRoomMusicPath : _normalRoomMusicPath;
+            AudioClip clip = Resources.Load<AudioClip>(musicPath);
+
+            if (clip == null)
+            {
+                Debug.LogWarning($"{TAG} Não foi possível carregar a música '{musicPath}'.");
+                return;
+            }
+
+            AudioManager.Instance.StopTrack(_musicChannel);
+            AudioManager.Instance.PlayTrack(clip, _musicChannel, true, _musicVolume, 1f, 1f, musicPath);
         }
     }
 }
