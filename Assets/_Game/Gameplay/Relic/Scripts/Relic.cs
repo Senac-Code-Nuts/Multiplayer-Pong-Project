@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Pong.Gameplay.Actors;
+using Pong.Gameplay.Boss;
 using Pong.Gameplay.Enemy;
 using Pong.Gameplay.Player;
 using Pong.Systems.Audio;
@@ -143,6 +144,7 @@ namespace Pong.Gameplay.Relics
             if (collision.collider.TryGetComponent(out PlayerController player))
             {
                 player.ResetVelocity();
+                Reflect(collision);
                 return;
             }
 
@@ -152,6 +154,14 @@ namespace Pong.Gameplay.Relics
                 Reflect(collision);
                 return;
             }
+
+            if (collision.collider.TryGetComponent(out BossActor boss))
+            {
+                boss.ApplyDamage(_damage);
+                Reflect(collision);
+                return;
+            }
+
 
             if (collision.gameObject.TryGetComponent(out MinotaurEnemy minotaur) && minotaur.ConsumeCounterAttackTriggered())
             {
