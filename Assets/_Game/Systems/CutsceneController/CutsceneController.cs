@@ -14,6 +14,7 @@ namespace MenuManager
         [SerializeField] private string _nextSceneName = "Map";
 
         private MenuMusicPlayer _menuMusicPlayer;
+        
 
         [Header("Skip")]
         [SerializeField, Min(0.1f)] private float _holdToSkipDuration = 1.5f;
@@ -57,6 +58,9 @@ namespace MenuManager
 
             if (_videoPlayer != null)
             {
+                string videoPath = System.IO.Path.Combine(Application.streamingAssetsPath, "cutscene/cutscene.mp4");
+                _videoPlayer.source = VideoSource.Url;
+                _videoPlayer.url = videoPath;
                 _videoPlayer.time = 0;
                 _videoPlayer.Play();
             }
