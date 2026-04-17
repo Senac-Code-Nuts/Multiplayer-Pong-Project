@@ -247,6 +247,8 @@ namespace Pong.Gameplay.Enemy
                 _relic.InvertDirection(attackAxis);
             }
 
+            PlayAttackSfx();
+
             _hasCounterAttackTriggered = true;
             _hasCounterAttackExecuted = true;
             _isCounterAttackReady = false;

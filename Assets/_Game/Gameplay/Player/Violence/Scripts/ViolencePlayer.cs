@@ -2,11 +2,14 @@ using System.Collections;
 using UnityEngine;
 using Pong.Gameplay.Enemy;
 using Pong.Gameplay.Boss;
+using Pong.Systems.Audio;
 
 namespace Pong.Gameplay.Player
 {
     public class ViolencePlayer : PlayerActor
     {
+        private const string STUN_SFX = "SFX/SFX_Stun.wav";
+
         [Header("Ability")]
         [SerializeField] private float _stunRadius = 5f;
         [SerializeField] private float _enemyStunDuration = 1f;
@@ -73,6 +76,10 @@ namespace Pong.Gameplay.Player
                         continue;
 
                     enemy.ApplyStun(_enemyStunDuration);
+                    if (AudioManager.Instance != null)
+                    {
+                        AudioManager.Instance.PlaySFX(STUN_SFX);
+                    }
                     stunnedEnemies++;
                     continue;
                 }
@@ -81,6 +88,10 @@ namespace Pong.Gameplay.Player
                 if (boss != null)
                 {
                     boss.ApplyStun(_bossStunDuration);
+                    if (AudioManager.Instance != null)
+                    {
+                        AudioManager.Instance.PlaySFX(STUN_SFX);
+                    }
                 }
             }
         }

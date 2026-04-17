@@ -157,6 +157,8 @@ namespace Pong.Gameplay.Boss
 
             OnDamageTaken();
 
+            PlayHurtSfx();
+
             if (!_isVulnerable)
                 return;
 
@@ -197,6 +199,8 @@ namespace Pong.Gameplay.Boss
         }
         public override void ExecuteAttack()
         {
+            PlayAttackSfx();
+
             if(!IsPreparingAttack) return;
 
             _prepareTimer += Time.deltaTime;

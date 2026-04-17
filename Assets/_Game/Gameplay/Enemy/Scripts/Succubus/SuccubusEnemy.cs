@@ -109,6 +109,7 @@ namespace Pong.Gameplay.Enemy.Succubus
 
         public override void ExecuteAttack()
         {
+            PlayAttackSfx();
             throw new System.NotImplementedException();
         }
 

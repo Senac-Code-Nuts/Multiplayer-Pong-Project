@@ -1,7 +1,6 @@
 using Pong.Framework.BehaviourTree;
 using Pong.Gameplay.Enemy;
 using Pong.Gameplay.Enemy.Succubus;
-using Pong.Systems.Audio;
 using Pong.Systems.Graph;
 using UnityEngine;
 
@@ -88,10 +87,7 @@ namespace Pong.Gameplay.Boss.Greed
 
         public override void ApplyDamage(int damage)
         {
-            if (HurtClip != null && AudioManager.Instance != null)
-            {
-                AudioManager.Instance.PlaySFX(HurtClip);
-            }
+            PlayHurtSfx();
             base.ApplyDamage(damage);
         }
         protected override void OnDeath()
@@ -132,10 +128,7 @@ namespace Pong.Gameplay.Boss.Greed
         public override void ExecuteAttack()
         {
             Debug.Log($"<color=red>[Boss] {gameObject.name} executou o hit!</color>");
-            if (AttackClip != null && AudioManager.Instance != null)
-            {
-                AudioManager.Instance.PlaySFX(AttackClip);
-            }
+            PlayAttackSfx();
         }
         private void OnDrawGizmos()
         {

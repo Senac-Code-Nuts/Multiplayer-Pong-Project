@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Pong.Gameplay.Actors;
 using Pong.Gameplay.Enemy;
 using Pong.Gameplay.Player;
+using Pong.Systems.Audio;
 using UnityEngine;
 
 namespace Pong.Gameplay.Relics
@@ -9,6 +10,8 @@ namespace Pong.Gameplay.Relics
     [RequireComponent(typeof(Rigidbody))]
     public class Relic : MonoBehaviour
     {
+        private const string RELIC_BOUNCE_SFX = "SFX/SFX_Relic_Bounce.wav";
+
         [Header("Speed")]
         [SerializeField, Range(0f, 25f)] private float _speed;
 
@@ -166,6 +169,11 @@ namespace Pong.Gameplay.Relics
             _direction = Vector3.Reflect(_direction, normal);
             _rigidBody.linearVelocity = _direction.normalized * _currentSpeed;
             _rigidBody.linearVelocity = _rigidBody.linearVelocity.normalized * _currentSpeed;
+
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySFX(RELIC_BOUNCE_SFX);
+            }
         }
 
         private void TryApplyDamage(Collision collision)

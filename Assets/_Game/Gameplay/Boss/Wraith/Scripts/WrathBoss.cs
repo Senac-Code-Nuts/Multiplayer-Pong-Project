@@ -190,6 +190,7 @@ namespace Pong.Gameplay.Boss
         public override void ExecuteAttack()
         {
             Debug.Log("Spin attack");
+            PlayAttackSfx();
             Collider[] hits = Physics.OverlapSphere(transform.position, AttackRadius);
 
             foreach(var hit in hits)

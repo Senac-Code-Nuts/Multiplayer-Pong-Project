@@ -103,6 +103,8 @@ namespace Pong.Gameplay.Enemy.Cerberus
         {
             if (_shotPrefab == null) return;
 
+            PlayAttackSfx();
+
             Transform spawnPoint = _projectileSpawnPoint != null ? _projectileSpawnPoint : transform;
             Vector3 forward = _graphCenter != null ? (_graphCenter.position - transform.position) : transform.forward;
             forward.y = 0f;

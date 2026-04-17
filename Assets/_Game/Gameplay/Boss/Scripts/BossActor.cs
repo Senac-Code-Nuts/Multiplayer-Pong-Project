@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Pong.Systems.Audio;
 using UnityEngine;
 using Pong.Gameplay.Actors;
 using Pong.Gameplay.Enemy;
@@ -9,6 +10,9 @@ namespace Pong.Gameplay.Boss
 {
     public abstract class BossActor : Actor
     {
+        protected const string HurtSfxPath = "SFX/SFX_Enemy_Attack.wav";
+        protected const string AttackSfxPath = "SFX/SFX_Enemy_Attack.wav";
+
         [Header("Boss")]
         [SerializeField, Range(0, 3)] protected int _phase;
 
@@ -112,10 +116,27 @@ namespace Pong.Gameplay.Boss
 
         protected override void OnDamageTaken()
         {
+            PlayHurtSfx();
         }
 
         protected override void OnDeath()
         {
+        }
+
+        protected void PlayHurtSfx()
+        {
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySFX(HurtSfxPath);
+            }
+        }
+
+        protected void PlayAttackSfx()
+        {
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySFX(AttackSfxPath);
+            }
         }
     }
 }

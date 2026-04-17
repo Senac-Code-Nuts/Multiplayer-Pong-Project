@@ -26,11 +26,11 @@ namespace Pong.Shared.Management
         [SerializeField, Min(0.05f)] private float _duration = 1f;
         [SerializeField, Min(0f)] private float _cameraFocusLeadTime = 0.2f;
 
-        [Header("AudioClips")]
-        [SerializeField] private AudioClip _oneClip;
-        [SerializeField] private AudioClip _twoClip;
-        [SerializeField] private AudioClip _threeClip;
-        [SerializeField] private AudioClip _goClip;
+        [Header("Audio Clips")]
+        [SerializeField] private string _oneClipPath = "SFX/SFX_Count_1.wav";
+        [SerializeField] private string _twoClipPath = "SFX/SFX_Count_2.wav";
+        [SerializeField] private string _threeClipPath = "SFX/SFX_Count_3.wav";
+        [SerializeField] private string _goClipPath = "SFX/SFX_Count_Go.wav";
 
         private readonly List<VisualEffect> _runtimeCountdownSmokeEffects = new List<VisualEffect>();
         private Coroutine _countdownRoutine;
@@ -64,15 +64,15 @@ namespace Pong.Shared.Management
             for (int i = 3; i > 0; i--)
             {
                 _uiText.text = i.ToString();
-                AudioClip clipToPlay = i switch
+                string clipToPlay = i switch
                 {
-                    3 => _threeClip,
-                    2 => _twoClip,
-                    1 => _oneClip,
-                    _ => null
+                    3 => _threeClipPath,
+                    2 => _twoClipPath,
+                    1 => _oneClipPath,
+                    _ => string.Empty
                 };
 
-                if(clipToPlay != null)
+                if (!string.IsNullOrWhiteSpace(clipToPlay) && AudioManager.Instance != null)
                 {
                     AudioManager.Instance.PlaySFX(clipToPlay);
                 }
@@ -89,6 +89,10 @@ namespace Pong.Shared.Management
             IsCountdownFinished = true; 
 
             _uiText.text = "GO!";
+            if (!string.IsNullOrWhiteSpace(_goClipPath) && AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySFX(_goClipPath);
+            }
             SetFocusCamera(_gameCamera);
             SetAllCountdownSmokeActive(false);
 
