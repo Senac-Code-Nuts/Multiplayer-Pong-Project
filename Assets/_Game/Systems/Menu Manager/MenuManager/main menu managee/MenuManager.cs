@@ -40,5 +40,9 @@ namespace MenuManager
             Application.Quit();
 #endif
         }
+        public void ChangeToCharacterSelect()
+        {
+            StateMachina.ChangeState(StateMachina.currentState, MenuState.StateType.characterSelect);
+        }
     }
 }
