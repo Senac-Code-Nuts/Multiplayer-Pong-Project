@@ -15,7 +15,8 @@ namespace MenuManager
             Null,
             Padrao,
             config,
-            credit
+            credit,
+            characterSelect
         }
 
         /// <summary>

@@ -2,16 +2,19 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
 using Pong.Core;
+using Pong.Systems.Selection;
 using System.Collections.Generic;
 
 namespace Pong.Systems.Input
 {
     [Serializable]
-    struct PlayerSlot
+    struct CharacterSpawnEntry
     {
+        public CharacterType CharacterType;
         public GameObject Prefab;
         public Transform SpawnPoint;
         public PlayerSide PlayerSide;
+        public int PlayerOrder;
     }
 
     public class GamepadsManager : MonoBehaviour
@@ -21,12 +24,15 @@ namespace Pong.Systems.Input
         private const int DEFAULT_PLAYERS = 2;
         private const string GAMEPAD_TAG = "<color=yellow><b>[Gamepads Manager]</b></color>";
 
-        [SerializeField] private PlayerSlot[] _playerSlots = new PlayerSlot[MAX_PLAYERS];
+        public static GamepadsManager Instance { get; private set; }
+
+        [SerializeField] private CharacterSelectionSession _characterSelectionSession;
+        [SerializeField] private CharacterSpawnEntry[] _characterSpawnEntries = new CharacterSpawnEntry[MAX_PLAYERS];
+
         private PlayerData[] _activePlayers = new PlayerData[MAX_PLAYERS];
 
         [SerializeField, Range(2, 4)] private int _playerCount = DEFAULT_PLAYERS;
         [SerializeField] private bool _enableKeyboardForTesting = false;
-
         [SerializeField] private Transform _playerParent;
 
         private bool _isSpawningAllowed = false;
@@ -49,12 +55,30 @@ namespace Pong.Systems.Input
             }
         }
 
+        private void Awake()
+        {
+            if (Instance != null && Instance != this)
+            {
+                Debug.LogWarning($"{GAMEPAD_TAG} Mais de um GamepadsManager encontrado na cena.");
+            }
+
+            Instance = this;
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
+            }
+        }
+
         public void StartPlayerSpawning()
         {
             _isSpawningAllowed = true;
             Debug.Log($"{GAMEPAD_TAG} Spawning permitido pelo Bootstrapper. Procurando dispositivos ativos...");
 
-            foreach (var gamepad in Gamepad.all)
+            foreach (Gamepad gamepad in Gamepad.all)
             {
                 SpawnPlayerForDevice(gamepad);
             }
@@ -97,7 +121,6 @@ namespace Pong.Systems.Input
             if (change == InputDeviceChange.Removed)
             {
                 int index = FindPlayerIndexForDevice(device);
-
                 if (index == -1) return;
 
                 if (_activePlayers[index]?.Instance != null)
@@ -113,38 +136,74 @@ namespace Pong.Systems.Input
 
         private void SpawnPlayerForDevice(InputDevice device)
         {
-            if (!_isSpawningAllowed) return; 
+            if (!_isSpawningAllowed) return;
             if (IsDeviceAlreadyPaired(device)) return;
 
             int index = GetFirstEmptyIndex();
             if (index == -1) return;
             if (index >= PlayerCount) return;
 
-            var slot = _playerSlots[index];
-            if (slot.Prefab == null || slot.SpawnPoint == null) return;
+            if (!TryGetSpawnEntry(index, out CharacterSpawnEntry spawnEntry))
+            {
+                Debug.LogWarning($"{GAMEPAD_TAG} Nenhum CharacterSpawnEntry válido encontrado para player index {index}");
+                return;
+            }
 
-            var playerInput = PlayerInput.Instantiate(
-                slot.Prefab,
+            if (spawnEntry.Prefab == null || spawnEntry.SpawnPoint == null)
+            {
+                Debug.LogWarning($"{GAMEPAD_TAG} SpawnEntry inválido para {spawnEntry.CharacterType}");
+                return;
+            }
+
+            PlayerInput playerInput = PlayerInput.Instantiate(
+                spawnEntry.Prefab,
                 playerIndex: index,
                 pairWithDevice: device
             );
 
-            playerInput.transform.position = slot.SpawnPoint.position;
-            playerInput.name = $"Player {index + 1}";
+            playerInput.transform.position = spawnEntry.SpawnPoint.position;
+            playerInput.transform.rotation = spawnEntry.SpawnPoint.rotation;
+            playerInput.name = $"{spawnEntry.CharacterType} Player";
             playerInput.transform.SetParent(_playerParent, true);
 
             _activePlayers[index] = new PlayerData
             {
                 Instance = playerInput.gameObject,
                 Device = device,
-                Side = slot.PlayerSide
+                Side = spawnEntry.PlayerSide
             };
-            PlayerSpawnEvents.RaisePlayerSpawned(playerInput.gameObject, index, (int)slot.PlayerSide);
 
-            Debug.Log($"{GAMEPAD_TAG} Spawned player for device: {device.displayName} at index {index}");
+            PlayerSpawnEvents.RaisePlayerSpawned(
+                playerInput.gameObject,
+                spawnEntry.PlayerOrder,
+                (int)spawnEntry.PlayerSide
+            );
+
+            Debug.Log($"{GAMEPAD_TAG} Spawned {spawnEntry.CharacterType} for device: {device.displayName} at index {index}");
         }
 
-        #region Device Helpers
+        private bool TryGetSpawnEntry(int playerIndex, out CharacterSpawnEntry spawnEntry)
+        {
+            spawnEntry = default;
+
+            if (_characterSelectionSession == null)
+                return false;
+
+            if (!_characterSelectionSession.TryGetSelectedCharacter(playerIndex, out CharacterType selectedCharacter))
+                return false;
+
+            for (int i = 0; i < _characterSpawnEntries.Length; i++)
+            {
+                if (_characterSpawnEntries[i].CharacterType == selectedCharacter)
+                {
+                    spawnEntry = _characterSpawnEntries[i];
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private int FindPlayerIndexForDevice(InputDevice device)
         {
             for (int i = 0; i < _activePlayers.Length; i++)
@@ -152,6 +211,7 @@ namespace Pong.Systems.Input
                 if (_activePlayers[i] != null && _activePlayers[i].Device == device)
                     return i;
             }
+
             return -1;
         }
 
@@ -159,8 +219,10 @@ namespace Pong.Systems.Input
         {
             for (int i = 0; i < PlayerCount; i++)
             {
-                if (_activePlayers[i] == null) return i;
+                if (_activePlayers[i] == null)
+                    return i;
             }
+
             return -1;
         }
 
@@ -172,6 +234,7 @@ namespace Pong.Systems.Input
         public List<GameObject> GetActivePlayerInstances()
         {
             List<GameObject> instances = new List<GameObject>();
+
             for (int i = 0; i < PlayerCount; i++)
             {
                 if (_activePlayers[i] != null && _activePlayers[i].Instance != null)
@@ -179,8 +242,13 @@ namespace Pong.Systems.Input
                     instances.Add(_activePlayers[i].Instance);
                 }
             }
+
             return instances;
         }
-        #endregion
+
+        public GameObject[] GetActivePlayerControllers()
+        {
+            return GetActivePlayerInstances().ToArray();
+        }
     }
 }
