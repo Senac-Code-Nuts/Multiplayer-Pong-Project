@@ -2060,7 +2060,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _selectionSession: {fileID: 11400000, guid: faaa22b0131c9d541a29d81e390bf193, type: 2}
   _debugPlayerCount: 2
-  _applyOnStart: 1
+  _applyOnStart: 0
 --- !u!1 &1669679627
 GameObject:
   m_ObjectHideFlags: 0
