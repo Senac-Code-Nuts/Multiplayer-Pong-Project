@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using Pong.Gameplay.Actors;
+using Pong.Gameplay.Life;
 using Pong.Systems.Input;
 
 namespace Pong.Gameplay.Player
@@ -89,6 +90,11 @@ namespace Pong.Gameplay.Player
             }
 
             base.ApplyDamage(damage);
+
+            if (LifeManager.Instance != null)
+            {
+                LifeManager.Instance.ApplyDamage(damage);
+            }
         }
 
         public void ReceiveShield()

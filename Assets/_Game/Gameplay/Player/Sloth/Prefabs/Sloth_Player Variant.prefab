@@ -150,6 +150,10 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3427831262410433437, guid: 8e8aa83f77d60b24b97a1aa308b3bba6, type: 3}
+      propertyPath: _playerSide
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 4450597553685973012, guid: 8e8aa83f77d60b24b97a1aa308b3bba6, type: 3}
     m_RemovedGameObjects:
@@ -162,6 +166,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1558463620509405343, guid: 8e8aa83f77d60b24b97a1aa308b3bba6, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1472597330758859331}
+    - targetCorrespondingSourceObject: {fileID: 1558463620509405343, guid: 8e8aa83f77d60b24b97a1aa308b3bba6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1750881647643096178}
   m_SourcePrefab: {fileID: 100100000, guid: 8e8aa83f77d60b24b97a1aa308b3bba6, type: 3}
 --- !u!114 &3450547807768322870 stripped
 MonoBehaviour:
@@ -197,7 +204,7 @@ MonoBehaviour:
   _isVulnerable: 1
   _isStunned: 0
   _isDead: 0
-  _stunVfxPrefab: {fileID: 0}
+  _stunVfxPrefab: {fileID: 3382951440209629269, guid: b055950fcc14a6649b78e958b4008970, type: 3}
   _stunOffset: {x: 0, y: 1.8, z: 0}
   _playerOrder: -1
   _inputReader: {fileID: 3450547807768322870}
@@ -217,6 +224,33 @@ MonoBehaviour:
   _rotationInterval: 0.5
   _markerOffset: {x: 0, y: 2, z: 0}
   _useDebug: 0
+--- !u!54 &1750881647643096178
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6971873844655511209}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 124
+  m_CollisionDetection: 3
 --- !u!4 &7663199338775693481 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2249815225679842975, guid: 8e8aa83f77d60b24b97a1aa308b3bba6, type: 3}

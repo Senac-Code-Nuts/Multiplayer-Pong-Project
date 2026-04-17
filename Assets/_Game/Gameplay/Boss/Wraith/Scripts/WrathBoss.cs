@@ -194,14 +194,10 @@ namespace Pong.Gameplay.Boss
 
             foreach(var hit in hits)
             {
-                if(hit.CompareTag("Player"))
+                if (hit.GetComponentInParent<PlayerActor>() is PlayerActor playerActor)
                 {
-                    Debug.Log($"<color=orange>Hit player: {hit.name}</color>");
-                    var playerActor = hit.GetComponent<PlayerActor>();
-                    if(playerActor != null)
-                    {
-                        playerActor.ApplyDamage(_melleeDamage);
-                    }
+                    Debug.Log($"<color=orange>Hit player: {playerActor.name}</color>");
+                    playerActor.ApplyDamage(_melleeDamage);
                 }
             }
         }
@@ -241,7 +237,7 @@ namespace Pong.Gameplay.Boss
 
         public GameObject GetFarthestPlayer()
         {
-            GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+            PlayerActor[] players = FindObjectsByType<PlayerActor>(FindObjectsSortMode.None);
 
             GameObject farthest = null;
             float maxDistance = 0f;
@@ -252,7 +248,7 @@ namespace Pong.Gameplay.Boss
                 if(distance > maxDistance)
                 {
                     maxDistance = distance;
-                    farthest = player;
+                    farthest = player.gameObject;
                 }
             }
 

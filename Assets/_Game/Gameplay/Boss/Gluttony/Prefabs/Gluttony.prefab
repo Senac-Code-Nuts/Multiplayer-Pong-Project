@@ -290,9 +290,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.8865919
-  m_Height: 3.8697622
+  m_Height: 3.3645976
   m_Direction: 1
-  m_Center: {x: -0.18484378, y: 0.9348811, z: 0}
+  m_Center: {x: -0.18484378, y: 1.9283837, z: 0}
 --- !u!114 &1307643262847235447
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -305,9 +305,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ef47eb60a72b954b9edc667e90834bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxHealth: 0
+  _maxHealth: 15
   _currentHealth: 0
-  _damage: 0
+  _damage: 1
   _isVulnerable: 1
   _isStunned: 0
   _isDead: 0

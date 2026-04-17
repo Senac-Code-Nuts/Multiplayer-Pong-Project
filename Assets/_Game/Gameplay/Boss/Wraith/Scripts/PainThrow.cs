@@ -21,20 +21,21 @@ namespace Pong.Gameplay.Boss
         {
             if(_isStuck) return;
 
-            if(collision.gameObject.CompareTag("Wall") || collision.gameObject.CompareTag("Player"))
+            PlayerActor playerActor = collision.gameObject.GetComponentInParent<PlayerActor>();
+
+            if(collision.gameObject.CompareTag("Wall") || playerActor != null)
             {
                 _isStuck = true;
                 
                 _rigidBody.linearVelocity = Vector3.zero;
                 _rigidBody.isKinematic = true;
 
-                var playerActor = collision.gameObject.GetComponent<PlayerActor>();
                 if(playerActor != null)
                 {
                     playerActor.ApplyDamage(_painDamage);
                 }
 
-                transform.SetParent(collision.transform);
+                transform.SetParent(playerActor != null ? playerActor.transform : collision.transform);
 
             }
         }
