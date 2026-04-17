@@ -82,6 +82,19 @@ namespace Pong.Systems.Selection
         {
             return playerIndex >= 0 && playerIndex < _playerSelections.Length;
         }
+
+        public int GetRegisteredPlayerCount()
+        {
+            int count = 0;
+
+            for (int i = 0; i < _playerSelections.Length; i++)
+            {
+                if (_playerSelections[i].IsRegistered)
+                    count++;
+            }
+
+            return count;
+        }
     }
 
     [Serializable]
