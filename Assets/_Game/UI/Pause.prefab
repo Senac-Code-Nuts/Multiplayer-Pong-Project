@@ -1716,7 +1716,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 50
   m_TargetDisplay: 0
 --- !u!114 &4014291254482956515
 MonoBehaviour:
@@ -2133,7 +2133,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pauseMenuContainer: {fileID: 6751692404827192064}
-  _mainMenuSceneName: MainMenu
 --- !u!1 &7363529823065491663
 GameObject:
   m_ObjectHideFlags: 0
