@@ -645,7 +645,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _enemyPrefabs:
   - {fileID: 1128052536487738876, guid: d6414430c39847d4badfc09ac8e390b1, type: 3}
-  - {fileID: 5227405886908166763, guid: f555dd2e207d4c840b90c83b9cd86641, type: 3}
+  - {fileID: 1128052536487738876, guid: d6414430c39847d4badfc09ac8e390b1, type: 3}
   - {fileID: 5227405886908166763, guid: f555dd2e207d4c840b90c83b9cd86641, type: 3}
   _spawnPoints:
   - {fileID: 507488963}
@@ -666,6 +666,7 @@ MonoBehaviour:
   _useBosses: 0
   _bossPrefabs: []
   _bossSpawnPoints: []
+  _mapSceneName: Map
   _enemyParent: {fileID: 0}
 --- !u!4 &507488963 stripped
 Transform:
