@@ -13,7 +13,14 @@ namespace Pong.Systems.Input
 
         public void OnMove(InputAction.CallbackContext context)
         {
-            MoveEvent?.Invoke(context.ReadValue<Vector2>());
+            if (context.performed || context.canceled)
+            {
+                MoveEvent?.Invoke(context.ReadValue<Vector2>());
+            }
+            else
+            {
+                MoveEvent?.Invoke(Vector2.zero);
+            }
         }
 
         public void OnCast(InputAction.CallbackContext context)
