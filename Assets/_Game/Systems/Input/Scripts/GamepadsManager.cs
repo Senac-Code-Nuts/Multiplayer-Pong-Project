@@ -39,7 +39,18 @@ namespace Pong.Systems.Input
 
         private int PlayerCount
         {
-            get { return _playerCount; }
+            get
+            {
+                if (_characterSelectionSession != null && _characterSelectionSession.HasAnyRegisteredPlayers)
+                {
+                    int count = _characterSelectionSession.GetRegisteredPlayerCount();
+
+                    if (count == 2 || count == 4)
+                        return count;
+                }
+
+                return _playerCount;
+            }
         }
 
         public bool AllPlayersReady
