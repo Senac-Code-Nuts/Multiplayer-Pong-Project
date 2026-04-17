@@ -1510,7 +1510,7 @@ MonoBehaviour:
   _gameManager: {fileID: 2067724708}
   _enemyManager: {fileID: 502501445}
   _influenceSystem: {fileID: 1265117883}
-  _lifeManagerHud: {fileID: 0}
+  _lifeManagerHud: {fileID: 694646875}
   _currentState: 0
 --- !u!1 &1143474400
 GameObject:
