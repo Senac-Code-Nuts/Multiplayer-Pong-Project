@@ -43,13 +43,9 @@ namespace Pong.Gameplay.Boss.Greed
 
         protected override void OnAIInitialized()
         {
-            _graphComponent = _influenceSystem != null && _influenceSystem.GraphComponent != null
-                ? _influenceSystem.GraphComponent
-                : _graphComponent;
-
-            if (_graphComponent == null)
+            if (!TryResolveGraphComponent(ref _graphComponent))
             {
-                Debug.LogWarning("[Greed] GraphComponent não foi configurado.");
+                FailAIInitialization("[Greed] GraphComponent não foi configurado.");
                 return;
             }
 
@@ -92,7 +88,7 @@ namespace Pong.Gameplay.Boss.Greed
 
         public override void ApplyDamage(int damage)
         {
-            if(HurtClip != null)
+            if (HurtClip != null && AudioManager.Instance != null)
             {
                 AudioManager.Instance.PlaySFX(HurtClip);
             }
@@ -136,7 +132,7 @@ namespace Pong.Gameplay.Boss.Greed
         public override void ExecuteAttack()
         {
             Debug.Log($"<color=red>[Boss] {gameObject.name} executou o hit!</color>");
-            if(AttackClip != null)
+            if (AttackClip != null && AudioManager.Instance != null)
             {
                 AudioManager.Instance.PlaySFX(AttackClip);
             }

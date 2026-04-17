@@ -116,6 +116,13 @@ namespace Pong.Gameplay.Enemy
                 }
 
                 boss.InitializeAI(activePlayers, influenceSystem);
+
+                if (!boss.IsAIInitialized)
+                {
+                    Debug.LogWarning($"{TAG} Boss {boss.name} não foi ativado porque a inicialização da IA falhou.");
+                    continue;
+                }
+
                 boss.gameObject.SetActive(true);
             }
         }

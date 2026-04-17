@@ -40,15 +40,34 @@ namespace Pong.Gameplay.Boss
             _slotMachine = GetComponent<EnvySlotMachine>();
         }
 
+        protected override bool ValidateAISetup()
+        {
+            bool isValid = true;
+
+            if (_slotMachine == null)
+            {
+                FailAIInitialization("[Envy] EnvySlotMachine não foi encontrado no mesmo GameObject.");
+                isValid = false;
+            }
+
+            if (_projectilePrefab == null)
+            {
+                Debug.LogWarning("[Envy] Projectile prefab não foi configurado. O ataque não vai lançar projéteis.");
+            }
+
+            if (_projectileSpawnPoint == null)
+            {
+                Debug.LogWarning("[Envy] Projectile spawn point não foi configurado. O boss vai usar a própria posição.");
+            }
+
+            return isValid;
+        }
+
         protected override void OnAIInitialized()
         {
-            _graphComponent = _influenceSystem != null && _influenceSystem.GraphComponent != null
-                ? _influenceSystem.GraphComponent
-                : _graphComponent;
-
-            if (_graphComponent == null)
+            if (!TryResolveGraphComponent(ref _graphComponent))
             {
-                Debug.LogWarning("[Envy] GraphComponent não foi configurado.");
+                FailAIInitialization("[Envy] GraphComponent não foi configurado.");
                 return;
             }
 
@@ -57,7 +76,10 @@ namespace Pong.Gameplay.Boss
 
         private void Start()
         {
-            _slotMachine.OnResultReady += OnSlotResult;
+            if (_slotMachine != null)
+            {
+                _slotMachine.OnResultReady += OnSlotResult;
+            }
         }
 
         protected override void Update()
@@ -79,7 +101,10 @@ namespace Pong.Gameplay.Boss
 
         private void OnDestroy()
         {
-            _slotMachine.OnResultReady -= OnSlotResult;
+            if (_slotMachine != null)
+            {
+                _slotMachine.OnResultReady -= OnSlotResult;
+            }
         }
 
 
@@ -117,12 +142,13 @@ namespace Pong.Gameplay.Boss
 
         protected override void OnDamageTaken()
         {
-            if(!_slotMachine.IsRolling)
+            if (_slotMachine == null || _slotMachine.IsRolling)
             {
-                IsInSlotPhase = true;
-                _slotMachine.StartRollAll();
-                
+                return;
             }
+
+            IsInSlotPhase = true;
+            _slotMachine.StartRollAll();
         }
         public override void ApplyDamage(int damage)
         {
@@ -198,7 +224,7 @@ namespace Pong.Gameplay.Boss
 
                 Vector3 direction = Quaternion.Euler(0,angle,0) * Vector3.forward;
 
-                SpawnProjectile(_projectileSpawnPoint.position, direction);
+                SpawnProjectile(direction);
             }
         }
 
@@ -224,13 +250,20 @@ namespace Pong.Gameplay.Boss
             AllowMovement();
         }
 
-        private void SpawnProjectile(Vector3 position, Vector3 direction)
+        private void SpawnProjectile(Vector3 direction)
         {
-            GameObject projectile = Instantiate(_projectilePrefab, position, Quaternion.identity);
+            if (_projectilePrefab == null)
+            {
+                Debug.LogWarning("[Envy] Projectile prefab não foi configurado.");
+                return;
+            }
+
+            Transform spawnPoint = _projectileSpawnPoint != null ? _projectileSpawnPoint : transform;
+            GameObject projectile = Instantiate(_projectilePrefab, spawnPoint.position, Quaternion.identity);
 
             Rigidbody rigidbody = projectile.GetComponent<Rigidbody>();
 
-            if(rigidbody != null)
+            if (rigidbody != null)
             {
                 rigidbody.linearVelocity = direction.normalized * _projectileSpeed;
             }
