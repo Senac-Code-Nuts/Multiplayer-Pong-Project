@@ -165,6 +165,15 @@ MonoBehaviour:
   _stunVfxPrefab: {fileID: 0}
   _stunOffset: {x: 0, y: 1.8, z: 0}
   _phase: 0
+  _projectilePrefab: {fileID: 0}
+  _projectileSpawnPoint: {fileID: 0}
+  _projectileCount: 0
+  _projectileSpeed: 0
+  _prepareDuration: 1.5
+  _attackCooldown: 1.5
+  _vulnerableDuration: 2
+  _graphComponent: {fileID: 0}
+  _moveSpeed: 3
 --- !u!114 &642899287367271131
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -177,9 +186,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76d87612f7d777d4d92a1fa7ca52da3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _ticketA: {fileID: 0}
-  _ticketB: {fileID: 0}
-  _ticketC: {fileID: 0}
+  _ticketA: {fileID: 2587257376493013909}
+  _ticketB: {fileID: 1771828863199668350}
+  _ticketC: {fileID: 6210416136523501204}
+  _rollDuration: 1.5
 --- !u!1 &3123390457577305076
 GameObject:
   m_ObjectHideFlags: 0

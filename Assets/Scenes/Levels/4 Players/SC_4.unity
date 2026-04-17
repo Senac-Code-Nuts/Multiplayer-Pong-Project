@@ -1549,6 +1549,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: "Cen\xE1rio"
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 1122b6e8ed826e84eadbd7ab190ddad8, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: -4603171508351061682, guid: 1122b6e8ed826e84eadbd7ab190ddad8, type: 3}
     - {fileID: 3293606577683875164, guid: 1122b6e8ed826e84eadbd7ab190ddad8, type: 3}
@@ -1570,6 +1574,68 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 1122b6e8ed826e84eadbd7ab190ddad8, type: 3}
   m_PrefabInstance: {fileID: 1156956998}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1176500734
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 2032657787}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 6ebd9b25dfe12ac41844c337f8e0b380, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.052530527
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6ebd9b25dfe12ac41844c337f8e0b380, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6ebd9b25dfe12ac41844c337f8e0b380, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.025814056
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6ebd9b25dfe12ac41844c337f8e0b380, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6ebd9b25dfe12ac41844c337f8e0b380, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6ebd9b25dfe12ac41844c337f8e0b380, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6ebd9b25dfe12ac41844c337f8e0b380, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6ebd9b25dfe12ac41844c337f8e0b380, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6ebd9b25dfe12ac41844c337f8e0b380, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 6ebd9b25dfe12ac41844c337f8e0b380, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 6ebd9b25dfe12ac41844c337f8e0b380, type: 3}
+      propertyPath: m_Name
+      value: "Cen\xE1rio Boss Limbo"
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 6ebd9b25dfe12ac41844c337f8e0b380, type: 3}
+--- !u!4 &1176500735 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 6ebd9b25dfe12ac41844c337f8e0b380, type: 3}
+  m_PrefabInstance: {fileID: 1176500734}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1178445557
 GameObject:
@@ -2957,6 +3023,7 @@ Transform:
   - {fileID: 552322553}
   - {fileID: 408317902}
   - {fileID: 1355683865}
+  - {fileID: 1176500735}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2034497030
