@@ -185,6 +185,14 @@ PrefabInstance:
       propertyPath: _playerSide
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3770370606807799116, guid: 8e8aa83f77d60b24b97a1aa308b3bba6, type: 3}
+      propertyPath: m_Size.y
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3770370606807799116, guid: 8e8aa83f77d60b24b97a1aa308b3bba6, type: 3}
+      propertyPath: m_Size.z
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 4450597553685973012, guid: 8e8aa83f77d60b24b97a1aa308b3bba6, type: 3}
     m_RemovedGameObjects:

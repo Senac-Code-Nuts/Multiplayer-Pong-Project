@@ -144,7 +144,6 @@ namespace Pong.Gameplay.Relics
             if (collision.collider.TryGetComponent(out PlayerController player))
             {
                 player.ResetVelocity();
-                Reflect(collision);
                 return;
             }
 
