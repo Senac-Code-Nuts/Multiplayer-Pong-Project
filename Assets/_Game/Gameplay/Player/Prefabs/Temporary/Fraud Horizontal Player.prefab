@@ -15,10 +15,11 @@ GameObject:
   - component: {fileID: 3427831262410433437}
   - component: {fileID: 426822721179788484}
   - component: {fileID: 6522086124894741760}
-  - component: {fileID: 44032235020845144}
-  - component: {fileID: 5951647855649453664}
+  - component: {fileID: -7186806496286198566}
+  - component: {fileID: -7521327327264265663}
+  - component: {fileID: -9207689287120582699}
   m_Layer: 3
-  m_Name: Violence Vertical Player
+  m_Name: Fraud Horizontal Player
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34,7 +35,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 1, z: 4}
+  m_LocalScale: {x: 4, y: 1, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -227,14 +228,14 @@ MonoBehaviour:
     m_ActionName: UI/TrackedDeviceOrientation
   - m_PersistentCalls:
       m_Calls: []
-    m_ActionId: d6278463-68ec-4bc8-b76c-e4112bb0c02c
-    m_ActionName: 'UI/RoomSelect[/Keyboard/escape]'
+    m_ActionId: 831c736f-ac46-4726-8948-d5d6203aa8da
+    m_ActionName: 'Player/Pause[/Keyboard/escape,/XInputControllerWindows/start]'
   - m_PersistentCalls:
       m_Calls: []
-    m_ActionId: 831c736f-ac46-4726-8948-d5d6203aa8da
-    m_ActionName: 'Player/Pause[/Keyboard/escape]'
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
+    m_ActionId: d6278463-68ec-4bc8-b76c-e4112bb0c02c
+    m_ActionName: 'UI/RoomSelect[/Keyboard/escape]'
+  m_NeverAutoSwitchControlSchemes: 1
+  m_DefaultControlScheme: Gamepad
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
@@ -250,7 +251,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c142579762e9874ca45e9656e9e47e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &44032235020845144
+--- !u!114 &-7186806496286198566
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -259,7 +260,82 @@ MonoBehaviour:
   m_GameObject: {fileID: 1558463620509405343}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 10e53a80d448a8b41b0fce4d23c2d272, type: 3}
+  m_Script: {fileID: 11500000, guid: e69c4d6feb198184cb3f3d07a901d053, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Radius>k__BackingField: 5
+  weightMultiplier: 3
+  _fallof:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.40981406
+      outSlope: 0.40981406
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.5017873
+      value: 0.2056395
+      inSlope: 1.0021173
+      outSlope: 1.0021173
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1.5944204
+      outSlope: 1.5944204
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _type: 1
+--- !u!54 &-7521327327264265663
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1558463620509405343}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 124
+  m_CollisionDetection: 3
+--- !u!114 &-9207689287120582699
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1558463620509405343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6680b796858a5c04d8d7479e249234da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _maxHealth: 0
@@ -278,28 +354,6 @@ MonoBehaviour:
   _hasShield: 0
   _shieldOffset: {x: 0, y: 1.8, z: 0}
   _shieldVisualScale: {x: 0.5, y: 0.5, z: 0.5}
-  _stunRadius: 5
-  _enemyStunDuration: 1
-  _bossStunDuration: 1
+  _isCopyModeActive: 0
+  _relicPrefab: {fileID: 5642087065606961590, guid: 81753672ad690c84c88006bd4db16d0f, type: 3}
   _useDebug: 0
---- !u!114 &5951647855649453664
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1558463620509405343}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e69c4d6feb198184cb3f3d07a901d053, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <Radius>k__BackingField: 0
-  weightMultiplier: 2
-  _fallof:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  _type: 0
