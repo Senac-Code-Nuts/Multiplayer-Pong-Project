@@ -46,10 +46,7 @@ namespace Pong.Systems
 
         public void TogglePauseMenu()
         {
-            if (gameStateSystem == null)
-            {
-                return;
-            }
+            if (gameStateSystem == null) return;
 
             if (gameStateSystem.CurrentState == GameState.Playing)
             {
@@ -74,6 +71,7 @@ namespace Pong.Systems
         }
         public void ReturnToMainMenu()
         {
+            gameStateSystem?.ResetToMenu();
             Time.timeScale = 1f;
             SceneManager.LoadScene(_mainMenuSceneName);
         }
