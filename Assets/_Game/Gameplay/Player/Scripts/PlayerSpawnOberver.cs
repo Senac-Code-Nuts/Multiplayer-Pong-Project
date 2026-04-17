@@ -7,10 +7,6 @@ namespace Pong.Gameplay
 {
     public class PlayerSpawnObserver : MonoBehaviour
     {
-        [Header("VFX")]
-        [SerializeField] private GameObject _playerSpawnVfxPrefab;
-        [SerializeField, Min(0f)] private float _playerSpawnVfxLifetime = 2f;
-
         private void OnEnable()
         {
             PlayerSpawnEvents.OnPlayerSpawned += HandlePlayerSpawned;
@@ -25,8 +21,6 @@ namespace Pong.Gameplay
         {
             if (playerObject == null) return;
 
-            SpawnPlayerVfx(playerObject.transform.position);
-
             PlayerActor playerActor = playerObject.GetComponent<PlayerActor>();
             if (playerActor == null) return;
 
@@ -37,14 +31,6 @@ namespace Pong.Gameplay
             {
                 playerController.SetPlayerSide((PlayerSide)playerSide);
             }
-        }
-
-        private void SpawnPlayerVfx(Vector3 position)
-        {
-            if (_playerSpawnVfxPrefab == null) return;
-
-            GameObject vfxInstance = Instantiate(_playerSpawnVfxPrefab, position, Quaternion.identity);
-            Destroy(vfxInstance, _playerSpawnVfxLifetime);
         }
     }
 }
