@@ -213,7 +213,7 @@ MonoBehaviour:
   _inputReader: {fileID: 3450547807768322870}
   _abilityCooldown: 0
   _level: 1
-  _shieldVisualPrefab: {fileID: 1918504192231109622, guid: 59eb93bab2040c642b13a21d1962a985, type: 3}
+  _shieldVisualPrefab: {fileID: 1964327490352400623, guid: 9356753afbeaccd4fb48402f8a110ecc, type: 3}
   _hasShield: 0
   _shieldOffset: {x: -2, y: 1.8, z: 0}
   _shieldVisualScale: {x: 0.5, y: 0.5, z: 0.5}
