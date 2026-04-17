@@ -109,10 +109,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.93731594
+  m_Radius: 1.9524744
   m_Height: 4.08
   m_Direction: 1
-  m_Center: {x: -0.38658428, y: 0.9163115, z: 0}
+  m_Center: {x: -0.33936906, y: 0.9163115, z: 0}
 --- !u!54 &4646474141150693295
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -155,6 +155,9 @@ MonoBehaviour:
   _maxHealth: 15
   _currentHealth: 0
   _damage: 1
+  _damageFlashRenderers: []
+  _damageFlashColor: {r: 1, g: 0, b: 0, a: 1}
+  _damageFlashDuration: 0.1
   _isVulnerable: 1
   _isStunned: 0
   _isDead: 0
