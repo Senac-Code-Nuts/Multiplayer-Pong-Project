@@ -1,10 +1,11 @@
 using UnityEngine;
+using Pong.Gameplay.Player;
 
 namespace Pong.Gameplay.Boss
 {
     public class PainThrow : MonoBehaviour
     {
-        [SerializeField] private float _painDamage;
+        [SerializeField] private int _painDamage;
         private Rigidbody _rigidBody;
         private bool _isStuck = false;
 
@@ -20,14 +21,21 @@ namespace Pong.Gameplay.Boss
         {
             if(_isStuck) return;
 
-            if(collision.gameObject.CompareTag("Wall") || collision.gameObject.CompareTag("Player"))
+            PlayerActor playerActor = collision.gameObject.GetComponentInParent<PlayerActor>();
+
+            if(collision.gameObject.CompareTag("Wall") || playerActor != null)
             {
                 _isStuck = true;
                 
                 _rigidBody.linearVelocity = Vector3.zero;
                 _rigidBody.isKinematic = true;
 
-                transform.SetParent(collision.transform);
+                if(playerActor != null)
+                {
+                    playerActor.ApplyDamage(_painDamage);
+                }
+
+                transform.SetParent(playerActor != null ? playerActor.transform : collision.transform);
 
             }
         }

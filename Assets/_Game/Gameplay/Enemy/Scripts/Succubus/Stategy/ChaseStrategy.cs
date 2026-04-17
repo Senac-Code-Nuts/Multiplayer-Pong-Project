@@ -1,7 +1,7 @@
-using UnityEngine;
-using Pong.Gameplay.Player;
+using System.Collections.Generic;
 using Pong.Framework.BehaviourTree;
-using Pong.Systems.Input;
+using Pong.Gameplay.Player;
+using UnityEngine;
 
 namespace Pong.Gameplay.Enemy.Succubus
 {
@@ -9,60 +9,63 @@ namespace Pong.Gameplay.Enemy.Succubus
     {
         private readonly SuccubusEnemy _succubusEnemy;
         private Transform _target;
-
-        private PlayerController[] _cachedPlayers; // Cache dos players
+        private List<PlayerController> _activePlayers;
+        private List<Transform> _cachedPlayers;
 
         public ChaseStrategy(SuccubusEnemy enemy, EnemyPathFinder pathFinder)
             : base(enemy, pathFinder, () => enemy != null ? enemy.ChaseSpeed : 0f)
         {
             _succubusEnemy = enemy;
+            _activePlayers = new List<PlayerController>();
             _cachedPlayers = null;
+        }
+
+        public void SetActivePlayers(List<PlayerController> activePlayers)
+        {
+            _activePlayers = activePlayers ?? new List<PlayerController>();
+            _cachedPlayers = null;
+            _target = null;
         }
 
         public void SetTarget()
         {
             CachePlayersIfNeeded();
-            _target = FindFarthestPlayer()?.transform;
+            _target = FindFarthestPlayer();
         }
 
         private void CachePlayersIfNeeded()
         {
             if (_cachedPlayers != null) return;
 
-            var manager = GamepadsManager.Instance;
-            if (manager != null)
+            _cachedPlayers = new List<Transform>();
+
+            for (int i = 0; i < _activePlayers.Count; i++)
             {
-                GameObject[] gameObjects = manager.GetActivePlayerControllers();
-                
-                _cachedPlayers = new PlayerController[gameObjects.Length];
-                for (int i = 0; i < gameObjects.Length; i++)
+                PlayerController player = _activePlayers[i];
+
+                if (player != null)
                 {
-                    _cachedPlayers[i] = gameObjects[i]?.GetComponent<PlayerController>();
+                    _cachedPlayers.Add(player.transform);
                 }
-            }
-            else
-            {
-                Debug.LogWarning("[Chase] GamepadsManager não encontrado na cena!");
-                _cachedPlayers = new PlayerController[0];
             }
         }
 
-        private PlayerController FindFarthestPlayer()
+        private Transform FindFarthestPlayer()
         {
-            if (_cachedPlayers.Length == 0)
+            if (_cachedPlayers == null || _cachedPlayers.Count == 0)
             {
-                Debug.LogWarning("[Chase] Nenhum Player encontrado com a tag 'Player'!");
+                Debug.LogWarning("[Chase] Nenhum player ativo encontrado para perseguir.");
                 return null;
             }
 
-            PlayerController farthestPlayer = null;
+            Transform farthestPlayer = null;
             float maxDistance = float.MinValue;
 
             foreach (var player in _cachedPlayers)
             {
                 if (player != null)
                 {
-                    float distance = Vector3.Distance(_succubusEnemy.transform.position, player.transform.position);
+                    float distance = Vector3.Distance(_succubusEnemy.transform.position, player.position);
                     if (distance > maxDistance)
                     {
                         maxDistance = distance;
@@ -136,6 +139,7 @@ namespace Pong.Gameplay.Enemy.Succubus
         {
             base.Reset();
             _target = null;
+            _cachedPlayers = null;
         }
     }
 }

@@ -1,4 +1,5 @@
 using Pong.Framework.BehaviourTree;
+using Pong.Gameplay.Player;
 using UnityEngine;
 
 namespace Pong.Gameplay.Enemy.Succubus
@@ -64,9 +65,10 @@ namespace Pong.Gameplay.Enemy.Succubus
 
             foreach (var hit in hitColliders)
             {
-                if (hit.CompareTag("Player"))
+                if (hit.GetComponentInParent<PlayerActor>() is PlayerActor player)
                 {
-                    Debug.Log($"<color=orange>Acertou no jogador: {hit.name}</color>");
+                    Debug.Log($"<color=orange>Acertou no jogador: {player.name}</color>");
+                    player.ApplyDamage(_enemy.Damage);
                 }
             }
         }

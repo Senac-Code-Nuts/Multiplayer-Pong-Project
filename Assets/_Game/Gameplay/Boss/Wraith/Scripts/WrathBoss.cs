@@ -1,5 +1,6 @@
 using Pong.Framework.BehaviourTree;
 using Pong.Gameplay.Enemy;
+using Pong.Gameplay.Player;
 using Pong.Systems.Graph;
 using UnityEngine;
 
@@ -21,7 +22,7 @@ namespace Pong.Gameplay.Boss
         [SerializeField] private float _painRotateSpeed;
 
         [Header("Meelee Settings")]
-        [SerializeField] private float _melleeDamage;
+        [SerializeField] private int _melleeDamage;
         [field : SerializeField] public float TelegraphTime {get; private set;} = 1.0f;
         [field : SerializeField] public float ChaseDistance {get; private set;} = 2.5f;
         [field : SerializeField]  public float RecoveryTime {get; private set;} = 1.5f;
@@ -42,11 +43,40 @@ namespace Pong.Gameplay.Boss
         protected override void Awake()
         {
             base.Awake();
+        }
+
+        protected override bool ValidateAISetup()
+        {
+            if (_painPrefab == null)
+            {
+                Debug.LogWarning("[Wrath] Pain prefab não foi configurado. O ataque Throw ficará desativado.");
+            }
+
+            if (_painSpawnPoint == null)
+            {
+                Debug.LogWarning("[Wrath] Pain spawn point não foi configurado. O boss vai usar a própria posição.");
+            }
+
+            return true;
+        }
+
+        protected override void OnAIInitialized()
+        {
+            if (!TryResolveGraphComponent(ref _graphComponent))
+            {
+                FailAIInitialization("[Wrath] GraphComponent não foi configurado.");
+                return;
+            }
 
             BuildTree();
         }
         protected override void Update()
         {
+            if (!IsInitialized)
+            {
+                return;
+            }
+
             base.Update();
 
             _tree?.Process();
@@ -54,13 +84,9 @@ namespace Pong.Gameplay.Boss
             {
                 _cooldownTimer -= Time.deltaTime;
             }  
-
         }
 
-        public override void ExecuteAttack()
-        {
-            Debug.Log($"{gameObject.name} executed treasure protection behavior.");
-        }
+
         public void SetAttack(AttackType type)
         {
             CurrentAttack = type;
@@ -161,25 +187,47 @@ namespace Pong.Gameplay.Boss
         {
             //Método para VFX da área de ataque
         }
-        public void ExecuteSpinAttack()
+        public override void ExecuteAttack()
         {
             Debug.Log("Spin attack");
+            PlayAttackSfx();
             Collider[] hits = Physics.OverlapSphere(transform.position, AttackRadius);
 
             foreach(var hit in hits)
             {
-                if(hit.CompareTag("Player"))
+                if (hit.GetComponentInParent<PlayerActor>() is PlayerActor playerActor)
                 {
-                    Debug.Log($"<color=orange>Hit player: {hit.name}</color>");
+                    Debug.Log($"<color=orange>Hit player: {playerActor.name}</color>");
+                    playerActor.ApplyDamage(_melleeDamage);
                 }
             }
         }
         public GameObject SpawnPain()
         {
-           
-            GameObject pain = Instantiate(_painPrefab, _painSpawnPoint.position, Quaternion.identity);
-            var projectile = pain.GetComponent<PainThrow>();
+            if (_painPrefab == null)
+            {
+                Debug.LogWarning("[Wrath] Pain prefab não foi configurado.");
+                return null;
+            }
+
             GameObject target = GetFarthestPlayer();
+            if (target == null)
+            {
+                Debug.LogWarning("[Wrath] Nenhum player encontrado para o ataque Throw.");
+                return null;
+            }
+
+            Transform spawnPoint = _painSpawnPoint != null ? _painSpawnPoint : transform;
+            GameObject pain = Instantiate(_painPrefab, spawnPoint.position, Quaternion.identity);
+            var projectile = pain.GetComponent<PainThrow>();
+
+            if (projectile == null)
+            {
+                Debug.LogWarning("[Wrath] PainThrow não foi encontrado no prefab.");
+                Destroy(pain);
+                return null;
+            }
+
             RotateTowards(target.transform.position);
 
             Vector3 direction = -(target.transform.position - transform.position).normalized;
@@ -190,7 +238,7 @@ namespace Pong.Gameplay.Boss
 
         public GameObject GetFarthestPlayer()
         {
-            GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+            PlayerActor[] players = FindObjectsByType<PlayerActor>(FindObjectsSortMode.None);
 
             GameObject farthest = null;
             float maxDistance = 0f;
@@ -201,7 +249,7 @@ namespace Pong.Gameplay.Boss
                 if(distance > maxDistance)
                 {
                     maxDistance = distance;
-                    farthest = player;
+                    farthest = player.gameObject;
                 }
             }
 

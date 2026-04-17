@@ -1,3 +1,4 @@
+using Pong.Systems.Selection;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
@@ -7,11 +8,20 @@ namespace Pong.Systems.MapSelection
 {
     public class MapButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler
     {
+        private const string PHASE_KEY = "NewPhase";
+
         [Header("Next Scenes")]
-        [Tooltip("Coloque o nome CORRETO da cena que será chamada")]
-        [SerializeField] private string _scene;
+        [Tooltip("Cena da sala para 2 jogadores")]
+        [SerializeField] private string _scene2Players;
+
+        [Tooltip("Cena da sala para 4 jogadores")]
+        [SerializeField] private string _scene4Players;
+
         [Tooltip("Para ordenar qual será a fase de forma sequencial")]
         [SerializeField] private int _numberScene;
+
+        [Header("Selection Session")]
+        [SerializeField] private CharacterSelectionSession _selectionSession;
 
         [Header("UI Components")]
         [SerializeField] private Button _button;
@@ -20,93 +30,163 @@ namespace Pong.Systems.MapSelection
         [Header("Colors")]
         [SerializeField] private Color _colorActualphase = Color.white;
         [SerializeField] private Color _colorUnlockedPhase = Color.green;
+        [SerializeField] private Color _colorCompletedPhase = Color.gray;
         [SerializeField] private Color _colorLockedPhase = Color.black;
 
+        [Header("Selection")]
         [SerializeField] private float _selectScale = 1.2f;
 
-        /// <summary> 
+        private Vector3 _defaultScale;
+
+        /// <summary>
         /// (PlayerPrefs)
         /// GetInt vai retornar um valor pra mim da etiqueta
-        /// Setint vai salvar um novo valor na etiqueta
-        /// PlayerPrefs.Save(); salvar a info
+        /// SetInt vai salvar um novo valor na etiqueta
+        /// PlayerPrefs.Save(); salva a info
         /// </summary>
-        /// 
+        private void Awake()
+        {
+            _defaultScale = transform.localScale;
 
+            if (_button == null)
+                _button = GetComponent<Button>();
+
+            if (_buttonImage == null)
+                _buttonImage = GetComponent<Image>();
+        }
+
+        /// <summary>
+        /// Estado BLOQUEADO:
+        /// pode ficar invisível ou apenas desativado
+        /// </summary>
+        public void SetLocked(bool shouldHide)
+        {
+            SetVisualState(false, _colorLockedPhase, !shouldHide);
+        }
+
+        /// <summary>
+        /// Estado LIBERADO:
+        /// jogador pode clicar
+        /// </summary>
+        public void SetUnlocked()
+        {
+            SetVisualState(true, _colorUnlockedPhase, true);
+        }
+
+        /// <summary>
+        /// Estado CONCLUÍDO:
+        /// fica visível, mas não clicável
+        /// </summary>
+        public void SetCompleted()
+        {
+            SetVisualState(false, _colorCompletedPhase, true);
+        }
 
         public void OnPointerEnter(PointerEventData eventData)
         {
+            if (!CanHighlight())
+                return;
 
-            transform.localScale = new Vector3(_selectScale, _selectScale, 1);
+            transform.localScale = _defaultScale * _selectScale;
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            transform.localScale = Vector3.one;
+            ResetScale();
         }
 
         public void OnSelect(BaseEventData data)
         {
-            transform.localScale = new Vector3(_selectScale, _selectScale, 1);
+            if (!CanHighlight())
+                return;
+
+            transform.localScale = _defaultScale * _selectScale;
         }
 
         public void OnDeselect(BaseEventData data)
         {
-            transform.localScale = Vector3.one;
-        }
-
-        private void Start()
-        {
-            ButtonSetting();
-        }
-        private void ButtonSetting()
-        {
-            int _phase = PlayerPrefs.GetInt("NewPhase", 0);
-            if (_numberScene == _phase)
-            {
-                ActiveButton(false, _colorActualphase);
-            }
-            else if (_numberScene == _phase + 1)
-            {
-                ActiveButton(true, _colorUnlockedPhase);
-            }
-            else
-            {
-                ActiveButton(false, _colorLockedPhase);
-            }
-        }
-        private void ActiveButton(bool interactable, Color color)
-        {
-            if (_button != null)
-            {
-                _button.interactable = interactable;
-            }
-            if (_buttonImage != null)
-            {
-                _buttonImage.color = color;
-            }
+            ResetScale();
         }
 
         public void ToNextScene()
         {
-            if (!string.IsNullOrEmpty(_scene))
+            string targetScene = GetSceneByPlayerCount();
+
+            if (string.IsNullOrEmpty(targetScene))
             {
-                PlayerPrefs.SetInt("NewPhase", _numberScene);
-                PlayerPrefs.Save();
-                SceneManager.LoadScene(_scene);
+                Debug.LogError($"Nao foi possivel definir a cena da fase {name} para a quantidade atual de jogadores.");
+                return;
             }
-            else
+
+            if (MapProgressManager.Instance != null)
             {
-                Debug.LogError("Voce colocou o nome de uma cena que não existe ou voce só não escreveu mesmo!");
+                MapProgressManager.Instance.SetCurrentPhase(_numberScene);
             }
+
+            SceneManager.LoadScene(targetScene);
         }
 
         public void DeleteAllSaves()
         {
-            if (!string.IsNullOrEmpty(_scene))
+            PlayerPrefs.DeleteKey(PHASE_KEY);
+            PlayerPrefs.Save();
+        }
+
+        private string GetSceneByPlayerCount()
+        {
+            int registeredPlayers = GetRegisteredPlayerCount();
+
+            if (registeredPlayers == 2)
+                return _scene2Players;
+
+            if (registeredPlayers == 4)
+                return _scene4Players;
+
+            Debug.LogWarning($"Quantidade de jogadores invalida para carregar sala: {registeredPlayers}");
+            return string.Empty;
+        }
+
+        private int GetRegisteredPlayerCount()
+        {
+            if (_selectionSession == null)
+                return 0;
+
+            int registeredPlayers = 0;
+
+            for (int i = 0; i < _selectionSession.PlayerSelections.Length; i++)
             {
-                PlayerPrefs.DeleteAll();
-                SceneManager.LoadScene(_scene);
+                if (_selectionSession.PlayerSelections[i].IsRegistered)
+                    registeredPlayers++;
             }
+
+            return registeredPlayers;
+        }
+
+        private void SetVisualState(bool interactable, Color color, bool isVisible)
+        {
+            if (_button != null)
+                _button.interactable = interactable;
+
+            if (_buttonImage != null)
+                _buttonImage.color = color;
+
+            gameObject.SetActive(isVisible);
+
+            if (!interactable)
+                ResetScale();
+        }
+
+        private bool CanHighlight()
+        {
+            if (_button == null)
+                return false;
+
+            return _button.interactable;
+        }
+
+        private void ResetScale()
+        {
+            transform.localScale = _defaultScale;
         }
     }
 }

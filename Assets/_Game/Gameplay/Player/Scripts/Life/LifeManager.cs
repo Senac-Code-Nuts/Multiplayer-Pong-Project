@@ -7,7 +7,7 @@ namespace Pong.Gameplay.Life
         public static LifeManager Instance { get; private set; }
 
         private int _life;
-        [SerializeField] private int _maxLife;
+        private int _maxLife = 3;
         public int Life => _life;
         public int MaxLife => _maxLife;
 
