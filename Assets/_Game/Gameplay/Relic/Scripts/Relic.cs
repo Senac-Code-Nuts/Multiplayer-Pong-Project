@@ -124,8 +124,6 @@ namespace Pong.Gameplay.Relics
 
         private void OnCollisionEnter(Collision collision)
         {
-            TryApplyDamage(collision);
-
             if (collision.collider.TryGetComponent(out FraudPlayer fraudPlayer) || collision.collider.GetComponentInParent<FraudPlayer>() != null)
             {
                 FraudPlayer targetFraudPlayer = collision.collider.GetComponentInParent<FraudPlayer>();
@@ -150,6 +148,7 @@ namespace Pong.Gameplay.Relics
 
             if (collision.collider.TryGetComponent(out EnemyActor actor) || collision.collider.GetComponentInParent<EnemyActor>() != null)
             {
+                TryApplyDamage(collision);
                 Reflect(collision);
                 return;
             }
