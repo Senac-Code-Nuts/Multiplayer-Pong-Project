@@ -131,12 +131,18 @@ namespace Pong.Gameplay.Relics
                 {
                     Debug.Log($"[Relic] {name} collided with FraudPlayer {targetFraudPlayer.name}");
                     targetFraudPlayer.TryCopyRelic(this);
+                    if (collision.collider.TryGetComponent(out PlayerController fraudPlayerController))
+                    {
+                        fraudPlayerController.ResetVelocity();
+                    }
                     return;
                 }
             }
 
-            if (collision.collider.TryGetComponent(out PlayerController player)) {
+            if (collision.collider.TryGetComponent(out PlayerController player))
+            {
                 player.ResetVelocity();
+                return;
             }
 
             if (collision.collider.TryGetComponent(out EnemyActor actor) || collision.collider.GetComponentInParent<EnemyActor>() != null)
