@@ -1,4 +1,3 @@
-using Codice.CM.Common;
 using Pong.Gameplay.Relics;
 using UnityEngine;
 
@@ -13,7 +12,7 @@ namespace Pong.Gameplay.Boss.Greed
 
         [Header("Follow Settings")]
         [SerializeField] private float _smoothSpeed = 5f;
-        [Tooltip("Ajustar a posição do tesouro caso não tenha")]
+        [Tooltip("Ajustar a posiï¿½ï¿½o do tesouro caso nï¿½o tenha")]
         [SerializeField] private Vector3 _offset = new Vector3(1f, -1f, 0);
 
         [Header("Arena Limits")]
