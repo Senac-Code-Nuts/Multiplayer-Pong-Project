@@ -56,6 +56,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2645649570746258235, guid: 8e8aa83f77d60b24b97a1aa308b3bba6, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -87,11 +91,19 @@ MonoBehaviour:
   _isVulnerable: 1
   _isStunned: 0
   _isDead: 0
+  _stunVfxPrefab: {fileID: 0}
+  _stunOffset: {x: 0, y: 1.8, z: 0}
+  _playerOrder: -1
   _inputReader: {fileID: 7180688116601788347}
   _abilityCooldown: 0
+  _level: 1
+  _shieldVisualPrefab: {fileID: 0}
+  _hasShield: 0
+  _shieldOffset: {x: 0, y: 1.8, z: 0}
+  _shieldVisualScale: {x: 0.5, y: 0.5, z: 0.5}
   _isCopyModeActive: 0
-  _copyCount: 1
   _relicPrefab: {fileID: 5642087065606961590, guid: 81753672ad690c84c88006bd4db16d0f, type: 3}
+  _useDebug: 0
 --- !u!114 &7180688116601788347 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6522086124894741760, guid: 8e8aa83f77d60b24b97a1aa308b3bba6, type: 3}
