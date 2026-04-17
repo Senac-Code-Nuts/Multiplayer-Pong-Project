@@ -45,15 +45,26 @@ namespace Pong.Gameplay.Boss
             base.Awake();
         }
 
+        protected override bool ValidateAISetup()
+        {
+            if (_painPrefab == null)
+            {
+                Debug.LogWarning("[Wrath] Pain prefab não foi configurado. O ataque Throw ficará desativado.");
+            }
+
+            if (_painSpawnPoint == null)
+            {
+                Debug.LogWarning("[Wrath] Pain spawn point não foi configurado. O boss vai usar a própria posição.");
+            }
+
+            return true;
+        }
+
         protected override void OnAIInitialized()
         {
-            _graphComponent = _influenceSystem != null && _influenceSystem.GraphComponent != null
-                ? _influenceSystem.GraphComponent
-                : _graphComponent;
-
-            if (_graphComponent == null)
+            if (!TryResolveGraphComponent(ref _graphComponent))
             {
-                Debug.LogWarning("[Wrath] GraphComponent não foi configurado.");
+                FailAIInitialization("[Wrath] GraphComponent não foi configurado.");
                 return;
             }
 
@@ -196,10 +207,30 @@ namespace Pong.Gameplay.Boss
         }
         public GameObject SpawnPain()
         {
-           
-            GameObject pain = Instantiate(_painPrefab, _painSpawnPoint.position, Quaternion.identity);
-            var projectile = pain.GetComponent<PainThrow>();
+            if (_painPrefab == null)
+            {
+                Debug.LogWarning("[Wrath] Pain prefab não foi configurado.");
+                return null;
+            }
+
             GameObject target = GetFarthestPlayer();
+            if (target == null)
+            {
+                Debug.LogWarning("[Wrath] Nenhum player encontrado para o ataque Throw.");
+                return null;
+            }
+
+            Transform spawnPoint = _painSpawnPoint != null ? _painSpawnPoint : transform;
+            GameObject pain = Instantiate(_painPrefab, spawnPoint.position, Quaternion.identity);
+            var projectile = pain.GetComponent<PainThrow>();
+
+            if (projectile == null)
+            {
+                Debug.LogWarning("[Wrath] PainThrow não foi encontrado no prefab.");
+                Destroy(pain);
+                return null;
+            }
+
             RotateTowards(target.transform.position);
 
             Vector3 direction = -(target.transform.position - transform.position).normalized;

@@ -115,15 +115,26 @@ namespace Pong.Gameplay.Boss
             }
         }
 
+        protected override bool ValidateAISetup()
+        {
+            if (_attackVinePrefab == null)
+            {
+                Debug.LogWarning("[Pride] Attack vine prefab não foi configurado. O ataque Vine ficará desativado.");
+            }
+
+            if (_useTrailVines && _trailVinePrefab == null)
+            {
+                Debug.LogWarning("[Pride] Trail vine prefab não foi configurado. O trail ficará desativado.");
+            }
+
+            return true;
+        }
+
         protected override void OnAIInitialized()
         {
-            _graphComponent = _influenceSystem != null && _influenceSystem.GraphComponent != null
-                ? _influenceSystem.GraphComponent
-                : _graphComponent;
-
-            if (_graphComponent == null)
+            if (!TryResolveGraphComponent(ref _graphComponent))
             {
-                Debug.LogWarning("[Pride] GraphComponent não foi configurado.");
+                FailAIInitialization("[Pride] GraphComponent não foi configurado.");
                 return;
             }
 

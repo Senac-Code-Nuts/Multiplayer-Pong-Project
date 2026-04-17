@@ -66,12 +66,40 @@ namespace Pong.Gameplay.Enemy
             }
         }
 
+        public void InitializeSpawnDependencies(GraphComponent graphComponent, Relic relic)
+        {
+            if (graphComponent != null)
+            {
+                _graphComponent = graphComponent;
+            }
+
+            if (relic != null)
+            {
+                _relic = relic;
+            }
+        }
+
         public override void InitializeAI(List<PlayerController> activePlayers, InfluenceSystem influenceSystem)
         {
             _activePlayers = activePlayers ?? new List<PlayerController>();
             _influenceSystem = influenceSystem;
 
-            _graphComponent = _influenceSystem.GraphComponent;
+            if (_graphComponent == null && _influenceSystem != null)
+            {
+                _graphComponent = _influenceSystem.GraphComponent;
+            }
+
+            if (_graphComponent == null)
+            {
+                Debug.LogWarning("[Minotaur] GraphComponent não foi configurado.");
+                return;
+            }
+
+            if (_relic == null)
+            {
+                Debug.LogWarning("[Minotaur] Relíquia não foi configurada.");
+                return;
+            }
 
             _tree = new BehaviourTree("Minotaur");
 

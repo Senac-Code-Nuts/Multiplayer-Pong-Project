@@ -6,8 +6,6 @@ namespace MenuManager
 {
     public class MainMenuManager : MonoBehaviour
     {
-
-
         private MenuStateMachine StateMachina;
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Start()
@@ -29,10 +27,7 @@ namespace MenuManager
         {
             StateMachina.ChangeState(StateMachina.currentState, MenuState.StateType.Padrao);
         }
-        public void ChangeToCharacterSelect()
-        {
-            StateMachina.ChangeState(StateMachina.currentState, MenuState.StateType.characterSelect);
-        }
+
         public void ChangeToNull()
         {
             StateMachina.ClearState();

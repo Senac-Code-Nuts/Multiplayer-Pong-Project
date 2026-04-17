@@ -114,15 +114,26 @@ namespace Pong.Gameplay.Boss
             }
         }
 
+        protected override bool ValidateAISetup()
+        {
+            if (_boneProjectilePrefab == null)
+            {
+                Debug.LogWarning("[Gluttony] Bone projectile prefab não foi configurado. O ataque Spit Bones ficará desativado.");
+            }
+
+            if (_coneAttack == null)
+            {
+                Debug.LogWarning("[Gluttony] GluttonyConeAttack não foi configurado. O ataque Drink ficará desativado.");
+            }
+
+            return true;
+        }
+
         protected override void OnAIInitialized()
         {
-            _graphComponent = _influenceSystem != null && _influenceSystem.GraphComponent != null
-                ? _influenceSystem.GraphComponent
-                : _graphComponent;
-
-            if (_graphComponent == null)
+            if (!TryResolveGraphComponent(ref _graphComponent))
             {
-                Debug.LogWarning("[Gluttony] GraphComponent não foi configurado.");
+                FailAIInitialization("[Gluttony] GraphComponent não foi configurado.");
                 return;
             }
 
