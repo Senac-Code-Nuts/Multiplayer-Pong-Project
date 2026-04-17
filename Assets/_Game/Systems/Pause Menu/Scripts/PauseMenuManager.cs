@@ -1,5 +1,6 @@
 using Pong.Core;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Pong.Systems
 {
@@ -9,6 +10,8 @@ namespace Pong.Systems
         private GameStateSystem gameStateSystem => GameStateSystem.Instance;
 
         [SerializeField] private GameObject _pauseMenuContainer;
+
+        [SerializeField] private string _mainMenuSceneName = "MainMenu";
 
         private void Awake()
         {
@@ -68,6 +71,11 @@ namespace Pong.Systems
             }
 
             Time.timeScale = isPaused ? 0f : 1f;
+        }
+        public void ReturnToMainMenu()
+        {
+            Time.timeScale = 1f;
+            SceneManager.LoadScene(_mainMenuSceneName);
         }
     }
 }

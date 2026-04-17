@@ -120,9 +120,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2391117525130532902}
-        m_TargetAssemblyTypeName: MenuManager.MainMenuManager, Assembly-CSharp
-        m_MethodName: Exit
+      - m_Target: {fileID: 6976778372237232176}
+        m_TargetAssemblyTypeName: Pong.Systems.PauseMenuManager, Pong.Systems
+        m_MethodName: ReturnToMainMenu
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2133,6 +2133,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pauseMenuContainer: {fileID: 6751692404827192064}
+  _mainMenuSceneName: MainMenu
 --- !u!1 &7363529823065491663
 GameObject:
   m_ObjectHideFlags: 0
