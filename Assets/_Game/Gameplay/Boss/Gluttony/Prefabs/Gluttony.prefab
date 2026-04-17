@@ -289,10 +289,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.8865919
+  m_Radius: 1.6123402
   m_Height: 3.3645976
   m_Direction: 1
-  m_Center: {x: -0.18484378, y: 1.9283837, z: 0}
+  m_Center: {x: -0.20520353, y: 1.9283837, z: 0}
 --- !u!114 &1307643262847235447
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -363,6 +363,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5e91f5c350c01249a792e01212c081c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _angleTolerance: 5
+  _vfxRotationOffset: {x: 0, y: 0, z: 0}
+  _useVfxSpawnPointAsDamageOrigin: 1
 --- !u!1001 &1021699675316329878
 PrefabInstance:
   m_ObjectHideFlags: 0

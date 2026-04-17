@@ -16,9 +16,9 @@ MonoBehaviour:
   - IsRegistered: 1
     IsConfirmed: 0
     SelectedCharacter: 1
-  - IsRegistered: 0
+  - IsRegistered: 1
     IsConfirmed: 0
-    SelectedCharacter: 0
+    SelectedCharacter: 2
   - IsRegistered: 0
     IsConfirmed: 0
     SelectedCharacter: 0
